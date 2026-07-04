@@ -723,5 +723,107 @@ body:not(.linko-dark) .branch-page-hero p,body:not(.linko-dark) .branch-page-her
 }
 </style>
 
+
+<!-- ===== LINKO TRUE FINAL CONTRAST FIX: splash + side menu ===== -->
+<style id="linkoTrueFinalContrastFix">
+/* 1) Splash / Gateway titles: always bright on dark gradient */
+html body .splash,
+html body .splash .splash-card,
+html body .splash .splash-card *{
+  color:#ffffff !important;
+  opacity:1 !important;
+  mix-blend-mode:normal !important;
+}
+
+html body .splash .splash-card h1,
+html body .splash h1{
+  color:#ffffff !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+  text-shadow:
+    0 4px 18px rgba(0,0,0,.78),
+    0 0 22px rgba(255,255,255,.16) !important;
+}
+
+html body .splash .splash-card p,
+html body .splash p{
+  color:#f3f4f6 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+  text-shadow:0 3px 14px rgba(0,0,0,.72) !important;
+}
+
+/* 2) Side menu: force readable buttons in light and dark modes */
+html body .side-menu .menu-panel{
+  background:#0b1220 !important;
+  color:#ffffff !important;
+}
+
+html body .side-menu .menu-panel h1,
+html body .side-menu .menu-panel h2,
+html body .side-menu .menu-panel h3{
+  color:#ffffff !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+
+html body .side-menu .menu-panel small,
+html body .side-menu .menu-panel p{
+  color:#e5e7eb !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+
+html body .side-menu .menu-panel .menu-item{
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.18) !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+
+html body .side-menu .menu-panel .menu-item,
+html body .side-menu .menu-panel .menu-item *,
+html body .side-menu .menu-panel .menu-item span,
+html body .side-menu .menu-panel .menu-item b,
+html body .side-menu .menu-panel .menu-item .mi{
+  color:#111827 !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+  font-weight:900 !important;
+}
+
+html body .side-menu .menu-panel .menu-item .mi{
+  color:#0f8a55 !important;
+}
+
+/* close button in side menu */
+html body .side-menu .menu-panel .icon-btn{
+  background:rgba(255,255,255,.08) !important;
+  color:#ffffff !important;
+  border-color:rgba(255,255,255,.18) !important;
+}
+html body .side-menu .menu-panel .icon-btn .mi{
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+
+/* keep normal top/header readable after this fix */
+html body:not(.linko-dark) .topbar .brand h2,
+html body:not(.linko-dark) .topbar .brand small{
+  color:#111827 !important;
+  opacity:1 !important;
+}
+html body.linko-dark .topbar .brand h2{
+  color:#ffffff !important;
+  opacity:1 !important;
+}
+html body.linko-dark .topbar .brand small{
+  color:#e5e7eb !important;
+  opacity:1 !important;
+}
+</style>
+
 </body>
 </html>
