@@ -649,5 +649,79 @@ body.linko-dark .app-wrap:before{opacity:.35!important}
 })();
 </script>
 
+
+
+<!-- ===== LINKO FINAL VISIBILITY FIX: hero/splash/card text contrast ===== -->
+<style id="linkoFinalVisibilityFix">
+/* Fix dark text on dark hero/splash backgrounds in both modes */
+.splash,.splash-card,.splash-card *{
+  color:#ffffff!important;
+}
+.splash h1,.splash p{
+  color:#ffffff!important;
+  text-shadow:0 3px 16px rgba(0,0,0,.55)!important;
+}
+.splash p{color:#e5e7eb!important;opacity:1!important}
+
+.member-card,
+.member-card *,
+.profile-hero,
+.profile-hero *,
+.branch-page-hero,
+.branch-page-hero *,
+.float-cart,
+.float-cart *{
+  color:#ffffff!important;
+  text-shadow:0 2px 10px rgba(0,0,0,.34)!important;
+}
+.member-card,
+.profile-hero,
+.branch-page-hero{
+  background:linear-gradient(135deg,#07111f 0%,#064e3b 62%,#059669 100%)!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+}
+.member-card .member-stat,
+.profile-hero .member-stat{
+  background:rgba(255,255,255,.16)!important;
+  border-color:rgba(255,255,255,.24)!important;
+}
+.member-card .member-stat small,
+.member-card .member-stat b,
+.member-card .member-info small,
+.member-card .member-info b{
+  color:#ffffff!important;
+  opacity:1!important;
+}
+.member-card:after{color:#ffffff!important;opacity:.10!important}
+
+/* keep normal page titles readable in each mode */
+body.linko-dark .app-page:not(.auth-screen) h1,
+body.linko-dark .app-page:not(.auth-screen) h2,
+body.linko-dark .app-page:not(.auth-screen) h3,
+body.linko-dark .app-page:not(.auth-screen) p,
+body.linko-dark .app-page:not(.auth-screen) small,
+body.linko-dark .app-page:not(.auth-screen) label{
+  text-shadow:none;
+}
+body.linko-dark .member-card h1,body.linko-dark .member-card h2,body.linko-dark .member-card h3,
+body.linko-dark .member-card p,body.linko-dark .member-card small,body.linko-dark .member-card b,
+body.linko-dark .profile-hero h1,body.linko-dark .profile-hero h2,body.linko-dark .profile-hero h3,
+body.linko-dark .profile-hero p,body.linko-dark .profile-hero small,body.linko-dark .profile-hero b,
+body.linko-dark .branch-page-hero h1,body.linko-dark .branch-page-hero h2,body.linko-dark .branch-page-hero h3,
+body.linko-dark .branch-page-hero p,body.linko-dark .branch-page-hero small,body.linko-dark .branch-page-hero b{
+  color:#ffffff!important;
+  text-shadow:0 2px 10px rgba(0,0,0,.38)!important;
+}
+body:not(.linko-dark) .member-card h1,body:not(.linko-dark) .member-card h2,body:not(.linko-dark) .member-card h3,
+body:not(.linko-dark) .member-card p,body:not(.linko-dark) .member-card small,body:not(.linko-dark) .member-card b,
+body:not(.linko-dark) .profile-hero h1,body:not(.linko-dark) .profile-hero h2,body:not(.linko-dark) .profile-hero h3,
+body:not(.linko-dark) .profile-hero p,body:not(.linko-dark) .profile-hero small,body:not(.linko-dark) .profile-hero b,
+body:not(.linko-dark) .branch-page-hero h1,body:not(.linko-dark) .branch-page-hero h2,body:not(.linko-dark) .branch-page-hero h3,
+body:not(.linko-dark) .branch-page-hero p,body:not(.linko-dark) .branch-page-hero small,body:not(.linko-dark) .branch-page-hero b{
+  color:#ffffff!important;
+  text-shadow:0 2px 10px rgba(0,0,0,.38)!important;
+}
+</style>
+
 </body>
 </html>
