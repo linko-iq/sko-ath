@@ -81,6 +81,166 @@ html,body{width:100%;max-width:100%;overflow-x:hidden!important;}
 /* ===== LINKO PHASE 7: HOME CLEANUP + BRANCH GRID + PROFILE AVATAR ===== */
 html,body{max-width:100%;overflow-x:hidden!important}.app-page,.app-wrap{max-width:100%;overflow-x:hidden}.app-wrap{padding-left:14px!important;padding-right:14px!important}.topbar{max-width:100vw;overflow:hidden}.promo-rail{display:none!important}.branch-rail{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;overflow:visible!important;padding:2px 0 14px!important;scroll-snap-type:none!important}.branch-card{min-width:0!important;width:100%!important;text-align:center!important}.branch-img{height:104px!important}.branch-card h3{font-size:14px!important;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px 8px 2px!important}.branch-card small{text-align:center!important}.products-section{margin-top:10px;scroll-margin-top:90px}.cats-rail.compact{display:flex!important;gap:7px!important;overflow-x:auto!important;padding-bottom:10px!important}.cats-rail.compact .chip{min-height:36px!important;padding:7px 11px!important;font-size:13px!important}.section-title{padding-inline:2px}.searchbar{width:100%;overflow:hidden}.searchbar .input-icon{min-width:0}.request-actions{grid-template-columns:1fr 1fr!important}.avatar-big img,.member-avatar img{width:100%;height:100%;object-fit:contain!important;background:#fff;border-radius:inherit}.avatar-file{display:none!important}@media(min-width:760px){.branch-rail{grid-template-columns:repeat(4,minmax(0,1fr))!important}.branch-img{height:118px!important}.app-wrap{max-width:1100px;margin:auto;padding-left:22px!important;padding-right:22px!important}}@media(max-width:410px){.branch-rail{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}.branch-img{height:90px!important}.branch-card h3{font-size:12px!important;min-height:42px}.request-actions{grid-template-columns:1fr!important}.products-grid{grid-template-columns:1fr!important}}
 
+
+
+/* ===== LINKO PHASE 11: HIGH CONTRAST LIGHT/DARK THEME FINAL ===== */
+:root{
+  --bg:#f3f7f4!important;
+  --card:#ffffff!important;
+  --ink:#07111f!important;
+  --muted:#334155!important;
+  --line:#cbd5e1!important;
+  --green:#057a45!important;
+  --green2:#10b981!important;
+  --gold:#d97706!important;
+  --red:#dc2626!important;
+  --blue:#1d4ed8!important;
+  --orange:#c2410c!important;
+  --shadow:0 24px 70px rgba(15,23,42,.16)!important;
+  --soft:0 12px 30px rgba(15,23,42,.12)!important;
+}
+body:not(.linko-dark){
+  background:radial-gradient(circle at 8% 0,rgba(217,119,6,.18),transparent 30%),radial-gradient(circle at 90% 12%,rgba(5,122,69,.16),transparent 34%),linear-gradient(180deg,#ffffff,#eef6f0)!important;
+  color:#07111f!important;
+}
+body:not(.linko-dark) .topbar{background:rgba(255,255,255,.94)!important;border-bottom:1px solid #cbd5e1!important}
+body:not(.linko-dark) .glass,
+body:not(.linko-dark) .auth-card,
+body:not(.linko-dark) .branch-card,
+body:not(.linko-dark) .product-card,
+body:not(.linko-dark) .order-card,
+body:not(.linko-dark) .note-card,
+body:not(.linko-dark) .profile-card,
+body:not(.linko-dark) .menu-card,
+body:not(.linko-dark) .cart-item,
+body:not(.linko-dark) .summary-box,
+body:not(.linko-dark) .empty-card,
+body:not(.linko-dark) .modal-card,
+body:not(.linko-dark) .menu-panel,
+body:not(.linko-dark) .info-box,
+body:not(.linko-dark) .avatar-upload-card,
+body:not(.linko-dark) .photo-editor-card,
+body:not(.linko-dark) .bottom-nav,
+body:not(.linko-dark) .icon-btn,
+body:not(.linko-dark) .linko-theme-toggle{
+  background:#ffffff!important;color:#07111f!important;border-color:#cbd5e1!important;
+}
+body:not(.linko-dark) h1,body:not(.linko-dark) h2,body:not(.linko-dark) h3,body:not(.linko-dark) h4,
+body:not(.linko-dark) b,body:not(.linko-dark) strong,body:not(.linko-dark) label,
+body:not(.linko-dark) .brand h2,body:not(.linko-dark) .page-head h1,body:not(.linko-dark) .section-title h2{
+  color:#020617!important;
+}
+body:not(.linko-dark) p,body:not(.linko-dark) small,body:not(.linko-dark) .lead,
+body:not(.linko-dark) .brand small,body:not(.linko-dark) .section-title small,
+body:not(.linko-dark) .page-head p,body:not(.linko-dark) .clean-note,
+body:not(.linko-dark) .menu-item,body:not(.linko-dark) .sum-row,
+body:not(.linko-dark) .meta-pill,body:not(.linko-dark) .chip{
+  color:#334155!important;
+}
+body:not(.linko-dark) input,body:not(.linko-dark) select,body:not(.linko-dark) textarea{
+  background:#ffffff!important;color:#020617!important;border-color:#94a3b8!important;
+}
+body:not(.linko-dark) input::placeholder,body:not(.linko-dark) textarea::placeholder{color:#64748b!important;opacity:1!important}
+body:not(.linko-dark) .btn{color:#ffffff!important;background:linear-gradient(135deg,#057a45,#10b981)!important}
+body:not(.linko-dark) .btn.secondary{background:#ffffff!important;color:#020617!important;border-color:#94a3b8!important}
+body:not(.linko-dark) .btn.dark,body:not(.linko-dark) .add-btn{background:#020617!important;color:#ffffff!important}
+body:not(.linko-dark) .chip.active,body:not(.linko-dark) .nav-btn.active{background:#dcfce7!important;color:#065f46!important;border-color:#10b981!important}
+body:not(.linko-dark) .nav-btn{color:#334155!important}
+body:not(.linko-dark) .bottom-nav{background:rgba(255,255,255,.96)!important}
+body:not(.linko-dark) .branch-img,body:not(.linko-dark) .product-img,body:not(.linko-dark) .cart-thumb,body:not(.linko-dark) .avatar-preview{background:linear-gradient(135deg,#ecfdf5,#fefce8)!important}
+body:not(.linko-dark) .branch-img .mi,body:not(.linko-dark) .product-img .mi{color:#057a45!important}
+body:not(.linko-dark) .p-status{background:#dcfce7!important;color:#166534!important}
+body:not(.linko-dark) .p-status.off{background:#fee2e2!important;color:#991b1b!important}
+body:not(.linko-dark) .p-badge,body:not(.linko-dark) .status.pending{background:#ffedd5!important;color:#9a3412!important}
+body:not(.linko-dark) .status.ok{background:#dcfce7!important;color:#166534!important}
+body:not(.linko-dark) .status.info{background:#dbeafe!important;color:#1e40af!important}
+body:not(.linko-dark) .price{color:#047857!important}
+
+body.linko-dark{
+  --bg:#020617!important;
+  --card:#0f172a!important;
+  --ink:#ffffff!important;
+  --muted:#e2e8f0!important;
+  --line:rgba(255,255,255,.24)!important;
+  --green:#34d399!important;
+  --green2:#22c55e!important;
+  --gold:#fbbf24!important;
+  --red:#fb7185!important;
+  --blue:#60a5fa!important;
+  --orange:#fb923c!important;
+  --shadow:0 26px 80px rgba(0,0,0,.55)!important;
+  --soft:0 14px 38px rgba(0,0,0,.42)!important;
+  background:radial-gradient(circle at 75% 0,rgba(52,211,153,.18),transparent 34%),radial-gradient(circle at 10% 18%,rgba(251,191,36,.10),transparent 30%),linear-gradient(180deg,#020617,#07111f 62%,#020617)!important;
+  color:#ffffff!important;
+}
+body.linko-dark .topbar{background:rgba(2,6,23,.94)!important;border-bottom-color:rgba(255,255,255,.22)!important}
+body.linko-dark .glass,
+body.linko-dark .auth-card,
+body.linko-dark .branch-card,
+body.linko-dark .product-card,
+body.linko-dark .order-card,
+body.linko-dark .note-card,
+body.linko-dark .profile-card,
+body.linko-dark .menu-card,
+body.linko-dark .cart-item,
+body.linko-dark .summary-box,
+body.linko-dark .empty-card,
+body.linko-dark .modal-card,
+body.linko-dark .menu-panel,
+body.linko-dark .info-box,
+body.linko-dark .avatar-upload-card,
+body.linko-dark .photo-editor-card,
+body.linko-dark .bottom-nav,
+body.linko-dark .icon-btn,
+body.linko-dark .linko-theme-toggle,
+body.linko-dark input,
+body.linko-dark textarea,
+body.linko-dark select,
+body.linko-dark .chip,
+body.linko-dark .meta-pill{
+  background:#0f172a!important;color:#ffffff!important;border-color:rgba(255,255,255,.24)!important;
+}
+body.linko-dark h1,body.linko-dark h2,body.linko-dark h3,body.linko-dark h4,
+body.linko-dark b,body.linko-dark strong,body.linko-dark label,
+body.linko-dark .brand h2,body.linko-dark .page-head h1,body.linko-dark .section-title h2,
+body.linko-dark .product-body h3{
+  color:#ffffff!important;
+}
+body.linko-dark p,body.linko-dark small,body.linko-dark .lead,
+body.linko-dark .brand small,body.linko-dark .section-title small,
+body.linko-dark .page-head p,body.linko-dark .clean-note,
+body.linko-dark .menu-item,body.linko-dark .sum-row,
+body.linko-dark .meta-pill,body.linko-dark .chip,
+body.linko-dark .auth-tabs button{
+  color:#e2e8f0!important;
+}
+body.linko-dark input::placeholder,body.linko-dark textarea::placeholder{color:#cbd5e1!important;opacity:1!important}
+body.linko-dark input:focus,body.linko-dark select:focus,body.linko-dark textarea:focus{border-color:#34d399!important;box-shadow:0 0 0 4px rgba(52,211,153,.26)!important}
+body.linko-dark .btn{color:#03130c!important;background:linear-gradient(135deg,#34d399,#22c55e)!important;font-weight:900!important}
+body.linko-dark .btn.secondary{background:#1e293b!important;color:#ffffff!important;border-color:rgba(255,255,255,.28)!important}
+body.linko-dark .btn.dark,body.linko-dark .add-btn{background:#ffffff!important;color:#020617!important}
+body.linko-dark .btn.red{background:linear-gradient(135deg,#fb7185,#dc2626)!important;color:#ffffff!important}
+body.linko-dark .branch-img,body.linko-dark .product-img,body.linko-dark .cart-thumb,body.linko-dark .avatar-preview{background:linear-gradient(135deg,#111827,#1e293b)!important}
+body.linko-dark .branch-img .mi,body.linko-dark .product-img .mi,body.linko-dark .mi{color:#f8fafc!important}
+body.linko-dark .linko-theme-toggle .mi,body.linko-dark .icon-btn .mi{color:#34d399!important}
+body.linko-dark .nav-btn{color:#e2e8f0!important;background:transparent!important}
+body.linko-dark .nav-btn.active,body.linko-dark .chip.active{background:rgba(52,211,153,.24)!important;color:#86efac!important;border-color:#34d399!important}
+body.linko-dark .bottom-nav{background:rgba(15,23,42,.96)!important;box-shadow:0 22px 70px rgba(0,0,0,.65)!important}
+body.linko-dark .p-status{background:rgba(34,197,94,.22)!important;color:#bbf7d0!important;border:1px solid rgba(34,197,94,.35)!important}
+body.linko-dark .p-status.off{background:rgba(248,113,113,.20)!important;color:#fecaca!important;border:1px solid rgba(248,113,113,.38)!important}
+body.linko-dark .p-badge,body.linko-dark .status.pending{background:rgba(251,146,60,.24)!important;color:#fed7aa!important}
+body.linko-dark .status.ok{background:rgba(34,197,94,.22)!important;color:#bbf7d0!important}
+body.linko-dark .status.info{background:rgba(96,165,250,.22)!important;color:#bfdbfe!important}
+body.linko-dark .price{color:#86efac!important}
+body.linko-dark .badge{background:#ef4444!important;color:#ffffff!important}
+body.linko-dark .qty button{background:#1e293b!important;color:#ffffff!important;border:1px solid rgba(255,255,255,.20)!important}
+body.linko-dark .auth-tabs{background:#020617!important;border:1px solid rgba(255,255,255,.20)!important}
+body.linko-dark .auth-tabs button.active{background:#ffffff!important;color:#020617!important}
+body.linko-dark .modal{background:rgba(0,0,0,.72)!important}
+body.linko-dark .toast{background:#ffffff!important;color:#020617!important}
+.member-card,.profile-hero,.float-cart,.branch-page-hero{color:#ffffff!important}
+.member-card small,.member-card b,.profile-hero small,.profile-hero b,.float-cart *,.branch-page-hero *{color:#ffffff!important}
+
 </style>
 </head>
 <body>
