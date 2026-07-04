@@ -405,5 +405,89 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!import
 })();
 </script>
 
+
+
+<!-- ===== LINKO PHASE 9: CART INDICATOR + THEME RESTORE ===== -->
+<style id="linkoPhase9CartThemeStyle">
+/* زر الوضع الليلي/النهاري */
+.linko-theme-toggle{width:50px;height:50px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:var(--soft);display:grid;place-items:center;color:var(--ink);position:relative;transition:.2s ease}
+.linko-theme-toggle:active{transform:scale(.96)}
+/* مؤشر السلة داخل الشريط السفلي */
+.nav-btn{position:relative!important}
+.linko-cart-nav-badge{position:absolute!important;top:4px;left:10px;min-width:22px;height:22px;border-radius:999px;background:#ef4444;color:#fff;font-size:11px;font-weight:900;display:none;place-items:center;box-shadow:0 8px 18px rgba(239,68,68,.24);z-index:3}.linko-cart-nav-badge.show{display:grid!important}
+/* زر السلة العائم بشكل صغير ومرتب */
+.float-cart{left:16px!important;right:auto!important;bottom:92px!important;min-width:132px!important;width:auto!important;min-height:48px!important;padding:0 14px!important;border-radius:999px!important;font-size:14px!important;box-shadow:0 18px 38px rgba(17,24,39,.22)!important;gap:7px!important}.float-cart .mi{font-size:20px!important}.float-cart span:last-child{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.22);min-width:24px;height:24px;border-radius:999px;display:grid;place-items:center;font-size:12px}
+/* الوضع الليلي */
+body.linko-dark{--bg:#0b1220;--card:#111827;--ink:#f8fafc;--muted:#cbd5e1;--line:rgba(255,255,255,.12);background:radial-gradient(circle at 80% 0,rgba(16,185,129,.18),transparent 32%),linear-gradient(180deg,#07111f,#0b1220)!important;color:var(--ink)!important}
+body.linko-dark .topbar{background:rgba(11,18,32,.86)!important;border-bottom-color:rgba(255,255,255,.10)!important}
+body.linko-dark .glass,body.linko-dark .branch-card,body.linko-dark .product-card,body.linko-dark .order-card,body.linko-dark .note-card,body.linko-dark .profile-card,body.linko-dark .menu-card,body.linko-dark .cart-item,body.linko-dark .summary-box,body.linko-dark .empty-card,body.linko-dark .modal-card,body.linko-dark .drawer,body.linko-dark .icon-btn,body.linko-dark .linko-theme-toggle,body.linko-dark input,body.linko-dark textarea,body.linko-dark select,body.linko-dark .chip,body.linko-dark .meta-pill,body.linko-dark .bottom-nav{background:rgba(17,24,39,.92)!important;color:var(--ink)!important;border-color:rgba(255,255,255,.12)!important}
+body.linko-dark .branch-img,body.linko-dark .product-img{background:linear-gradient(135deg,#111827,#1f2937)!important}
+body.linko-dark .btn.secondary{background:#111827!important;color:#f8fafc!important;border-color:rgba(255,255,255,.12)!important}
+body.linko-dark .bottom-nav{box-shadow:0 20px 60px rgba(0,0,0,.35)!important}
+body.linko-dark .nav-btn{color:#cbd5e1!important}body.linko-dark .nav-btn.active{background:rgba(16,185,129,.18)!important;color:#34d399!important}
+body.linko-dark .branch-page-hero{background:linear-gradient(135deg,#020617,#065f46)!important}
+body.linko-dark .app-wrap:before{opacity:.35!important}
+@media(max-width:430px){.float-cart{bottom:90px!important;left:14px!important;min-width:118px!important;min-height:44px!important;font-size:13px!important;padding:0 12px!important}.linko-theme-toggle{width:48px;height:48px}}
+</style>
+<script id="linkoPhase9CartThemeScript">
+(function(){
+  function activePageId(){return document.querySelector('.app-page.active')?.id || 'authPage'}
+  function shouldShowFloat(){return cart.reduce((s,x)=>s+(Number(x.qty)||0),0)>0 && ['homePage','branchPage'].includes(activePageId())}
+  function ensureCartBadge(){
+    const cartBtn=[...document.querySelectorAll('#bottomNav .nav-btn')].find(b=>b.textContent.includes('السلة'));
+    if(!cartBtn) return null;
+    let badge=cartBtn.querySelector('#cartNavBadge');
+    if(!badge){badge=document.createElement('span');badge.id='cartNavBadge';badge.className='linko-cart-nav-badge';cartBtn.appendChild(badge)}
+    return badge;
+  }
+  function refreshCartIndicators(){
+    const count=Array.isArray(cart)?cart.reduce((s,x)=>s+(Number(x.qty)||0),0):0;
+    const fCount=document.getElementById('floatCount'); if(fCount) fCount.textContent=count;
+    const itemsCount=document.getElementById('cartItemsCount'); if(itemsCount) itemsCount.textContent=count;
+    const badge=ensureCartBadge(); if(badge){badge.textContent=count;badge.classList.toggle('show',count>0)}
+    const float=document.getElementById('floatCart'); if(float) float.classList.toggle('show',shouldShowFloat());
+  }
+  const oldUpdate=window.updateCart;
+  window.updateCart=function(){ if(typeof oldUpdate==='function') oldUpdate(); refreshCartIndicators(); };
+  const oldGo=window.go;
+  window.go=function(id){ if(typeof oldGo==='function') oldGo(id); setTimeout(refreshCartIndicators,30); };
+  const oldAdd=window.addToCart;
+  window.addToCart=function(id,btn){ if(typeof oldAdd==='function') oldAdd(id,btn); setTimeout(refreshCartIndicators,50); };
+  const oldQty=window.qty;
+  window.qty=function(id,d){ if(typeof oldQty==='function') oldQty(id,d); setTimeout(refreshCartIndicators,50); };
+  const oldClear=window.clearCart;
+  window.clearCart=function(){ if(typeof oldClear==='function') oldClear(); setTimeout(refreshCartIndicators,50); };
+  const oldSend=window.sendOrder;
+  window.sendOrder=function(){ if(typeof oldSend==='function') oldSend(); setTimeout(refreshCartIndicators,80); };
+
+  function applyTheme(mode){
+    const dark=mode==='dark';
+    document.body.classList.toggle('linko-dark',dark);
+    localStorage.setItem('lm_theme',dark?'dark':'light');
+    document.querySelectorAll('.linko-theme-toggle .mi').forEach(i=>i.textContent=dark?'light_mode':'dark_mode');
+  }
+  window.toggleLinkoTheme=function(){applyTheme(document.body.classList.contains('linko-dark')?'light':'dark')};
+  function ensureThemeButtons(){
+    document.querySelectorAll('.top-actions').forEach(actions=>{
+      if(actions.querySelector('.linko-theme-toggle')) return;
+      const btn=document.createElement('button');
+      btn.type='button';btn.className='linko-theme-toggle';btn.setAttribute('aria-label','الوضع الليلي والنهاري');
+      btn.onclick=window.toggleLinkoTheme;
+      btn.innerHTML='<span class="mi">dark_mode</span>';
+      actions.insertBefore(btn,actions.firstChild);
+    });
+    const branchTop=document.querySelector('#branchPage .top-row');
+    if(branchTop && !branchTop.querySelector('.linko-theme-toggle')){
+      const btn=document.createElement('button');
+      btn.type='button';btn.className='linko-theme-toggle';btn.setAttribute('aria-label','الوضع الليلي والنهاري');btn.onclick=window.toggleLinkoTheme;btn.innerHTML='<span class="mi">dark_mode</span>';
+      branchTop.appendChild(btn);
+    }
+    applyTheme(localStorage.getItem('lm_theme')==='dark'?'dark':'light');
+  }
+  document.addEventListener('DOMContentLoaded',()=>{ensureThemeButtons();refreshCartIndicators();setTimeout(refreshCartIndicators,500)});
+  setTimeout(()=>{ensureThemeButtons();refreshCartIndicators()},600);
+})();
+</script>
+
 </body>
 </html>
