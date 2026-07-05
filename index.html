@@ -1421,5 +1421,128 @@ body.linko-dark .delivery-pill.closed{background:rgba(239,68,68,.18)!important;c
 })();
 </script>
 
+
+
+<!-- ===== LINKO TARGETED FIX: assistant placement + cart indicator + avatar button ===== -->
+<style id="linkoTargetedFixOnly">
+/* حذف زر المساعد الكبير داخل كرت الدخول وأي زر داخلي مكرر */
+#authAssistantBtn,
+.linko-auth-assistant-btn,
+#linkoSmartHomeBtn{
+  display:none!important;
+}
+
+/* زر مساعد واحد فقط في صفحة الدخول: صغير، واضح، فوق يمين */
+#linkoSmartFloat.auth-mode{
+  top:calc(env(safe-area-inset-top,0px) + 14px)!important;
+  right:14px!important;
+  bottom:auto!important;
+  left:auto!important;
+  min-height:42px!important;
+  height:42px!important;
+  padding:0 12px!important;
+  border-radius:999px!important;
+  font-size:12px!important;
+  z-index:240!important;
+  background:linear-gradient(135deg,#F6B64A,#FFD166)!important;
+  color:#171C26!important;
+  border:1px solid rgba(37,42,52,.20)!important;
+  box-shadow:0 12px 28px rgba(37,42,52,.24)!important;
+}
+#linkoSmartFloat.auth-mode .mi{font-size:19px!important;color:#171C26!important}
+#linkoSmartFloat.home-mode{
+  top:auto!important;
+  right:18px!important;
+  bottom:92px!important;
+  min-height:50px!important;
+}
+@media(max-width:430px){
+  #linkoSmartFloat.auth-mode{top:calc(env(safe-area-inset-top,0px) + 10px)!important;right:10px!important;min-height:40px!important;height:40px!important;padding:0 10px!important;font-size:11.5px!important}
+  #linkoSmartFloat.home-mode{bottom:86px!important;right:14px!important}
+}
+
+/* توضيح زر اختيار الصورة في الاشتراك النهاري فقط */
+body:not(.linko-dark) .avatar-actions label,
+body:not(.linko-dark) .avatar-actions button{
+  background:linear-gradient(135deg,#252A34,#171C26)!important;
+  color:#F6B64A!important;
+  border:1px solid #F6B64A!important;
+  box-shadow:0 10px 24px rgba(37,42,52,.18)!important;
+}
+body:not(.linko-dark) .avatar-actions label .mi,
+body:not(.linko-dark) .avatar-actions button .mi{color:#F6B64A!important}
+
+/* ضمان بروز زر السلة العائم ومؤشر السلة بعد الإضافة */
+.float-cart.show{
+  display:flex!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  z-index:95!important;
+}
+.linko-cart-nav-badge.show{display:grid!important;opacity:1!important;visibility:visible!important}
+</style>
+<script id="linkoTargetedFixOnlyScript">
+(function(){
+  function cartCount(){
+    try{return Array.isArray(cart)?cart.reduce((s,x)=>s+(Number(x.qty)||0),0):0}catch(e){return 0}
+  }
+  function activePageId(){return document.querySelector('.app-page.active')?.id || 'authPage'}
+  function ensureSingleAssistant(){
+    document.getElementById('authAssistantBtn')?.remove();
+    document.getElementById('linkoSmartHomeBtn')?.remove();
+    const float=document.getElementById('linkoSmartFloat');
+    if(!float) return;
+    const page=activePageId();
+    float.classList.remove('show','auth-mode','home-mode');
+    if(page==='authPage') float.classList.add('show','auth-mode');
+    if(page==='homePage') float.classList.add('show','home-mode');
+  }
+  function ensureCartBadge(){
+    const cartBtn=[...document.querySelectorAll('#bottomNav .nav-btn')].find(b=>b.textContent.includes('السلة'));
+    if(!cartBtn) return null;
+    let badge=cartBtn.querySelector('#cartNavBadge');
+    if(!badge){badge=document.createElement('span');badge.id='cartNavBadge';badge.className='linko-cart-nav-badge';cartBtn.appendChild(badge)}
+    return badge;
+  }
+  function forceCartIndicators(){
+    const count=cartCount();
+    const fCount=document.getElementById('floatCount'); if(fCount) fCount.textContent=count;
+    const itemsCount=document.getElementById('cartItemsCount'); if(itemsCount) itemsCount.textContent=count;
+    const badge=ensureCartBadge(); if(badge){badge.textContent=count;badge.classList.toggle('show',count>0)}
+    const float=document.getElementById('floatCart');
+    if(float){
+      const show=count>0 && activePageId()==='homePage';
+      float.classList.toggle('show',show);
+    }
+    ensureSingleAssistant();
+  }
+  const oldUpdate=window.updateCart;
+  window.updateCart=function(){ if(typeof oldUpdate==='function') oldUpdate(); forceCartIndicators(); };
+  const oldGo=window.go;
+  window.go=function(id){ if(typeof oldGo==='function') oldGo(id); setTimeout(forceCartIndicators,60); };
+  const oldConfirm=window.confirmAddProductToCart;
+  window.confirmAddProductToCart=function(){
+    const before=cartCount();
+    if(typeof oldConfirm==='function') oldConfirm();
+    setTimeout(()=>{
+      if(cartCount()>before){
+        if(typeof renderProducts==='function') renderProducts();
+        if(typeof renderBranchProducts==='function') renderBranchProducts();
+      }
+      forceCartIndicators();
+    },80);
+  };
+  const oldSpecial=window.confirmSpecialRequest;
+  window.confirmSpecialRequest=function(){
+    const before=cartCount();
+    if(typeof oldSpecial==='function') oldSpecial();
+    setTimeout(()=>{ if(cartCount()>before) forceCartIndicators(); },80);
+  };
+  window.addEventListener('load',()=>{setTimeout(forceCartIndicators,120);setTimeout(forceCartIndicators,600)});
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(forceCartIndicators,120);setTimeout(forceCartIndicators,600)});
+})();
+</script>
+
 </body>
 </html>
