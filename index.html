@@ -1297,5 +1297,129 @@ body.linko-dark .linko-chat-card{background:#0f172a}.linko-dark .linko-chat-body
 })();
 </script>
 
+
+
+<!-- ===== LINKO PATCH: assistant on auth + clearer delivery/special cards ===== -->
+<style id="linkoPatchAuthAssistantDeliveryClarity">
+/* زر المساعد داخل صفحة الدخول */
+.linko-auth-assistant-btn{
+  width:100%!important;
+  min-height:58px!important;
+  border-radius:22px!important;
+  margin:10px 0 14px!important;
+  padding:12px 14px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  font-weight:900!important;
+  background:linear-gradient(135deg,#252A34,#171C26)!important;
+  color:#F6B64A!important;
+  border:1px solid rgba(246,182,74,.55)!important;
+  box-shadow:0 18px 38px rgba(37,42,52,.18)!important;
+}
+.linko-auth-assistant-btn .left{display:flex!important;align-items:center!important;gap:10px!important;text-align:right!important}
+.linko-auth-assistant-btn b{display:block!important;color:#F6B64A!important;font-size:16px!important}
+.linko-auth-assistant-btn small{display:block!important;color:#ffffff!important;opacity:.92!important;font-weight:800!important;line-height:1.5!important}
+.linko-auth-assistant-btn .mi{color:#F6B64A!important;animation:linkoChatBounce 1.45s ease-in-out infinite!important}
+body.linko-dark .linko-auth-assistant-btn{background:linear-gradient(135deg,#F6B64A,#FFD166)!important;color:#171C26!important;border-color:#F6B64A!important;box-shadow:0 18px 42px rgba(246,182,74,.22)!important}
+body.linko-dark .linko-auth-assistant-btn b,body.linko-dark .linko-auth-assistant-btn .mi{color:#171C26!important}
+body.linko-dark .linko-auth-assistant-btn small{color:#252A34!important;opacity:1!important}
+
+/* زر المساعد العائم يظهر في الدخول والرئيسية، مع مكان مختلف حسب الصفحة */
+.linko-smart-float.auth-mode{display:flex!important;bottom:18px!important;right:18px!important;left:auto!important;z-index:180!important}
+.linko-smart-float.home-mode{display:flex!important;bottom:92px!important}
+.linko-smart-float .mi{position:relative!important}
+.linko-smart-float .mi:after{
+  content:"";position:absolute;top:-4px;right:-5px;width:8px;height:8px;border-radius:50%;
+  background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.48);animation:linkoLivePulse 1.4s infinite;
+}
+@keyframes linkoLivePulse{70%{box-shadow:0 0 0 9px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+
+/* بطاقة الطلب الخاص في النهاري: أوضح وأقوى */
+body:not(.linko-dark) .special-request-card{
+  background:linear-gradient(135deg,#FFF7DF 0%,#FFE3A1 45%,#F6B64A 100%)!important;
+  color:#171C26!important;
+  border:2px solid #D79017!important;
+  box-shadow:0 18px 46px rgba(246,182,74,.28), inset 0 0 0 1px rgba(255,255,255,.55)!important;
+}
+body:not(.linko-dark) .special-request-card b{color:#111827!important;font-weight:900!important;text-shadow:none!important}
+body:not(.linko-dark) .special-request-card p{color:#273244!important;font-weight:900!important;text-shadow:none!important}
+body:not(.linko-dark) .special-request-card .mi{
+  color:#252A34!important;background:#fff3cd!important;border:2px solid rgba(37,42,52,.18)!important;
+  width:50px;height:50px;border-radius:18px;display:grid!important;place-items:center!important;
+}
+body:not(.linko-dark) .special-request-card button{
+  background:#252A34!important;color:#F6B64A!important;border:1px solid rgba(37,42,52,.18)!important;
+  box-shadow:0 12px 26px rgba(37,42,52,.18)!important;
+}
+body.linko-dark .special-request-card{border-color:rgba(246,182,74,.55)!important;box-shadow:0 18px 46px rgba(0,0,0,.35)!important}
+
+/* بطاقة التوصيل: تباين عالي + حالة متحركة */
+.linko-delivery-box{
+  position:relative!important;overflow:hidden!important;padding:16px!important;border-radius:26px!important;
+}
+body:not(.linko-dark) .linko-delivery-box{
+  background:linear-gradient(135deg,#FFFFFF 0%,#FFF7E0 58%,#FFE6A8 100%)!important;
+  color:#111827!important;border:2px solid #F6B64A!important;
+  box-shadow:0 18px 46px rgba(246,182,74,.24), inset 0 0 0 1px rgba(255,255,255,.68)!important;
+}
+body:not(.linko-dark) .linko-delivery-box b{color:#111827!important;font-size:17px!important}
+body:not(.linko-dark) .linko-delivery-box p{color:#1f2937!important;font-size:20px!important;font-weight:900!important;line-height:1.7!important}
+body:not(.linko-dark) .linko-delivery-box small{color:#334155!important;font-weight:900!important}
+body.linko-dark .linko-delivery-box{border-color:rgba(246,182,74,.55)!important;box-shadow:0 18px 46px rgba(0,0,0,.42)!important}
+.linko-delivery-title{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important}
+.delivery-live-dot{width:14px;height:14px;border-radius:50%;display:inline-block;flex:0 0 14px;box-shadow:0 0 0 0 currentColor;animation:deliveryDotPulse 1.25s infinite}
+.delivery-live-dot.open{background:#22c55e;color:rgba(34,197,94,.45)}
+.delivery-live-dot.closed{background:#ef4444;color:rgba(239,68,68,.42)}
+@keyframes deliveryDotPulse{70%{box-shadow:0 0 0 10px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.delivery-pill{display:inline-flex!important;align-items:center!important;gap:7px!important;border-radius:999px!important;padding:8px 12px!important;font-weight:900!important;margin-top:8px!important}
+.delivery-pill.open{background:#DCFCE7!important;color:#166534!important;border:1px solid #86efac!important}
+.delivery-pill.closed{background:#FEE2E2!important;color:#991B1B!important;border:1px solid #FCA5A5!important}
+body.linko-dark .delivery-pill.open{background:rgba(34,197,94,.20)!important;color:#bbf7d0!important;border-color:rgba(34,197,94,.45)!important}
+body.linko-dark .delivery-pill.closed{background:rgba(239,68,68,.18)!important;color:#fecaca!important;border-color:rgba(239,68,68,.45)!important}
+@media(max-width:430px){.linko-smart-float.auth-mode{bottom:14px!important;right:14px!important}.linko-smart-float.home-mode{bottom:86px!important}}
+</style>
+<script id="linkoPatchAuthAssistantDeliveryClarityScript">
+(function(){
+  function isFreeDeliveryNowLocal(d=new Date()){ const mins=d.getHours()*60+d.getMinutes(); return (mins>=480&&mins<720)||(mins>=960&&mins<1200); }
+  function deliveryTextLocal(){ return isFreeDeliveryNowLocal()?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب الوزن'; }
+  function syncAssistantButtons(){
+    const authCard=document.querySelector('#authPage .auth-card');
+    if(authCard && !document.getElementById('authAssistantBtn')){
+      const btn=document.createElement('button');
+      btn.id='authAssistantBtn'; btn.type='button'; btn.className='linko-auth-assistant-btn'; btn.onclick=window.openSmartAssistant;
+      btn.innerHTML='<span class="left"><span class="mi">forum</span><span><b>المساعد الذكي</b><small>تحتاج مساعدة بالتسجيل أو الدخول؟</small></span></span><span class="mi">arrow_back</span>';
+      const tabs=authCard.querySelector('.auth-tabs');
+      if(tabs) tabs.insertAdjacentElement('afterend',btn); else authCard.appendChild(btn);
+    }
+    const float=document.getElementById('linkoSmartFloat');
+    if(float){
+      const authActive=!!document.querySelector('#authPage.active');
+      const homeActive=!!document.querySelector('#homePage.active');
+      float.classList.remove('show','auth-mode','home-mode');
+      if(authActive){float.classList.add('show','auth-mode');}
+      else if(homeActive){float.classList.add('show','home-mode');}
+    }
+  }
+  function renderDeliveryBoxStrong(){
+    const box=document.getElementById('deliveryStatusBox'); if(!box) return;
+    const open=isFreeDeliveryNowLocal();
+    const text=deliveryTextLocal();
+    box.classList.toggle('delivery-open',open); box.classList.toggle('delivery-closed',!open);
+    box.innerHTML=`<div class="linko-delivery-title"><b><span class="mi">local_shipping</span> حالة التوصيل</b><span class="delivery-live-dot ${open?'open':'closed'}" aria-label="${open?'التوصيل مفتوح':'التوصيل حسب الوزن'}"></span></div><div class="delivery-pill ${open?'open':'closed'}"><span class="mi">${open?'check_circle':'error'}</span>${text}</div><small>أوقات التوصيل المجاني: 8 صباحاً - 12 ظهراً، و 4 مساءً - 8 مساءً</small>`;
+  }
+  const oldGo=window.go;
+  window.go=function(id){ if(typeof oldGo==='function') oldGo(id); setTimeout(()=>{syncAssistantButtons(); renderDeliveryBoxStrong();},80); };
+  const oldRenderCart=window.renderCart;
+  window.renderCart=function(){ if(typeof oldRenderCart==='function') oldRenderCart(); setTimeout(renderDeliveryBoxStrong,30); };
+  const oldRenderDelivery=window.getDeliveryStatusText;
+  window.getDeliveryStatusText=deliveryTextLocal;
+  window.addEventListener('load',()=>{syncAssistantButtons(); renderDeliveryBoxStrong(); setInterval(renderDeliveryBoxStrong,60000);});
+  document.addEventListener('DOMContentLoaded',()=>{syncAssistantButtons(); renderDeliveryBoxStrong();});
+  setTimeout(()=>{syncAssistantButtons(); renderDeliveryBoxStrong();},300);
+})();
+</script>
+
 </body>
 </html>
