@@ -1225,11 +1225,11 @@ body.linko-dark .linko-chat-card{background:#0f172a}.linko-dark .linko-chat-body
     'كيف أضيف رصيد؟':'ادخل إلى حسابي، ثم اختر طلب إضافة رصيد، واكتب المبلغ والملاحظة. سيتم إرسال الطلب للإدارة للمراجعة.',
     'كيف أتابع طلبي؟':'من قسم طلباتي تستطيع مشاهدة الطلبات المحفوظة وحالتها الحالية بعد تجهيز النظام وربطه بالإدارة.',
     'كيف أغير بياناتي؟':'من حسابي اختر طلب تغيير الاسم أو الهاتف أو العنوان أو كلمة المرور، واكتب البيانات الجديدة لإرسالها للإدارة.',
-    'ما هي أوقات التوصيل المجاني؟':'التوصيل المجاني متاح من 8:00 صباحاً إلى 12:00 ظهراً، ومن 4:00 مساءً إلى 8:00 مساءً. خارج هذه الأوقات يتم احتساب التوصيل حسب الوزن.'
+    'ما هي أوقات التوصيل المجاني؟':'التوصيل المجاني متاح من 8:00 صباحاً إلى 12:00 ظهراً، ومن 4:00 مساءً إلى 8:00 مساءً. خارج هذه الأوقات يتم احتساب التوصيل حسب المسافة.'
   };
   function currentBranch(){ return (typeof branches!=='undefined' ? branches.find(b=>b.id===selectedBranch) : null) || {id:'special',name:'طلب خاص'}; }
   function isFreeDeliveryNow(d=new Date()){ const mins=d.getHours()*60+d.getMinutes(); return (mins>=480&&mins<720)||(mins>=960&&mins<1200); }
-  function deliveryText(){ return isFreeDeliveryNow()?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب الوزن'; }
+  function deliveryText(){ return isFreeDeliveryNow()?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب المسافة'; }
   window.getDeliveryStatusText=deliveryText;
   function esc(v){ return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
   function productVisual(p){ return p?.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}">` : `<span class="mi">${esc(p?.icon||'shopping_bag')}</span>`; }
@@ -1383,7 +1383,7 @@ body.linko-dark .delivery-pill.closed{background:rgba(239,68,68,.18)!important;c
 <script id="linkoPatchAuthAssistantDeliveryClarityScript">
 (function(){
   function isFreeDeliveryNowLocal(d=new Date()){ const mins=d.getHours()*60+d.getMinutes(); return (mins>=480&&mins<720)||(mins>=960&&mins<1200); }
-  function deliveryTextLocal(){ return isFreeDeliveryNowLocal()?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب الوزن'; }
+  function deliveryTextLocal(){ return isFreeDeliveryNowLocal()?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب المسافة'; }
   function syncAssistantButtons(){
     const authCard=document.querySelector('#authPage .auth-card');
     if(authCard && !document.getElementById('authAssistantBtn')){
@@ -1407,7 +1407,7 @@ body.linko-dark .delivery-pill.closed{background:rgba(239,68,68,.18)!important;c
     const open=isFreeDeliveryNowLocal();
     const text=deliveryTextLocal();
     box.classList.toggle('delivery-open',open); box.classList.toggle('delivery-closed',!open);
-    box.innerHTML=`<div class="linko-delivery-title"><b><span class="mi">local_shipping</span> حالة التوصيل</b><span class="delivery-live-dot ${open?'open':'closed'}" aria-label="${open?'التوصيل مفتوح':'التوصيل حسب الوزن'}"></span></div><div class="delivery-pill ${open?'open':'closed'}"><span class="mi">${open?'check_circle':'error'}</span>${text}</div><small>أوقات التوصيل المجاني: 8 صباحاً - 12 ظهراً، و 4 مساءً - 8 مساءً</small>`;
+    box.innerHTML=`<div class="linko-delivery-title"><b><span class="mi">local_shipping</span> حالة التوصيل</b><span class="delivery-live-dot ${open?'open':'closed'}" aria-label="${open?'التوصيل مفتوح':'التوصيل حسب المسافة'}"></span></div><div class="delivery-pill ${open?'open':'closed'}"><span class="mi">${open?'check_circle':'error'}</span>${text}</div><small>أوقات التوصيل المجاني: 8 صباحاً - 12 ظهراً، و 4 مساءً - 8 مساءً</small>`;
   }
   const oldGo=window.go;
   window.go=function(id){ if(typeof oldGo==='function') oldGo(id); setTimeout(()=>{syncAssistantButtons(); renderDeliveryBoxStrong();},80); };
@@ -1678,6 +1678,90 @@ body.linko-dark #cartList .cart-details{color:#e2e8f0!important}
 })();
 </script>
 
+
+
+<!-- LINKO FINAL READABILITY CHECK: delivery text + high contrast polish -->
+<style id="linko-final-readability-fix">
+/* توحيد وضوح النصوص في النهاري والليلي قبل إضافة المنتجات الحقيقية */
+body:not(.linko-dark) .linko-delivery-box,
+body:not(.linko-dark) .special-request-card{
+  background:linear-gradient(135deg,#fff7df 0%,#ffffff 52%,#fff0bf 100%)!important;
+  color:#07111f!important;
+  border:2px solid rgba(246,182,74,.95)!important;
+  box-shadow:0 18px 46px rgba(15,23,42,.16),0 0 0 1px rgba(255,255,255,.78) inset!important;
+}
+body:not(.linko-dark) .linko-delivery-box b,
+body:not(.linko-dark) .special-request-card b,
+body:not(.linko-dark) .linko-delivery-title b{
+  color:#07111f!important;
+  text-shadow:none!important;
+}
+body:not(.linko-dark) .linko-delivery-box p,
+body:not(.linko-dark) .linko-delivery-box small,
+body:not(.linko-dark) .special-request-card p{
+  color:#1e293b!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+body:not(.linko-dark) .delivery-pill.open{
+  background:#dcfce7!important;
+  color:#065f46!important;
+  border:1px solid #22c55e!important;
+}
+body:not(.linko-dark) .delivery-pill.closed{
+  background:#fee2e2!important;
+  color:#991b1b!important;
+  border:1px solid #ef4444!important;
+}
+body.linko-dark .linko-delivery-box,
+body.linko-dark .special-request-card{
+  background:linear-gradient(135deg,#101827 0%,#182233 56%,#0b1220 100%)!important;
+  color:#ffffff!important;
+  border:1px solid rgba(246,182,74,.56)!important;
+  box-shadow:0 22px 60px rgba(0,0,0,.50),0 0 0 1px rgba(246,182,74,.10) inset!important;
+}
+body.linko-dark .linko-delivery-box b,
+body.linko-dark .special-request-card b,
+body.linko-dark .linko-delivery-title b{
+  color:#ffffff!important;
+}
+body.linko-dark .linko-delivery-box p,
+body.linko-dark .linko-delivery-box small,
+body.linko-dark .special-request-card p{
+  color:#f8fafc!important;
+  opacity:1!important;
+}
+body.linko-dark .delivery-pill.open{
+  background:rgba(34,197,94,.22)!important;
+  color:#bbf7d0!important;
+  border:1px solid rgba(34,197,94,.55)!important;
+}
+body.linko-dark .delivery-pill.closed{
+  background:rgba(239,68,68,.22)!important;
+  color:#fecaca!important;
+  border:1px solid rgba(239,68,68,.55)!important;
+}
+body:not(.linko-dark) .linko-assistant-window,
+body:not(.linko-dark) .linko-assistant-panel,
+body:not(.linko-dark) .assistant-modal,
+body:not(.linko-dark) .assistant-chat{
+  background:#ffffff!important;
+  color:#07111f!important;
+  border-color:#cbd5e1!important;
+}
+body:not(.linko-dark) .linko-msg.bot,
+body:not(.linko-dark) .assistant-message.bot{
+  background:#f8fafc!important;
+  color:#07111f!important;
+  border:1px solid #cbd5e1!important;
+}
+body:not(.linko-dark) .linko-msg.user,
+body:not(.linko-dark) .assistant-message.user{
+  background:#f6b64a!important;
+  color:#07111f!important;
+}
+</style>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
@@ -1777,7 +1861,7 @@ body:not(.linko-dark) .linko-chat-questions button{
   function pageId(){return document.querySelector('.app-page.active')?.id||'authPage'}
   function countCart(){try{return Array.isArray(cart)?cart.reduce((s,x)=>s+(Number(x.qty)||0),0):0}catch(e){return 0}}
   function freeNow(d=new Date()){const m=d.getHours()*60+d.getMinutes();return (m>=480&&m<720)||(m>=960&&m<1200)}
-  function deliveryHTML(){const open=freeNow();return `<div class="linko-delivery-title"><b><span class="mi">local_shipping</span> حالة التوصيل</b><span class="delivery-live-dot ${open?'open':'closed'}"></span></div><div class="delivery-pill ${open?'open':'closed'}"><span class="mi">${open?'check_circle':'error'}</span>${open?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب الوزن'}</div><small>أوقات التوصيل المجاني: 8 صباحاً - 12 ظهراً، و 4 مساءً - 8 مساءً</small>`}
+  function deliveryHTML(){const open=freeNow();return `<div class="linko-delivery-title"><b><span class="mi">local_shipping</span> حالة التوصيل</b><span class="delivery-live-dot ${open?'open':'closed'}"></span></div><div class="delivery-pill ${open?'open':'closed'}"><span class="mi">${open?'check_circle':'error'}</span>${open?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب المسافة'}</div><small>أوقات التوصيل المجاني: 8 صباحاً - 12 ظهراً، و 4 مساءً - 8 مساءً</small>`}
   function ensureHomeDelivery(){
     const member=document.querySelector('#homePage .member-card');
     if(member&&!document.getElementById('homeDeliveryStatusBox')){
