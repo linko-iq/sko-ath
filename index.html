@@ -1155,5 +1155,147 @@ body.linko-dark .unavailable-note{background:rgba(127,29,29,.55)!important;color
 })();
 </script>
 
+
+
+<style id="medinaBazaarRequestedUpdateStyles">
+:root{
+  --mb-gold:#F6B64A!important;--mb-gold2:#FFD166!important;--mb-navy:#252A34!important;--mb-navy2:#171C26!important;--mb-cream:#FFFDF7!important;--mb-soft:#F8F4EA!important;
+  --green:var(--mb-gold)!important;--green2:var(--mb-gold2)!important;--gold:#F6B64A!important;--dark:#252A34!important;
+}
+body:not(.linko-dark){background:radial-gradient(circle at 6% 0,rgba(246,182,74,.18),transparent 32%),linear-gradient(180deg,#fffdf7,#f6f0e2)!important;color:#1d2430!important}
+body:not(.linko-dark) .topbar{background:rgba(255,253,247,.94)!important;border-bottom-color:#e7d6b5!important}
+body:not(.linko-dark) .member-card,body:not(.linko-dark) .profile-hero,body:not(.linko-dark) .branch-page-hero,body:not(.linko-dark) .float-cart{background:linear-gradient(135deg,#252A34,#171C26)!important;color:#fff!important}
+body:not(.linko-dark) .btn,body:not(.linko-dark) .add-btn:not([disabled]),body:not(.linko-dark) .linko-smart-home-btn,body:not(.linko-dark) .linko-smart-float{background:linear-gradient(135deg,#F6B64A,#FFD166)!important;color:#171C26!important;box-shadow:0 16px 34px rgba(246,182,74,.26)!important}
+body:not(.linko-dark) .chip.active,body:not(.linko-dark) .nav-btn.active{background:#252A34!important;color:#F6B64A!important;border-color:#F6B64A!important}
+body:not(.linko-dark) .branch-card.active{border-color:#F6B64A!important;box-shadow:0 16px 34px rgba(246,182,74,.16)!important}
+body:not(.linko-dark) #branchesRail .branch-card h3{color:#252A34!important}
+body:not(.linko-dark) .branch-img,body:not(.linko-dark) .product-img,body:not(.linko-dark) .cart-thumb{background:linear-gradient(135deg,#fff8e7,#f2ead9)!important}
+body:not(.linko-dark) .branch-img .mi,body:not(.linko-dark) .product-img .mi{color:#c98716!important}
+body.linko-dark{background:radial-gradient(circle at 75% 0,rgba(246,182,74,.16),transparent 34%),linear-gradient(180deg,#171C26,#0b0f17 60%,#05070b)!important;color:#fff!important}
+body.linko-dark .member-card,body.linko-dark .profile-hero,body.linko-dark .branch-page-hero,body.linko-dark .float-cart{background:linear-gradient(135deg,#252A34,#0b0f17)!important;color:#fff!important;border:1px solid rgba(246,182,74,.22)!important}
+body.linko-dark .btn,body.linko-dark .add-btn:not([disabled]),body.linko-dark .linko-smart-home-btn,body.linko-dark .linko-smart-float{background:linear-gradient(135deg,#F6B64A,#FFD166)!important;color:#111827!important}
+body.linko-dark .chip.active,body.linko-dark .nav-btn.active{background:rgba(246,182,74,.22)!important;color:#FFD166!important;border-color:#F6B64A!important}
+.price,.price-row .price,#cartSubtotal,#cartTotal,.sum-row.total,.product-meta,.meta-pill,.cart-item small{display:none!important}
+.price-row{justify-content:flex-end!important}.product-body h3{min-height:auto!important;margin-bottom:10px}.add-product-head small#addProductMeta{display:none!important}
+.linko-delivery-box{margin:0 0 12px;background:linear-gradient(135deg,#252A34,#171C26);color:#fff;border-radius:24px;padding:14px;box-shadow:var(--soft);border:1px solid rgba(246,182,74,.22)}
+.linko-delivery-box b{display:flex;align-items:center;gap:8px;color:#fff!important}.linko-delivery-box p{margin-top:6px;color:#f6e8c7!important;font-weight:900;line-height:1.7}.linko-delivery-box small{display:block;margin-top:6px;color:#d8dce5!important;font-weight:800}
+.linko-smart-home-btn{width:100%;border-radius:24px;min-height:64px;margin:10px 0 14px;padding:12px 16px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:12px}.linko-smart-home-btn .left{display:flex;align-items:center;gap:10px}.linko-smart-home-btn .mi{animation:linkoChatBounce 1.55s ease-in-out infinite}.linko-smart-home-btn small{display:block;color:rgba(23,28,38,.75)!important;font-weight:900;text-align:right}
+.linko-smart-float{position:fixed;right:18px;bottom:92px;z-index:75;min-height:54px;border-radius:999px;padding:0 16px;display:none;align-items:center;gap:8px;font-weight:900;box-shadow:0 20px 46px rgba(0,0,0,.22);animation:linkoSmartPulse 2.6s ease-in-out infinite}.linko-smart-float.show{display:flex}.linko-smart-float .mi{animation:linkoChatBounce 1.4s ease-in-out infinite}
+@keyframes linkoSmartPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes linkoChatBounce{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-7deg)}}
+.linko-chat-modal{position:fixed;inset:0;z-index:260;display:none;align-items:end;justify-content:center;background:rgba(15,23,42,.50);backdrop-filter:blur(8px);padding:14px}.linko-chat-modal.show{display:flex}.linko-chat-card{width:min(520px,100%);max-height:82dvh;background:#fff;border-radius:30px 30px 24px 24px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.30);display:grid;grid-template-rows:auto 1fr auto}.linko-chat-head{background:linear-gradient(135deg,#252A34,#171C26);color:#fff;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}.linko-chat-head b{color:#fff!important}.linko-chat-head small{color:#f6e8c7!important;font-weight:800}.linko-chat-close{width:42px;height:42px;border-radius:15px;background:rgba(255,255,255,.12);color:#fff}.linko-chat-body{padding:14px;overflow:auto;display:grid;gap:9px;background:linear-gradient(180deg,#fffdf7,#f6f0e2)}.linko-msg{max-width:86%;padding:10px 12px;border-radius:18px;font-weight:800;line-height:1.7}.linko-msg.bot{background:#252A34;color:#fff;border-bottom-right-radius:6px}.linko-msg.user{justify-self:end;background:#F6B64A;color:#171C26;border-bottom-left-radius:6px}.linko-typing{display:inline-flex;gap:5px;align-items:center}.linko-typing i{width:6px;height:6px;border-radius:50%;background:#F6B64A;animation:typingDot 1s infinite}.linko-typing i:nth-child(2){animation-delay:.15s}.linko-typing i:nth-child(3){animation-delay:.3s}@keyframes typingDot{50%{transform:translateY(-4px);opacity:.6}}
+.linko-chat-questions{display:flex;gap:8px;overflow-x:auto;padding:12px;background:#fff;border-top:1px solid #ead9b7}.linko-chat-questions::-webkit-scrollbar{display:none}.linko-chat-questions button{white-space:nowrap;min-height:40px;border-radius:999px;padding:8px 12px;background:#252A34;color:#fff;font-weight:900}.linko-chat-questions button:active{transform:scale(.98)}
+body.linko-dark .linko-chat-card{background:#0f172a}.linko-dark .linko-chat-body{background:linear-gradient(180deg,#171C26,#0b0f17)}.linko-dark .linko-chat-questions{background:#0f172a;border-top-color:rgba(246,182,74,.20)}.linko-dark .linko-msg.user{background:#F6B64A;color:#111827}.linko-dark .linko-msg.bot{background:#252A34;color:#fff;border:1px solid rgba(246,182,74,.18)}
+.special-request-card{grid-column:1/-1;background:linear-gradient(135deg,#252A34,#171C26);color:#fff;border:1px solid rgba(246,182,74,.35);border-radius:26px;padding:18px;box-shadow:var(--soft);display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:right}.special-request-card b{color:#fff!important;font-size:18px}.special-request-card p{color:#f6e8c7!important;font-weight:800;line-height:1.7}.special-request-card .mi{font-size:34px;color:#F6B64A!important}.special-request-card button{min-height:44px;border-radius:16px;background:#F6B64A;color:#171C26;font-weight:900;padding:8px 12px;white-space:nowrap}
+@media(max-width:430px){.linko-smart-float{right:14px;bottom:86px;min-height:48px;padding:0 12px;font-size:13px}.linko-chat-modal{padding:0;align-items:stretch}.linko-chat-card{height:100dvh;max-height:none;border-radius:0}.special-request-card{display:grid}.special-request-card button{width:100%}}
+</style>
+
+<button class="linko-smart-float" id="linkoSmartFloat" type="button" onclick="openSmartAssistant()"><span class="mi">forum</span> المساعد الذكي</button>
+
+<div class="linko-chat-modal" id="smartAssistantModal" aria-hidden="true">
+  <div class="linko-chat-card">
+    <div class="linko-chat-head">
+      <div><b>المساعد الذكي</b><small>إجابات سريعة حول استخدام سوق المدينة</small></div>
+      <button class="linko-chat-close" type="button" onclick="closeSmartAssistant()"><span class="mi">close</span></button>
+    </div>
+    <div class="linko-chat-body" id="smartChatBody"></div>
+    <div class="linko-chat-questions" id="smartQuestionsRail"></div>
+  </div>
+</div>
+
+<div class="modal" id="specialRequestModal">
+  <div class="modal-card">
+    <h2>طلب خاص</h2>
+    <p>اكتب المنتج الذي لم تجده داخل الفرع وسنراجعه ضمن طلبك.</p>
+    <div class="field"><label>اسم المنتج المطلوب</label><input id="specialProductName" placeholder="مثلاً: نوع رز محدد، لون معين، حجم خاص..."></div>
+    <div class="field"><label>تفاصيل المنتج</label><textarea id="specialProductDetails" placeholder="اكتب التفاصيل المطلوبة بوضوح"></textarea></div>
+    <div class="quantity-box"><b>الكمية</b><div class="quantity-actions"><button type="button" onclick="changeSpecialQty(1)">+</button><span id="specialQty">1</span><button type="button" onclick="changeSpecialQty(-1)">−</button></div></div>
+    <div class="field"><label>ملاحظة إضافية (اختياري)</label><textarea id="specialProductNote" placeholder="أي ملاحظة إضافية"></textarea></div>
+    <div class="modal-actions"><button class="btn" type="button" onclick="confirmSpecialRequest()"><span class="mi">add_shopping_cart</span> إضافة الطلب الخاص إلى السلة</button><button class="btn secondary" type="button" onclick="closeModal('specialRequestModal')">إلغاء</button></div>
+  </div>
+</div>
+
+<script id="medinaBazaarRequestedUpdateScript">
+(function(){
+  window.linkoMarketSettings = Object.assign({ whatsappNumber:'07887624967', deliveryPer3Kg:0 }, window.linkoMarketSettings || {});
+  let specialQtyValue=1;
+  const assistantQA={
+    'كيف أسجل اشتراك؟':'يمكنك إنشاء حساب من واجهة الدخول عبر إدخال الاسم الكامل، اسم المستخدم، رقم الهاتف، العنوان، والرمز. بعد ذلك تدخل إلى واجهة الأعضاء مباشرة.',
+    'كيف أطلب من الموقع؟':'اختر الفرع المناسب، ثم اختر المنتج، اكتب تفاصيل الطلب مثل الوزن أو الحجم أو اللون، أضفه للسلة، ثم اضغط إرسال الطلب عبر واتساب.',
+    'كيف أتواصل مع الإدارة؟':'يمكنك التواصل مع الإدارة من خلال زر إرسال الطلب عبر واتساب أو من قسم القائمة وحسابات التواصل عند توفرها.',
+    'كيف أضيف رصيد؟':'ادخل إلى حسابي، ثم اختر طلب إضافة رصيد، واكتب المبلغ والملاحظة. سيتم إرسال الطلب للإدارة للمراجعة.',
+    'كيف أتابع طلبي؟':'من قسم طلباتي تستطيع مشاهدة الطلبات المحفوظة وحالتها الحالية بعد تجهيز النظام وربطه بالإدارة.',
+    'كيف أغير بياناتي؟':'من حسابي اختر طلب تغيير الاسم أو الهاتف أو العنوان أو كلمة المرور، واكتب البيانات الجديدة لإرسالها للإدارة.',
+    'ما هي أوقات التوصيل المجاني؟':'التوصيل المجاني متاح من 8:00 صباحاً إلى 12:00 ظهراً، ومن 4:00 مساءً إلى 8:00 مساءً. خارج هذه الأوقات يتم احتساب التوصيل حسب الوزن.'
+  };
+  function currentBranch(){ return (typeof branches!=='undefined' ? branches.find(b=>b.id===selectedBranch) : null) || {id:'special',name:'طلب خاص'}; }
+  function isFreeDeliveryNow(d=new Date()){ const mins=d.getHours()*60+d.getMinutes(); return (mins>=480&&mins<720)||(mins>=960&&mins<1200); }
+  function deliveryText(){ return isFreeDeliveryNow()?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب الوزن'; }
+  window.getDeliveryStatusText=deliveryText;
+  function esc(v){ return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+  function productVisual(p){ return p?.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}">` : `<span class="mi">${esc(p?.icon||'shopping_bag')}</span>`; }
+  function cleanProductCardHTML(p){ const unavailable=p.status==='غير متوفر'; return `<article class="product-card"><div class="product-img"><span class="p-badge">${esc(p.badge||'')}</span><span class="p-status ${unavailable?'off':''}">${unavailable?'غير متوفر':'متوفر'}</span>${productVisual(p)}</div><div class="product-body"><h3>${esc(p.name)}</h3>${unavailable?'<div class="unavailable-note">المنتج غير متوفر حالياً</div>':''}<div class="price-row"><button class="add-btn" ${unavailable?'disabled':''} onclick="openAddProductModal('${esc(p.id)}')"><span class="mi">${unavailable?'block':'add'}</span>${unavailable?'غير متوفر':'أضف للسلة'}</button></div></div></article>`; }
+  function specialRequestCardHTML(){ return `<article class="special-request-card"><span class="mi">add_circle</span><div><b>لم تجد المنتج؟ اطلبه هنا</b><p>اكتب المنتج المطلوب وتفاصيله وسنضيفه إلى طلبك داخل السلة.</p></div><button type="button" onclick="openSpecialRequestModal()">طلب خاص</button></article>`; }
+  function renderDeliveryBox(){ const box=document.getElementById('deliveryStatusBox'); if(box){ box.querySelector('p').textContent=deliveryText(); box.querySelector('small').textContent='أوقات التوصيل المجاني: 8 صباحاً - 12 ظهراً، و 4 مساءً - 8 مساءً'; } }
+  window.renderBranchProducts=function(){
+    const grid=document.getElementById('branchProductsGrid'); if(!grid||typeof products==='undefined') return;
+    const b=currentBranch(); ['branchPageTitle','branchHeroTitle'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent=b.name}); const sub=document.getElementById('branchPageSub'); if(sub) sub.textContent=`${b.count||0} منتج وخدمة`;
+    const q=(document.getElementById('branchSearch')?.value||'').trim().toLowerCase();
+    let list=products.filter(p=>p.branch===b.id).filter(p=>(selectedCat==='all'||p.badge===selectedCat||(selectedCat==='متوفر'&&p.status==='متوفر')||(selectedCat==='غير متوفر'&&p.status==='غير متوفر'))&&(!q||String(p.name).toLowerCase().includes(q)));
+    const count=document.getElementById('branchProductsCount'); if(count) count.textContent=list.length+' منتج ظاهر';
+    grid.innerHTML=(list.length?list.map(cleanProductCardHTML).join(''):'<div class="empty-card">لا توجد منتجات مطابقة داخل هذا الفرع</div>')+specialRequestCardHTML();
+  };
+  const originalOpenAdd=window.openAddProductModal;
+  window.openAddProductModal=function(id){ if(typeof originalOpenAdd==='function') originalOpenAdd(id); setTimeout(()=>{ const meta=document.getElementById('addProductMeta'); if(meta) meta.textContent='اكتب تفاصيل الطلب بالطريقة المناسبة لك'; },20); };
+  window.renderCart=function(){
+    const list=document.getElementById('cartList'); if(!list) return;
+    list.innerHTML=cart.length?cart.map(x=>{ const key=x.cartKey||x.id; return `<div class="cart-item"><div class="cart-thumb">${productVisual(x)}</div><div><h3>${esc(x.name)}</h3><div class="cart-details"><b>الكمية:</b> ${Number(x.qty)||1}</div>${x.branchName?`<div class="cart-details"><b>القسم / الفرع:</b> ${esc(x.branchName)}</div>`:''}${x.details?`<div class="cart-details"><b>تفاصيل الطلب:</b> ${esc(x.details)}</div>`:''}${x.note?`<div class="cart-details"><b>ملاحظة:</b> ${esc(x.note)}</div>`:''}</div><div class="qty"><button onclick="qty('${esc(key)}',1)">+</button><b>${Number(x.qty)||1}</b><button onclick="qty('${esc(key)}',-1)">−</button></div></div>`; }).join(''):'<div class="empty-card">السلة فارغة حالياً</div>';
+    ['cartSubtotal','cartTotal'].forEach(id=>{const el=document.getElementById(id); if(el) el.textContent='';});
+    renderDeliveryBox(); if(typeof updateCart==='function') updateCart(); if(typeof refreshCartIndicators==='function') refreshCartIndicators();
+  };
+  function enhancedMessage(){
+    const lines=[], b=currentBranch(), now=new Date();
+    lines.push('🛒 طلب جديد من سوق المدينة الكبير'); lines.push('MEDINA BAZAAR'); lines.push('------------------------------');
+    lines.push(`👤 اسم العضو: ${currentUser?.name || 'عضو سوق المدينة'}`); lines.push(`🆔 رقم العضوية: ${currentUser?.username || currentUser?.name || 'غير محدد'}`); lines.push(`📍 العنوان: ${currentUser?.address || ''}`); lines.push(`🕒 وقت الطلب: ${now.toLocaleString('ar-IQ')}`); lines.push(`🚚 حالة التوصيل: ${deliveryText()}`); lines.push('------------------------------');
+    cart.forEach((x,i)=>{lines.push(`${i+1}) ${x.name}`); lines.push(`القسم / الفرع: ${x.branchName || b.name || 'غير محدد'}`); lines.push(`الكمية: ${x.qty}`); if(x.details) lines.push(`تفاصيل الطلب: ${x.details}`); if(x.note) lines.push(`ملاحظة المنتج: ${x.note}`); lines.push('------------------------------');});
+    const generalNote=(document.getElementById('orderNote')?.value||'').trim(); if(generalNote) lines.push(`ملاحظة عامة: ${generalNote}`);
+    lines.push('يرجى مراجعة الطلب وتأكيد التفاصيل.'); return lines.join('\n');
+  }
+  function normalizeWhatsAppNumber(num){let n=String(num||'').replace(/\D/g,''); if(n.startsWith('00')) n=n.slice(2); if(n.startsWith('0')) n='964'+n.slice(1); return n;}
+  window.sendOrder=function(){ if(!cart.length){toast('السلة فارغة');return;} const order={id:Date.now(),items:JSON.parse(JSON.stringify(cart)),total:0,note:(document.getElementById('orderNote')?.value||'').trim(),delivery:deliveryText(),status:'قيد المراجعة',date:new Date().toLocaleString('ar-IQ')}; orders.unshift(order); saveOrders(); const phone=normalizeWhatsAppNumber(window.linkoMarketSettings.whatsappNumber||'07887624967'); window.open(`https://wa.me/${phone}?text=${encodeURIComponent(enhancedMessage())}`,'_blank'); cart=[]; saveCart(); renderCart(); if(typeof renderProducts==='function') renderProducts(); if(typeof renderBranchProducts==='function') renderBranchProducts(); if(typeof updateCart==='function') updateCart(); if(typeof refreshCartIndicators==='function') refreshCartIndicators(); const modal=document.getElementById('orderModal'); if(modal){modal.querySelector('h2').textContent='تم تجهيز الطلب'; modal.querySelector('p').textContent='تم فتح واتساب لإرسال الطلب إلى الإدارة.'; modal.classList.add('show');} };
+  const oldConfirm=window.confirmAddProductToCart;
+  window.confirmAddProductToCart=function(){ const before=cart.length; if(typeof oldConfirm==='function') oldConfirm(); if(cart.length>before){ const b=currentBranch(); const it=cart[cart.length-1]; it.branchId=b.id; it.branchName=b.name; it.price=0; it.unit=''; it.size=''; saveCart(); renderCart(); } };
+  window.changeSpecialQty=function(delta){ specialQtyValue=Math.max(1,specialQtyValue+delta); const el=document.getElementById('specialQty'); if(el) el.textContent=specialQtyValue; };
+  window.openSpecialRequestModal=function(){ specialQtyValue=1; ['specialProductName','specialProductDetails','specialProductNote'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';}); const q=document.getElementById('specialQty'); if(q) q.textContent='1'; document.getElementById('specialRequestModal')?.classList.add('show'); };
+  window.confirmSpecialRequest=function(){ const name=(document.getElementById('specialProductName')?.value||'').trim(), details=(document.getElementById('specialProductDetails')?.value||'').trim(), note=(document.getElementById('specialProductNote')?.value||'').trim(); if(!name||!details){toast('اكتب اسم المنتج والتفاصيل أولاً');return;} const b=currentBranch(); cart.push({id:'special_'+Date.now(),cartKey:'special_'+Date.now(),name:'طلب خاص: '+name,qty:specialQtyValue,details,note,price:0,status:'متوفر',icon:'edit_note',branchId:b.id,branchName:b.name,isSpecial:true}); saveCart(); closeModal('specialRequestModal'); toast('تمت إضافة الطلب الخاص للسلة'); renderCart(); if(typeof renderBranchProducts==='function') renderBranchProducts(); if(typeof updateCart==='function') updateCart(); if(typeof refreshCartIndicators==='function') refreshCartIndicators(); };
+  function addMsg(type,html,id){ const body=document.getElementById('smartChatBody'); if(!body) return null; const el=document.createElement('div'); el.className='linko-msg '+type; if(id) el.id=id; el.innerHTML=html; body.appendChild(el); body.scrollTop=body.scrollHeight; return el; }
+  function renderQuestions(){ const rail=document.getElementById('smartQuestionsRail'); if(!rail) return; rail.innerHTML=Object.keys(assistantQA).map(q=>`<button type="button" onclick="askSmartQuestion('${esc(q)}')">${esc(q)}</button>`).join(''); }
+  window.openSmartAssistant=function(){ const m=document.getElementById('smartAssistantModal'); if(!m) return; m.classList.add('show'); const body=document.getElementById('smartChatBody'); if(body&&!body.dataset.started){ body.dataset.started='1'; addMsg('bot','أهلاً بك 👋 اختر سؤالاً من الأسئلة الجاهزة وسأجيبك مباشرة.'); } renderQuestions(); };
+  window.closeSmartAssistant=function(){ document.getElementById('smartAssistantModal')?.classList.remove('show'); };
+  window.askSmartQuestion=function(q){ addMsg('user',esc(q)); const typing=addMsg('bot','<span class="linko-typing">جاري الكتابة <i></i><i></i><i></i></span>','smartTyping'); setTimeout(()=>{ if(typing) typing.remove(); addMsg('bot',esc(assistantQA[q]||'سأوفر لك الإجابة قريباً.')); },1500); };
+  function injectAssistantButtons(){
+    if(!document.getElementById('linkoSmartHomeBtn')){ const search=document.querySelector('#homePage .searchbar'); if(search){ const btn=document.createElement('button'); btn.type='button'; btn.id='linkoSmartHomeBtn'; btn.className='linko-smart-home-btn'; btn.onclick=openSmartAssistant; btn.innerHTML='<span class="left"><span class="mi">forum</span><span><b>المساعد الذكي</b><small>اسأل عن الطلبات، الرصيد، التوصيل والحساب</small></span></span><span class="mi">arrow_back</span>'; search.insertAdjacentElement('afterend',btn); } }
+    const f=document.getElementById('linkoSmartFloat'); if(f) f.classList.toggle('show',document.getElementById('homePage')?.classList.contains('active'));
+  }
+  const oldGo=window.go; window.go=function(id){ if(typeof oldGo==='function') oldGo(id); setTimeout(()=>{injectAssistantButtons(); renderDeliveryBox();},60); };
+  document.addEventListener('DOMContentLoaded',()=>{ const cart=document.querySelector('#cartPage .summary-box'); if(cart&&!document.getElementById('deliveryStatusBox')) cart.insertAdjacentHTML('afterbegin','<div class="linko-delivery-box" id="deliveryStatusBox"><b><span class="mi">local_shipping</span> حالة التوصيل</b><p></p><small></small></div>'); injectAssistantButtons(); renderDeliveryBox(); setInterval(renderDeliveryBox,60000); if(typeof renderBranchProducts==='function') setTimeout(renderBranchProducts,200); });
+})();
+</script>
+
+
+<style id="medinaPriceCleanupFinal">
+.summary-box > .sum-row:not(:first-of-type){display:none!important}
+</style>
+<script id="medinaOrdersCleanupFinal">
+(function(){
+  const oldGo=window.go;
+  window.renderOrders=function(){
+    const list=document.getElementById('ordersList'); if(!list) return;
+    list.innerHTML=orders.length?orders.map(o=>`<div class="order-card"><div class="order-top"><div><h3>طلب رقم ${o.id}</h3><p>${o.items.length} منتجات</p><small>${o.date}</small></div><span class="status pending">${o.status}</span></div></div>`).join(''):'<div class="empty-card">لا توجد طلبات بعد</div>';
+    const c=document.getElementById('memberOrdersCount'); if(c) c.textContent=orders.length;
+  };
+  window.go=function(id){ if(typeof oldGo==='function') oldGo(id); if(id==='ordersPage') setTimeout(renderOrders,20); };
+})();
+</script>
+
 </body>
 </html>
