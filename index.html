@@ -1546,3 +1546,167 @@ body:not(.linko-dark) .avatar-actions button .mi{color:#F6B64A!important}
 
 </body>
 </html>
+<!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
+<style id="linkoSafePatchFinal">
+/* خانة التوصيل تحت بطاقة العضوية */
+#homeDeliveryStatusBox{
+  margin:10px 0 14px!important;
+  border-radius:24px!important;
+  padding:14px!important;
+}
+body:not(.linko-dark) #homeDeliveryStatusBox,
+body:not(.linko-dark) #deliveryStatusBox{
+  background:linear-gradient(135deg,#FFF7E6,#FFFFFF)!important;
+  border:2px solid #F6B64A!important;
+  color:#111827!important;
+  box-shadow:0 16px 36px rgba(180,112,16,.18)!important;
+}
+body:not(.linko-dark) #homeDeliveryStatusBox b,
+body:not(.linko-dark) #deliveryStatusBox b{color:#111827!important}
+body:not(.linko-dark) #homeDeliveryStatusBox small,
+body:not(.linko-dark) #deliveryStatusBox small{color:#334155!important;font-weight:900!important}
+
+/* تثبيت زر مساعد الدخول بمكان واحد فقط */
+#authAssistantBtn,.linko-auth-assistant-btn,#linkoSmartHomeBtn{display:none!important}
+#linkoSmartFloat.auth-mode{
+  position:fixed!important;
+  top:calc(env(safe-area-inset-top,0px) + 10px)!important;
+  right:10px!important;
+  bottom:auto!important;
+  left:auto!important;
+  min-height:40px!important;
+  height:40px!important;
+  padding:0 10px!important;
+  border-radius:999px!important;
+  font-size:11.5px!important;
+  z-index:500!important;
+  display:flex!important;
+  background:linear-gradient(135deg,#F6B64A,#FFD166)!important;
+  color:#171C26!important;
+  border:1px solid rgba(37,42,52,.22)!important;
+  box-shadow:0 12px 28px rgba(37,42,52,.25)!important;
+}
+#linkoSmartFloat.auth-mode .mi{font-size:18px!important;color:#171C26!important}
+#linkoSmartFloat.home-mode{
+  position:fixed!important;
+  top:auto!important;
+  right:18px!important;
+  bottom:92px!important;
+  left:auto!important;
+  z-index:95!important;
+  display:flex!important;
+}
+body:not(.linko-dark) #linkoSmartFloat.home-mode{
+  background:linear-gradient(135deg,#F6B64A,#FFD166)!important;
+  color:#171C26!important;
+  border:1px solid rgba(37,42,52,.18)!important;
+}
+
+/* توضيح محادثة المساعد في الوضع النهاري */
+body:not(.linko-dark) .linko-chat-modal{background:rgba(15,23,42,.35)!important}
+body:not(.linko-dark) .linko-chat-card{
+  background:#ffffff!important;
+  border:2px solid #F6B64A!important;
+  box-shadow:0 28px 90px rgba(15,23,42,.32)!important;
+}
+body:not(.linko-dark) .linko-chat-body{
+  background:linear-gradient(180deg,#FFF9EC,#FFFFFF)!important;
+}
+body:not(.linko-dark) .linko-msg.bot{
+  background:#ffffff!important;
+  color:#111827!important;
+  border:1px solid #d8b96c!important;
+  box-shadow:0 8px 20px rgba(15,23,42,.08)!important;
+}
+body:not(.linko-dark) .linko-msg.user{
+  background:linear-gradient(135deg,#F6B64A,#FFD166)!important;
+  color:#111827!important;
+  border:1px solid #d89b22!important;
+}
+body:not(.linko-dark) .linko-chat-questions{
+  background:#ffffff!important;
+  border-top:2px solid #F6B64A!important;
+}
+body:not(.linko-dark) .linko-chat-questions button{
+  background:#252A34!important;
+  color:#F6B64A!important;
+  border:1px solid #F6B64A!important;
+}
+
+/* ظهور فوري لمؤشر السلة */
+.float-cart.show{display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;z-index:110!important}
+.linko-cart-nav-badge.show{display:grid!important;opacity:1!important;visibility:visible!important}
+.add-btn.added-now{background:linear-gradient(135deg,#16a34a,#22c55e)!important;color:#fff!important}
+</style>
+<script id="linkoSafePatchFinalScript">
+(function(){
+  function pageId(){return document.querySelector('.app-page.active')?.id||'authPage'}
+  function countCart(){try{return Array.isArray(cart)?cart.reduce((s,x)=>s+(Number(x.qty)||0),0):0}catch(e){return 0}}
+  function freeNow(d=new Date()){const m=d.getHours()*60+d.getMinutes();return (m>=480&&m<720)||(m>=960&&m<1200)}
+  function deliveryHTML(){const open=freeNow();return `<div class="linko-delivery-title"><b><span class="mi">local_shipping</span> حالة التوصيل</b><span class="delivery-live-dot ${open?'open':'closed'}"></span></div><div class="delivery-pill ${open?'open':'closed'}"><span class="mi">${open?'check_circle':'error'}</span>${open?'التوصيل مجاني الآن':'يتم احتساب التوصيل حسب الوزن'}</div><small>أوقات التوصيل المجاني: 8 صباحاً - 12 ظهراً، و 4 مساءً - 8 مساءً</small>`}
+  function ensureHomeDelivery(){
+    const member=document.querySelector('#homePage .member-card');
+    if(member&&!document.getElementById('homeDeliveryStatusBox')){
+      member.insertAdjacentHTML('afterend','<div class="linko-delivery-box" id="homeDeliveryStatusBox"></div>');
+    }
+  }
+  function updateDelivery(){
+    ensureHomeDelivery();
+    ['homeDeliveryStatusBox','deliveryStatusBox'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=deliveryHTML();});
+  }
+  function cartBadge(){
+    const btn=[...document.querySelectorAll('#bottomNav .nav-btn')].find(b=>b.textContent.includes('السلة'));
+    if(!btn)return null;
+    let b=btn.querySelector('#cartNavBadge');
+    if(!b){b=document.createElement('span');b.id='cartNavBadge';b.className='linko-cart-nav-badge';btn.appendChild(b)}
+    return b;
+  }
+  function updateCartNow(){
+    const c=countCart();
+    const fc=document.getElementById('floatCount'); if(fc)fc.textContent=c;
+    const cc=document.getElementById('cartItemsCount'); if(cc)cc.textContent=c;
+    const b=cartBadge(); if(b){b.textContent=c;b.classList.toggle('show',c>0)}
+    const f=document.getElementById('floatCart'); if(f)f.classList.toggle('show',c>0&&pageId()==='homePage');
+  }
+  function fixAssistantPlace(){
+    document.getElementById('authAssistantBtn')?.remove();
+    document.getElementById('linkoSmartHomeBtn')?.remove();
+    const f=document.getElementById('linkoSmartFloat'); if(!f)return;
+    f.classList.remove('show','auth-mode','home-mode');
+    if(pageId()==='authPage')f.classList.add('show','auth-mode');
+    else if(pageId()==='homePage')f.classList.add('show','home-mode');
+  }
+  function markAdded(id){
+    if(!id)return;
+    const selector=`button.add-btn[onclick*="${String(id).replace(/"/g,'')}"]`;
+    document.querySelectorAll(selector).forEach(btn=>{
+      const old=btn.innerHTML;
+      btn.classList.add('added-now');
+      btn.innerHTML='<span class="mi">check_circle</span>تمت الإضافة';
+      setTimeout(()=>{btn.classList.remove('added-now');btn.innerHTML=old;},1000);
+    });
+  }
+  const oldGo=window.go;
+  window.go=function(id){if(typeof oldGo==='function')oldGo(id);setTimeout(()=>{fixAssistantPlace();updateCartNow();updateDelivery();},50)};
+  const oldUpdate=window.updateCart;
+  window.updateCart=function(){if(typeof oldUpdate==='function')oldUpdate();updateCartNow();fixAssistantPlace();updateDelivery()};
+  const oldConfirm=window.confirmAddProductToCart;
+  window.confirmAddProductToCart=function(){
+    const id=(window.pendingProduct&&window.pendingProduct.id)||null;
+    const before=countCart();
+    if(typeof oldConfirm==='function')oldConfirm();
+    setTimeout(()=>{if(countCart()>before)markAdded(id);updateCartNow();fixAssistantPlace();updateDelivery();},30);
+    setTimeout(()=>{updateCartNow();fixAssistantPlace();},250);
+  };
+  const oldAdd=window.addToCart;
+  window.addToCart=function(id,btn){
+    const before=countCart();
+    if(typeof oldAdd==='function')oldAdd(id,btn);
+    if(countCart()>before){ if(btn){btn.classList.add('added-now');btn.innerHTML='<span class="mi">check_circle</span>تمت الإضافة';setTimeout(()=>{btn.classList.remove('added-now');btn.innerHTML='<span class="mi">add</span>أضف للسلة';},1000)} }
+    setTimeout(()=>{updateCartNow();fixAssistantPlace();updateDelivery();},20);
+  };
+  window.addEventListener('load',()=>{ensureHomeDelivery();updateDelivery();updateCartNow();fixAssistantPlace();setInterval(()=>{fixAssistantPlace();updateCartNow();updateDelivery();},900)});
+  document.addEventListener('DOMContentLoaded',()=>{ensureHomeDelivery();updateDelivery();updateCartNow();fixAssistantPlace()});
+  setTimeout(()=>{ensureHomeDelivery();updateDelivery();updateCartNow();fixAssistantPlace()},200);
+})();
+</script>
