@@ -2286,6 +2286,48 @@ body:not(.linko-dark) #branchPage.linko-premium-mode #branchPageSub{
 })();
 </script>
 
+
+
+<!-- LINKO FINAL FIREBASE READY DATA SCHEMA PATCH - MEMBER -->
+<script id="linkoFinalFirebaseSchemaMember">
+(function(){
+  function normBranchStatus(s){return (s==='hidden'||s==='stopped'||s==='مخفي'||s==='موقوف')?'hidden':'visible';}
+  function normProductStatus(s){return (s==='unavailable'||s==='غير متوفر')?'unavailable':'available';}
+  function productStatusArabic(s){return normProductStatus(s)==='available'?'متوفر':'غير متوفر';}
+  function orderStatusArabic(s){return ({new:'جديد',processing:'قيد المتابعة',completed:'مكتمل',cancelled:'ملغي'}[s]||s||'جديد');}
+  function branchByAny(v){return (branches||[]).find(b=>String(b.id)===String(v)||b.name===v)||null;}
+  function normalizeSchema(){
+    try{
+      if(Array.isArray(branches)){
+        branches.forEach((b,i)=>{b.id=b.id; b.name=b.name||b.branchName||('فرع '+(i+1)); b.icon=b.icon||'storefront'; b.img=b.img||b.image||''; b.status=normBranchStatus(b.status); b.order=Number(b.order||i+1); delete b.image;});
+        branches.sort((a,b)=>(a.order||0)-(b.order||0));
+      }
+      if(Array.isArray(products)){
+        products.forEach((p,i)=>{const b=branchByAny(p.branchId||p.branchName||p.branch);p.branchId=b?b.id:(p.branchId||p.branch||'');p.branchName=b?b.name:(p.branchName||'');p.img=p.img||p.image||'';p.image=p.img;p.status=normProductStatus(p.status);p.group=p.group||'';p.order=Number(p.order||i+1);p.branch=p.branchId;delete p.price;delete p.unit;delete p.size;});
+        products.sort((a,b)=>(a.order||0)-(b.order||0));
+      }
+      if(Array.isArray(orders)){
+        orders=orders.map((o,i)=>{const items=(o.items||o.products||[]).map((it,idx)=>{const b=branchByAny(it.branchId||it.branchName||it.branch);return {...it,id:it.id||'',name:it.name||'',branchId:b?b.id:(it.branchId||it.branch||''),branchName:b?b.name:(it.branchName||it.branch||''),branch:b?b.name:(it.branchName||it.branch||''),quantity:Number(it.quantity||it.qty||1),details:it.details||'',note:it.note||'',isSpecial:!!it.isSpecial,img:it.img||it.image||''};});const b=branchByAny(o.branchId||o.branchName||o.branch||(items[0]&&items[0].branchId));return {id:o.id||Date.now()+i,orderNumber:o.orderNumber||('ORD-'+(o.id||Date.now()+i)),memberId:o.memberId||'',memberName:o.memberName||o.name||'',memberUsername:o.memberUsername||o.username||'',memberPhone:o.memberPhone||o.phone||'',memberAddress:o.memberAddress||o.address||'',branchId:b?b.id:(o.branchId||''),branchName:b?b.name:(o.branchName||o.branch||''),items:items,products:items,specialRequests:o.specialRequests||items.filter(x=>x.isSpecial),createdAt:o.createdAt||o.date||new Date().toLocaleString('ar-IQ'),date:o.date||o.createdAt||new Date().toLocaleString('ar-IQ'),status:({processing:'processing',completed:'completed',cancelled:'cancelled',new:'new','قيد المتابعة':'processing','مكتمل':'completed','ملغي':'cancelled'}[o.status]||'new')};});
+        localStorage.setItem('lm_orders',JSON.stringify(orders));
+      }
+      if(Array.isArray(requests)){
+        requests=requests.map((r,i)=>({id:r.id||Date.now()+i,memberId:r.memberId||'',memberName:r.memberName||r.name||'',memberUsername:r.memberUsername||r.username||'',phone:r.phone||'',type:r.type||'',currentData:r.currentData||r.current||'',newData:r.newData||r.newValue||'',createdAt:r.createdAt||r.time||new Date().toLocaleString('ar-IQ'),status:r.status||'pending'}));
+        localStorage.setItem('lm_requests',JSON.stringify(requests));
+      }
+    }catch(e){console.warn('schema normalize skipped',e)}
+  }
+  const oldRenderBranches=window.renderBranches;
+  window.renderBranches=function(){normalizeSchema();const visible=branches.filter(b=>b.status!=='hidden');if(window.branchesRail){branchesRail.innerHTML=visible.map(b=>`<button class="branch-card ${selectedBranch===b.id?'active':''}" onclick="selectBranch('${b.id}')"><div class="branch-img">${b.img?`<img src="${b.img}" alt="${b.name}">`:`<span class="mi">${b.icon}</span>`}</div><h3>${b.name}</h3><small>${(products||[]).filter(p=>p.branchId===b.id&&p.status!=='hidden').length} منتج وخدمة</small></button>`).join('');return;} if(typeof oldRenderBranches==='function')return oldRenderBranches();};
+  const oldRenderProducts=window.renderProducts;
+  window.renderProducts=function(){normalizeSchema();const q=(globalSearch?.value||'').trim().toLowerCase();const branchName=selectedBranch==='all'?'كل المنتجات':(branches.find(b=>b.id===selectedBranch)?.name||'منتجات الفرع'); if(document.getElementById('selectedBranchTitle')) selectedBranchTitle.textContent=branchName;let list=products.filter(p=>(selectedBranch==='all'||p.branchId===selectedBranch)&&(selectedCat==='all'||selectedCat==='متوفر'&&p.status==='available'||selectedCat==='غير متوفر'&&p.status==='unavailable'||p.badge===selectedCat)&&(!q||p.name.toLowerCase().includes(q)||String(p.branchName||'').toLowerCase().includes(q)));if(window.productsCount)productsCount.textContent=list.length+' منتج ظاهر';if(window.productsGrid)productsGrid.innerHTML=list.length?list.map(p=>{const unavailable=p.status==='unavailable';const inCart=cart.find(x=>x.id===p.id);return `<article class="product-card"><div class="product-img"><span class="p-badge">${p.badge||''}</span><span class="p-status ${unavailable?'off':''}">${productStatusArabic(p.status)}</span>${p.img?`<img src="${p.img}" alt="${p.name}">`:`<span class="mi">${p.icon||'shopping_bag'}</span>`}</div><div class="product-body"><h3>${p.name}</h3>${unavailable?`<div class="unavailable-note">المنتج غير متوفر حالياً</div>`:''}<div class="price-row"><button class="add-btn ${inCart?'added':''}" ${unavailable?'disabled':''} onclick="openAddProductModal('${p.id}')"><span class="mi">${inCart?'check':(unavailable?'block':'add')}</span>${inCart?'مضاف':(unavailable?'غير متوفر':'أضف')}</button></div></div></article>`}).join(''):'<div class="empty-card">لا توجد نتائج مطابقة حالياً</div>';};
+  const oldOpen=window.openAddProductModal; window.openAddProductModal=function(id){normalizeSchema();const p=products.find(x=>x.id===id);if(p&&p.status==='unavailable'){toast('المنتج غير متوفر حالياً');return;}return oldOpen?oldOpen(id):null};
+  const oldSaveOrders=window.saveOrders; window.saveOrders=function(){normalizeSchema();localStorage.setItem('lm_orders',JSON.stringify(orders));};
+  const oldRenderOrders=window.renderOrders; window.renderOrders=function(){normalizeSchema();if(typeof oldRenderOrders==='function')return oldRenderOrders();};
+  normalizeSchema();
+})();
+</script>
+<style id="linkoFinalSchemaImageContainMember">.product-img img,.branch-img img,.profile-avatar img,.order-img img{object-fit:contain!important;object-position:center center!important}</style>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
