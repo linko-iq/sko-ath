@@ -249,6 +249,68 @@ body.linko-dark .toast{background:#ffffff!important;color:#020617!important}
 body.linko-dark .menu-feature,body.linko-dark .usage-step,body.linko-dark .policy-item,body.linko-dark .contact-link{background:#111827!important;color:#fff!important;border-color:rgba(255,255,255,.24)!important}body.linko-dark .menu-feature b,body.linko-dark .usage-step b,body.linko-dark .policy-item b{color:#fff!important}body.linko-dark .menu-note-clean{background:rgba(246,180,75,.16)!important;color:#fff!important;border-color:rgba(246,180,75,.42)!important}
 @media(max-width:430px){.menu-feature-grid{grid-template-columns:1fr}.menu-page-hero h3{font-size:20px}.menu-page-hero{padding:16px}.usage-step,.policy-item{padding:12px}.modal-card{max-height:88dvh;overflow:auto}}
 
+
+
+/* ===== LINKO MENU FINAL REVIEW: public copy, contrast, and spacing only ===== */
+#infoModal .menu-page-body{color:#07111f!important;}
+body:not(.linko-dark) #infoModal .modal-card{
+  background:#ffffff!important;
+  color:#07111f!important;
+  border:1px solid #cbd5e1!important;
+}
+body:not(.linko-dark) #infoModal .menu-page-hero{
+  background:linear-gradient(135deg,#111827 0%,#1f2937 58%,#d9921f 100%)!important;
+  border:1px solid rgba(217,146,31,.55)!important;
+  box-shadow:0 18px 42px rgba(15,23,42,.18)!important;
+}
+body:not(.linko-dark) #infoModal .menu-page-hero h3,
+body:not(.linko-dark) #infoModal .menu-page-hero p{
+  color:#ffffff!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.28)!important;
+}
+body:not(.linko-dark) #infoModal .menu-feature,
+body:not(.linko-dark) #infoModal .usage-step,
+body:not(.linko-dark) #infoModal .policy-item,
+body:not(.linko-dark) #infoModal .contact-link{
+  background:#ffffff!important;
+  color:#07111f!important;
+  border:1px solid #b6c2d2!important;
+  box-shadow:0 12px 28px rgba(15,23,42,.12)!important;
+}
+body:not(.linko-dark) #infoModal .menu-feature b,
+body:not(.linko-dark) #infoModal .usage-step b,
+body:not(.linko-dark) #infoModal .policy-item b,
+body:not(.linko-dark) #infoModal .contact-link,
+body:not(.linko-dark) #infoModal .contact-link b{
+  color:#07111f!important;
+}
+body:not(.linko-dark) #infoModal .menu-feature .mi,
+body:not(.linko-dark) #infoModal .policy-item .mi{
+  color:#b66b00!important;
+}
+body:not(.linko-dark) #infoModal .menu-note-clean{
+  background:#fff7e6!important;
+  border:1px solid #d9921f!important;
+  color:#1f2937!important;
+  box-shadow:0 10px 24px rgba(217,146,31,.14)!important;
+}
+body:not(.linko-dark) #infoModal .menu-back{
+  background:#ffffff!important;
+  color:#07111f!important;
+  border:1px solid #b6c2d2!important;
+  box-shadow:0 8px 20px rgba(15,23,42,.10)!important;
+}
+#infoModal .menu-contact-cta{
+  margin-top:14px!important;
+  margin-bottom:8px!important;
+}
+#infoModal .modal-card > .btn.full{
+  margin-top:18px!important;
+}
+body.linko-dark #infoModal .modal-card > .btn.full{
+  border:1px solid rgba(255,255,255,.22)!important;
+}
+
 </style>
 </head>
 <body>
@@ -383,7 +445,7 @@ function menuBackBtn(){return `<button class="menu-back" onclick="closeModal('in
 function contactCta(){return `<button class="menu-contact-cta" onclick="showInfoPage('contact')"><span class="mi">support_agent</span> تواصل معنا</button>`}
 function showInfoPage(type){closeMenu();const pages={
  about:{title:'من نحن',body:`<div class="menu-page">${menuBackBtn()}<div class="menu-page-hero"><h3>مرحباً بكم في سوق المدينة الكبير</h3><p>سوق المدينة الكبير منصة إلكترونية تجمع مختلف الفروع التجارية في مكان واحد، لتسهيل طلب المنتجات والخدمات بسرعة وسهولة، مع تجربة استخدام حديثة وآمنة تناسب جميع المستخدمين.</p></div><div class="menu-feature-grid"><div class="menu-feature"><span class="mi">shopping_bag</span><b>تنوع كبير في الأقسام</b></div><div class="menu-feature"><span class="mi">bolt</span><b>سهولة وسرعة الطلب</b></div><div class="menu-feature"><span class="mi">lock</span><b>أمان وخصوصية</b></div><div class="menu-feature"><span class="mi">local_shipping</span><b>توصيل مرن</b></div></div>${contactCta()}</div>`},
- contact:{title:'تابعونا وتواصلوا معنا',body:`<div class="menu-page">${menuBackBtn()}<div class="menu-page-hero"><h3>تابعونا وتواصلوا معنا</h3><p>اختر القناة المناسبة للتواصل أو متابعة آخر تحديثات سوق المدينة الكبير.</p></div><div class="contact-list"><a class="contact-link" href="${contactUrl('instagram')}" target="_blank" rel="noopener"><span><span class="platform-icon">◎</span> إنستغرام</span><span class="mi">open_in_new</span></a><a class="contact-link" href="${contactUrl('tiktok')}" target="_blank" rel="noopener"><span><span class="platform-icon">♪</span> تيك توك</span><span class="mi">open_in_new</span></a><a class="contact-link" href="${contactUrl('whatsapp')}" target="_blank" rel="noopener"><span><span class="platform-icon">☎</span> واتساب الإدارة</span><b>${MENU_CONTACTS.whatsapp}</b></a></div><div class="menu-note-clean">جميع روابط التواصل محفوظة داخل إعدادات مستقلة ليسهل ربطها لاحقاً بلوحة الإدارة.</div></div>`},
+ contact:{title:'تابعونا وتواصلوا معنا',body:`<div class="menu-page">${menuBackBtn()}<div class="menu-page-hero"><h3>تابعونا وتواصلوا معنا</h3><p>اختر القناة المناسبة للتواصل أو متابعة آخر تحديثات سوق المدينة الكبير.</p></div><div class="contact-list"><a class="contact-link" href="${contactUrl('instagram')}" target="_blank" rel="noopener"><span><span class="platform-icon">◎</span> إنستغرام</span><span class="mi">open_in_new</span></a><a class="contact-link" href="${contactUrl('tiktok')}" target="_blank" rel="noopener"><span><span class="platform-icon">♪</span> تيك توك</span><span class="mi">open_in_new</span></a><a class="contact-link" href="${contactUrl('whatsapp')}" target="_blank" rel="noopener"><span><span class="platform-icon">☎</span> واتساب الإدارة</span><b>${MENU_CONTACTS.whatsapp}</b></a></div><div class="menu-note-clean">جميع الحسابات المذكورة أعلاه هي الحسابات الرسمية لسوق المدينة الكبير، ويمكنكم التواصل معنا أو متابعة آخر الأخبار والتحديثات من خلالها.</div></div>`},
  usage:{title:'كيفية استخدام الموقع',body:`<div class="menu-page">${menuBackBtn()}<div class="menu-page-hero"><h3>كيفية استخدام الموقع</h3><p>اتبع الخطوات التالية لإرسال طلبك بسهولة.</p></div><div class="usage-list">${['سجل الدخول إلى حسابك.','اختر الفرع المناسب.','اختر المنتجات أو أضف طلباً خاصاً.','اكتب تفاصيل الطلب.','أرسل الطلب عبر واتساب.','سيتم التواصل معك لتأكيد الطلب والتوصيل.'].map((x,i)=>`<div class="usage-step"><span class="step-num">${i+1}</span><b>${x}</b></div>`).join('')}</div>${contactCta()}</div>`},
  policy:{title:'سياسة الاستخدام',body:`<div class="menu-page">${menuBackBtn()}<div class="menu-page-hero"><h3>سياسة الاستخدام</h3><p>يرجى قراءة البنود التالية لضمان استخدام آمن ومنظم للخدمة.</p></div><div class="policy-list">${['يمنع إرسال طلبات وهمية أو غير جادة.','جميع بيانات المستخدمين تعامل بسرية تامة ولا يتم مشاركتها مع أي جهة خارجية.','يمنع مشاركة اسم المستخدم أو الرمز السري مع أي شخص، ويتحمل صاحب الحساب مسؤولية أي استخدام يتم من خلال حسابه.','لن تطلب إدارة سوق المدينة الكبير الرمز السري أو بيانات الدخول عبر الهاتف أو عبر مواقع التواصل الاجتماعي، لذا يرجى الحذر من أي شخص ينتحل صفة الإدارة.','يحق للإدارة إيقاف أو تعليق أي حساب يثبت إساءة استخدامه للنظام أو مخالفته لسياسات الموقع.','قد تختلف أوقات التوصيل ورسومه حسب ظروف العمل والمنطقة وسياسة كل فرع.','جميع الطلبات تخضع لتأكيد الفرع قبل تجهيزها.','يمنع استخدام الموقع لأي غرض مخالف للقوانين أو يسبب ضرراً للموقع أو للمستخدمين.','يحق للإدارة تعديل أو تحديث سياسة الاستخدام في أي وقت بما يحقق تطوير الخدمة وتحسين تجربة المستخدم.','استخدام الموقع يعني موافقتك على جميع بنود سياسة الاستخدام.'].map(x=>`<div class="policy-item"><span class="mi">verified_user</span><b>${x}</b></div>`).join('')}</div>${contactCta()}</div>`}
 };const page=pages[type]||pages.about;infoTitle.textContent=page.title;infoText.innerHTML=page.body;document.getElementById('infoModal').classList.add('show')}
