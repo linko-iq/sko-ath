@@ -2159,6 +2159,133 @@ body:not(.linko-dark) #branchPage.linko-premium-mode #branchPageSub{
 @keyframes linkoFrameLightMove{0%{background-position:0% 50%;opacity:.55}50%{background-position:100% 50%;opacity:1}100%{background-position:0% 50%;opacity:.55}}
 </style>
 
+
+
+<!-- LINKO FINAL ORDER STRUCTURE ONLY: order number + local saved orders + orders page details -->
+<script id="linkoFinalOrderStructureOnly">
+(function(){
+  function safeUser(){try{return currentUser||DEMO_USER||{}}catch(e){return {}}}
+  function pad(n,l=2){return String(n).padStart(l,'0')}
+  function orderDateKey(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())}
+  function createProfessionalOrderNumber(){
+    const d=new Date();
+    const key=orderDateKey(d);
+    const seqKey='lm_order_seq_'+key;
+    let seq=Number(localStorage.getItem(seqKey)||'0')+1;
+    localStorage.setItem(seqKey,String(seq));
+    return 'ORD-'+key+'-'+pad(seq,4);
+  }
+  function deliveryTextSafe(){
+    try{return typeof getDeliveryStatusText==='function'?getDeliveryStatusText():(typeof deliveryText==='function'?deliveryText():'غير محدد')}catch(e){return 'غير محدد'}
+  }
+  function itemBranchName(item){
+    try{
+      if(item.branchName)return item.branchName;
+      const bid=item.branchId||item.branch||selectedBranch;
+      const b=Array.isArray(branches)?branches.find(x=>x.id===bid):null;
+      return b?.name||item.branch||'غير محدد';
+    }catch(e){return item.branch||'غير محدد'}
+  }
+  function uniqueBranches(items){return [...new Set(items.map(x=>x.branch).filter(Boolean))].join('، ')||'غير محدد'}
+  function currentOrderContact(){
+    const u=safeUser();
+    return {
+      name:(document.getElementById('orderCustomerName')?.value||u.name||'').trim(),
+      username:(u.username||u.name||'').trim(),
+      phone:(document.getElementById('orderCustomerPhone')?.value||u.phone||'').trim(),
+      address:(document.getElementById('orderAddress')?.value||u.address||'').trim()
+    };
+  }
+  function buildOrderObject(orderNumber){
+    const c=currentOrderContact();
+    const now=new Date().toLocaleString('ar-IQ');
+    const items=(Array.isArray(cart)?cart:[]).map((item,index)=>({
+      index:index+1,
+      id:item.id||'',
+      name:item.name||'',
+      branch:itemBranchName(item),
+      quantity:Number(item.qty||item.quantity||1),
+      details:item.details||'',
+      note:item.note||'',
+      restaurant:item.restaurant||'',
+      isSpecial:!!item.isSpecial
+    }));
+    return {
+      id:Date.now(),
+      orderNumber:orderNumber,
+      memberName:c.name,
+      memberUsername:c.username,
+      memberPhone:c.phone,
+      memberAddress:c.address,
+      branch:uniqueBranches(items),
+      products:items,
+      items:items,
+      specialRequests:items.filter(x=>x.isSpecial),
+      note:(document.getElementById('orderNote')?.value||'').trim(),
+      delivery:deliveryTextSafe(),
+      date:now,
+      createdAt:now,
+      status:'جديد'
+    };
+  }
+  function normalizeWhatsAppNumber(num){let n=String(num||'').replace(/\D/g,'');if(n.startsWith('00'))n=n.slice(2);if(n.startsWith('0'))n='964'+n.slice(1);return n||'9647887624967'}
+  function buildWhatsAppMessage(order){
+    const lines=['🛒 طلب جديد من سوق المدينة الكبير','MEDINA BAZAAR','------------------------------',`🧾 رقم الطلب: ${order.orderNumber}`,`👤 الاسم: ${order.memberName||'غير محدد'}`,`🆔 اسم المستخدم: ${order.memberUsername||'غير محدد'}`,`📞 الهاتف: ${order.memberPhone||'غير محدد'}`,`📍 العنوان: ${order.memberAddress||'غير محدد'}`,`🚚 حالة التوصيل: ${order.delivery||'غير محدد'}`,`🕒 وقت الطلب: ${order.createdAt}`,'------------------------------'];
+    (order.items||[]).forEach((x,i)=>{
+      lines.push(`${i+1}. ${x.name}`);
+      lines.push(`القسم / الفرع: ${x.branch||'غير محدد'}`);
+      if(x.restaurant)lines.push(`المطعم: ${x.restaurant}`);
+      lines.push(`الكمية: ${x.quantity||1}`);
+      if(x.details)lines.push(`تفاصيل الطلب: ${x.details}`);
+      if(x.note)lines.push(`ملاحظة المنتج: ${x.note}`);
+      if(x.isSpecial)lines.push('نوع الطلب: طلب خاص');
+      lines.push('------------------------------');
+    });
+    if(order.note)lines.push(`ملاحظة عامة: ${order.note}`);
+    lines.push('يرجى مراجعة الطلب وتأكيد التفاصيل.');
+    return lines.join('\n');
+  }
+  window.sendOrder=function(){
+    if(!Array.isArray(cart)||!cart.length){toast('السلة فارغة');return;}
+    if(typeof ensureContactFields==='function')ensureContactFields();
+    const contact=currentOrderContact();
+    if(!contact.address){toast('اكتب العنوان التفصيلي قبل إرسال الطلب');document.getElementById('orderAddress')?.focus();return;}
+    const orderNumber=createProfessionalOrderNumber();
+    const order=buildOrderObject(orderNumber);
+    orders.unshift(order);
+    localStorage.setItem('lm_orders',JSON.stringify(orders));
+    const adminPhone=normalizeWhatsAppNumber((window.linkoMarketSettings&&window.linkoMarketSettings.whatsappNumber)||'07887624967');
+    window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(buildWhatsAppMessage(order))}`,'_blank');
+    cart=[];localStorage.setItem('lm_cart',JSON.stringify(cart));
+    if(typeof renderCart==='function')renderCart();
+    if(typeof renderProducts==='function')renderProducts();
+    if(typeof renderBranchProducts==='function')renderBranchProducts();
+    if(typeof updateCart==='function')updateCart();
+    if(typeof renderOrders==='function')renderOrders();
+    const modal=document.getElementById('orderModal');
+    if(modal){modal.querySelector('h2').textContent='تم تجهيز الطلب';modal.querySelector('p').textContent='تم حفظ الطلب داخل سجل طلباتك وفتح واتساب لإرساله إلى الإدارة.';modal.classList.add('show');}
+  };
+  window.toggleOrderDetails=function(orderId){
+    const el=document.getElementById('orderDetails_'+String(orderId).replace(/[^\w-]/g,''));
+    if(el)el.classList.toggle('hidden');
+  };
+  window.renderOrders=function(){
+    const list=document.getElementById('ordersList');if(!list)return;
+    list.innerHTML=Array.isArray(orders)&&orders.length?orders.map((o,idx)=>{
+      const orderNo=o.orderNumber||('ORD-OLD-'+(o.id||idx+1));
+      const status=o.status||'جديد';
+      const branch=o.branch||uniqueBranches((o.items||o.products||[]).map(x=>({...x,branch:x.branch||itemBranchName(x)})));
+      const date=o.createdAt||o.date||'';
+      const items=o.items||o.products||[];
+      const safeId=String(o.id||orderNo).replace(/[^\w-]/g,'');
+      const details=items.map((x,i)=>`<div style="padding:8px 0;border-top:1px dashed var(--line)"><b>${i+1}. ${x.name||''}</b><small style="display:block;margin-top:4px">الكمية: ${x.quantity||x.qty||1}${x.details?` — التفاصيل: ${x.details}`:''}${x.note?` — ملاحظة: ${x.note}`:''}${x.isSpecial?' — طلب خاص':''}</small></div>`).join('')||'<small>لا توجد تفاصيل محفوظة</small>';
+      return `<div class="order-card"><div class="order-top"><div><h3>طلب رقم ${orderNo}</h3><p>${branch}</p><small>${date}</small></div><span class="status pending">${status}</span></div><button class="btn secondary full" style="margin-top:10px;min-height:42px" onclick="toggleOrderDetails('${safeId}')"><span class="mi">receipt_long</span> مشاهدة تفاصيل الطلب</button><div class="hidden" id="orderDetails_${safeId}" style="margin-top:10px">${details}</div></div>`;
+    }).join(''):'<div class="empty-card">لا توجد طلبات بعد</div>';
+    const c=document.getElementById('memberOrdersCount');if(c)c.textContent=(orders||[]).length;
+  };
+})();
+</script>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
