@@ -1999,6 +1999,120 @@ body:not(.linko-dark) .linko-request-box{background:linear-gradient(135deg,#fff7
 })();
 </script>
 
+
+
+<!-- ===== LINKO BRANCH PREMIUM GLOW + LIGHT CONTRAST FIX ONLY ===== -->
+<style id="linkoBranchGlowContrastPatch">
+/* إبراز بطاقة فرع LINKO في قائمة الفروع فقط */
+#branchesRail .branch-card[onclick*="linko"]{
+  position:relative!important;
+  overflow:hidden!important;
+  border:2px solid rgba(246,180,75,.85)!important;
+  background:linear-gradient(135deg,#111827 0%,#1f2937 58%,#2b2110 100%)!important;
+  box-shadow:0 16px 38px rgba(17,24,39,.20),0 0 0 1px rgba(246,180,75,.35),0 0 28px rgba(246,180,75,.32)!important;
+  isolation:isolate!important;
+}
+#branchesRail .branch-card[onclick*="linko"]::before{
+  content:"";
+  position:absolute;
+  inset:-3px;
+  border-radius:28px;
+  background:conic-gradient(from 0deg,transparent 0deg,rgba(246,180,75,.18) 70deg,#ffd978 110deg,rgba(246,180,75,.18) 150deg,transparent 220deg,rgba(255,255,255,.55) 270deg,transparent 340deg);
+  animation:linkoBranchBorderSpin 3.2s linear infinite;
+  z-index:-2;
+}
+#branchesRail .branch-card[onclick*="linko"]::after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#111827 0%,#1f2937 60%,#21190a 100%);
+  z-index:-1;
+}
+#branchesRail .branch-card[onclick*="linko"] .branch-img{
+  background:radial-gradient(circle at 50% 28%,rgba(255,217,120,.26),transparent 42%),linear-gradient(135deg,#111827,#1f2937)!important;
+}
+#branchesRail .branch-card[onclick*="linko"] .branch-img .mi{
+  color:#ffd978!important;
+  filter:drop-shadow(0 0 12px rgba(246,180,75,.55));
+  animation:linkoBranchIconPulse 1.8s ease-in-out infinite;
+}
+#branchesRail .branch-card[onclick*="linko"] h3,
+#branchesRail .branch-card[onclick*="linko"] small{
+  color:#ffffff!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.45)!important;
+}
+#branchesRail .branch-card[onclick*="linko"] h3{font-weight:900!important;letter-spacing:.2px!important}
+#branchesRail .branch-card[onclick*="linko"] small{color:#fde68a!important;font-weight:900!important}
+
+/* إطار متحرك داخل صفحة فرع LINKO */
+#branchPage.linko-premium-mode .linko-premium-hero,
+#branchPage.linko-premium-mode .linko-request-box{
+  position:relative!important;
+  overflow:hidden!important;
+  border:2px solid rgba(246,180,75,.78)!important;
+  box-shadow:0 18px 46px rgba(17,24,39,.22),0 0 34px rgba(246,180,75,.28)!important;
+}
+#branchPage.linko-premium-mode .linko-premium-hero::before,
+#branchPage.linko-premium-mode .linko-request-box::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:inherit;
+  padding:2px;
+  background:linear-gradient(120deg,transparent,#ffd978,rgba(246,180,75,.15),#ffffff,transparent);
+  background-size:260% 260%;
+  animation:linkoFrameLightMove 3.8s ease-in-out infinite;
+  pointer-events:none;
+  opacity:.95;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+}
+
+/* تقوية وضوح النصوص داخل فرع LINKO في الوضع النهاري */
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-premium-wrap,
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-service-card,
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-request-box{
+  color:#020617!important;
+}
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-service-card{
+  background:#ffffff!important;
+  border:1.5px solid #b6c2d2!important;
+  box-shadow:0 12px 30px rgba(15,23,42,.14)!important;
+}
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-service-card h3{
+  color:#020617!important;
+  font-weight:900!important;
+}
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-service-card p{
+  color:#1e293b!important;
+  font-weight:900!important;
+}
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-request-box{
+  background:linear-gradient(135deg,#fff3cf,#ffffff)!important;
+  border-color:#d9921f!important;
+}
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-request-box p{
+  color:#020617!important;
+  font-weight:900!important;
+}
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-premium-hero h2,
+body:not(.linko-dark) #branchPage.linko-premium-mode .linko-premium-hero p{
+  color:#ffffff!important;
+  text-shadow:0 2px 5px rgba(0,0,0,.45)!important;
+}
+body:not(.linko-dark) #branchPage.linko-premium-mode #branchProductsCount,
+body:not(.linko-dark) #branchPage.linko-premium-mode #branchPageSub{
+  color:#334155!important;
+  font-weight:900!important;
+}
+
+@keyframes linkoBranchBorderSpin{to{transform:rotate(360deg)}}
+@keyframes linkoBranchIconPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 10px rgba(246,180,75,.45))}50%{transform:scale(1.08);filter:drop-shadow(0 0 20px rgba(246,180,75,.82))}}
+@keyframes linkoFrameLightMove{0%{background-position:0% 50%;opacity:.55}50%{background-position:100% 50%;opacity:1}100%{background-position:0% 50%;opacity:.55}}
+</style>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
