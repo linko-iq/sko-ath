@@ -4352,3 +4352,87 @@ window.addEventListener('load', boot);
 [300,1000,2200,4200].forEach(ms=>setTimeout(boot, ms));
 setInterval(()=>{ if(window.currentUser) startMemberRealtime(); }, 5000);
 </script>
+
+<!-- ===== LINKO PHOTO ROOT FINAL PATCH: local-first profile image, no size/network failure ===== -->
+<script type="module" id="linko-profile-photo-root-final-local-first">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, limit, updateDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const LINKO_PHOTO_FIREBASES=[
+  {name:'medina-photo-root-final',config:{apiKey:"AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",authDomain:"medina-bazaar-e5d67.firebaseapp.com",projectId:"medina-bazaar-e5d67",storageBucket:"medina-bazaar-e5d67.firebasestorage.app",messagingSenderId:"584827394228",appId:"1:584827394228:web:2447944b4324a17b469fe1"}},
+  {name:'linko-photo-root-final',config:{apiKey:"AIzaSyA0-hPPRwjvWPMcL2qgmLsEf0DzmXWIrq4",authDomain:"linko-market.firebaseapp.com",projectId:"linko-market",storageBucket:"linko-market.firebasestorage.app",messagingSenderId:"505941528794",appId:"1:505941528794:web:4be4f63325f43f1861f9e4"}}
+];
+const MEMBERS='linko_market_members';
+const clean=v=>String(v??'').trim();
+const read=(k,d=null)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch(_){return d}};
+const write=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
+const say=msg=>{try{window.toast(msg)}catch(_){try{alert(msg)}catch(__){}}};
+const now=()=>{try{return new Date().toLocaleString('ar-IQ')}catch(_){return new Date().toISOString()}};
+const normalize=m=>{m=m||{};const img=m.img||m.avatar||m.image||m.photoURL||'';return {...m,id:clean(m.id||m.memberId||m.docId||''),fullName:m.fullName||m.name||'',name:m.name||m.fullName||'',username:m.username||m.code||'',code:m.code||m.username||'',phone:m.phone||'',address:m.address||m.area||'',area:m.area||m.address||'',img,avatar:img,image:img,photoURL:img,balance:Number(m.balance||0)}};
+function getCurrent(){return normalize(window.currentUser||read('linko_current_member_session_v2',null)||read('linko_current_member',null)||{});}
+function same(a,b){a=normalize(a);b=normalize(b);return (!!a.id&&a.id===b.id)|| (!!a.phone&&a.phone===b.phone)|| (!!a.username&&a.username===b.username)|| (!!a.fullName&&a.fullName===b.fullName)|| (!!a.name&&a.name===b.name);}
+function appDb(x){let app=getApps().find(a=>a.name===x.name); if(!app) app=initializeApp(x.config,x.name); return getFirestore(app);}
+async function findMemberRef(db,m){
+  m=normalize(m);
+  if(m.id){const r=doc(db,MEMBERS,m.id); const s=await getDoc(r).catch(()=>null); if(s&&s.exists()) return r;}
+  const qs=[];
+  if(m.phone) qs.push(query(collection(db,MEMBERS),where('phone','==',m.phone),limit(1)));
+  if(m.username) qs.push(query(collection(db,MEMBERS),where('username','==',m.username),limit(1)));
+  if(m.fullName) qs.push(query(collection(db,MEMBERS),where('fullName','==',m.fullName),limit(1)));
+  if(m.name) qs.push(query(collection(db,MEMBERS),where('name','==',m.name),limit(1)));
+  for(const q of qs){const s=await getDocs(q).catch(()=>null); if(s&&!s.empty) return doc(db,MEMBERS,s.docs[0].id);}
+  return null;
+}
+async function makeTinyAvatar(file){
+  const data=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
+  const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=data;});
+  let side=180, q=.50, out='';
+  for(let i=0;i<7;i++){
+    const ratio=Math.min(1,side/Math.max(img.width,img.height));
+    const c=document.createElement('canvas'); c.width=Math.max(1,Math.round(img.width*ratio)); c.height=Math.max(1,Math.round(img.height*ratio));
+    const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(img,0,0,c.width,c.height);
+    out=c.toDataURL('image/jpeg',q);
+    if(out.length<65000) break;
+    side=Math.max(90,Math.round(side*.72)); q=Math.max(.30,q-.06);
+  }
+  return out;
+}
+function updateLocalPhoto(base64){
+  const cur=getCurrent();
+  const upd=normalize({...cur,img:base64,avatar:base64,image:base64,photoURL:base64,updatedAt:now(),updatedAtISO:new Date().toISOString()});
+  window.currentUser=upd;
+  write('linko_current_member_session_v2',upd); write('linko_current_member',upd);
+  ['linko_market_members','lm_members','members'].forEach(k=>{const arr=read(k,[]); if(Array.isArray(arr)){let changed=false; const next=arr.map(x=>same(x,upd)?(changed=true,{...x,...upd}):x); if(changed) write(k,next);}});
+  try{if(typeof window.renderAvatarBox==='function'){window.renderAvatarBox(window.memberAvatar,base64);window.renderAvatarBox(window.profileAvatar,base64);}}catch(_){ }
+  try{const imgs=document.querySelectorAll('#memberAvatar img,#profileAvatar img,.member-avatar img,.avatar-big img');imgs.forEach(im=>{im.src=base64;});}catch(_){ }
+  try{if(typeof window.fillUser==='function') window.fillUser();}catch(_){ }
+}
+async function syncPhotoSilently(base64){
+  const member=getCurrent(); if(!member.id&&!member.phone&&!member.username&&!member.fullName&&!member.name) return;
+  const payload={img:base64,avatar:base64,image:base64,photoURL:base64,updatedAt:now(),updatedAtISO:new Date().toISOString()};
+  for(const fb of LINKO_PHOTO_FIREBASES){
+    try{const db=appDb(fb); const ref=await findMemberRef(db,member); if(ref) await updateDoc(ref,payload);}catch(err){console.warn('photo background sync skipped',fb.name,err?.code||err?.message||err);}
+  }
+}
+window.handleProfileAvatarChange=async function(e){
+  const file=e?.target?.files&&e.target.files[0];
+  if(!file) return;
+  const cur=getCurrent();
+  if(!cur.id&&!cur.phone&&!cur.username&&!cur.fullName&&!cur.name){say('سجل الدخول أولاً');return;}
+  try{
+    say('جاري حفظ الصورة...');
+    const tiny=await makeTinyAvatar(file);
+    updateLocalPhoto(tiny);
+    say('تم تغيير صورة الملف الشخصي');
+    syncPhotoSilently(tiny);
+  }catch(err){
+    console.error('photo root final failed',err);
+    say('تعذر قراءة الصورة، جرّب اختيار صورة من المعرض مرة ثانية');
+  }finally{try{if(e?.target)e.target.value='';}catch(_){}}
+};
+try{
+  const input=document.getElementById('profileAvatarInput');
+  if(input){input.onchange=window.handleProfileAvatarChange;}
+}catch(_){ }
+console.log('LINKO PHOTO ROOT FINAL PATCH loaded: local-first, no network/size blocking');
+</script>
