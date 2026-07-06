@@ -3384,189 +3384,6 @@ setTimeout(setup, 600);
 setTimeout(setup, 1600);
 </script>
 
-
-
-<!-- ===== LINKO PHASE 6 FINAL STABLE SIGNUP OVERRIDE: single submit path, no Base64 payload, multi-submit safe ===== -->
-<style id="linkoPhase6StableSignupStyle">
-  #linkoStableSignupStatus{margin:14px 0;border-radius:20px;padding:14px 16px;font-weight:900;line-height:1.8;white-space:pre-line;display:none;text-align:center}
-  #linkoStableSignupStatus.ok{display:block;background:#dcfce7;color:#14532d;border:1px solid #86efac}
-  #linkoStableSignupStatus.error{display:block;background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca}
-  #linkoStableSignupStatus.info{display:block;background:#dbeafe;color:#1e3a8a;border:1px solid #bfdbfe}
-  body.linko-dark #linkoStableSignupStatus.ok{background:rgba(34,197,94,.20);color:#bbf7d0;border-color:rgba(34,197,94,.38)}
-  body.linko-dark #linkoStableSignupStatus.error{background:rgba(248,113,113,.18);color:#fecaca;border-color:rgba(248,113,113,.38)}
-  body.linko-dark #linkoStableSignupStatus.info{background:rgba(96,165,250,.18);color:#bfdbfe;border-color:rgba(96,165,250,.38)}
-</style>
-<script type="module" id="linkoPhase6StableSignupFinal">
-  import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",
-    authDomain: "medina-bazaar-e5d67.firebaseapp.com",
-    projectId: "medina-bazaar-e5d67",
-    storageBucket: "medina-bazaar-e5d67.firebasestorage.app",
-    messagingSenderId: "584827394228",
-    appId: "1:584827394228:web:2447944b4324a17b469fe1"
-  };
-
-  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const COLLECTION = 'linko_market_requests';
-  const LOCAL_KEY = 'linko_market_requests';
-  let sending = false;
-  let currentToken = null;
-
-  const $ = (id)=>document.getElementById(id);
-  const clean = (v)=>String(v ?? '').trim();
-  const onlyPhone = (v)=>clean(v).replace(/[^0-9+]/g,'');
-  const nowText = ()=> new Date().toLocaleString('ar-IQ');
-  const rand = ()=> (crypto?.randomUUID ? crypto.randomUUID() : ('req_'+Date.now()+'_'+Math.random().toString(36).slice(2)));
-  function toast(msg){ try{ if(typeof window.toast==='function') window.toast(msg); else alert(msg); }catch(_){ alert(msg); } }
-  function statusBox(){
-    let box = $('linkoStableSignupStatus');
-    const form = $('registerForm');
-    const btn = form?.querySelector('#linkoStableSignupSubmit');
-    if(!box){
-      box=document.createElement('div'); box.id='linkoStableSignupStatus';
-      (btn?.parentNode || form || document.body).insertBefore(box, btn || null);
-    }
-    return box;
-  }
-  function setStatus(type,msg){ const box=statusBox(); box.className=type||''; box.textContent=msg||''; }
-  function clearOldBoxes(){
-    document.querySelectorAll('#linkoSignupStatusBox,#linkoSignupStatusBox2,#linkoStableSignupStatus + #linkoSignupStatusBox,[id*="SignupStatus"],.linko-signup-error,.linko-signup-status').forEach(el=>{
-      if(el.id !== 'linkoStableSignupStatus') try{ el.remove(); }catch(_){}}
-    );
-  }
-  function timeout(promise, ms, label){
-    let t;
-    const timeoutPromise = new Promise((_, reject)=>{
-      t=setTimeout(()=>reject(Object.assign(new Error((label||'Firebase')+' استغرق وقتاً أطول من المتوقع'), {code:'linko-timeout'})), ms);
-    });
-    return Promise.race([promise, timeoutPromise]).finally(()=>clearTimeout(t));
-  }
-  function safePlain(obj){ return JSON.parse(JSON.stringify(obj, (k,v)=> typeof v === 'undefined' ? null : v)); }
-  function resetAvatarUI(){
-    window.pendingAvatarData = '';
-    try{ if($('regAvatarInput')) $('regAvatarInput').value=''; }catch(_){ }
-    try{ if(typeof window.renderAvatarBox==='function') window.renderAvatarBox($('regAvatarPreview'), ''); }catch(_){ }
-  }
-  function localBackup(request){
-    try{
-      const arr = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
-      if(Array.isArray(arr) && !arr.some(x=>String(x.id)===String(request.id))){
-        arr.unshift(request);
-        localStorage.setItem(LOCAL_KEY, JSON.stringify(arr.slice(0,200)));
-      }
-    }catch(e){ console.warn('LINKO local backup skipped', e); }
-  }
-  function makeRequest(){
-    const fullName = clean($('regName')?.value);
-    const phone = onlyPhone($('regPhone')?.value);
-    const address = clean($('regAddress')?.value);
-    const password = clean($('regPassword')?.value);
-    if(!fullName || !phone || !address || !password){
-      throw Object.assign(new Error('أكمل الاسم ورقم الهاتف والعنوان والرمز أولاً'), {code:'linko-validation'});
-    }
-    if(password.length < 4){
-      throw Object.assign(new Error('الرمز يجب أن يكون 4 أحرف/أرقام على الأقل'), {code:'linko-validation'});
-    }
-    const id = 'signup_' + Date.now() + '_' + rand().replace(/[^a-zA-Z0-9_-]/g,'').slice(0,18);
-    const hasAvatarSelected = !!(window.pendingAvatarData || $('regAvatarPreview')?.querySelector('img'));
-    return {
-      id,
-      requestId:id,
-      type:'membership',
-      fullName,
-      name:fullName,
-      username:'member_' + Date.now(),
-      phone,
-      address,
-      password,
-      status:'pending',
-      createdAt: nowText(),
-      createdAtMs: Date.now(),
-      updatedAtMs: Date.now(),
-      hasAvatarSelected,
-      imageStatus: hasAvatarSelected ? 'selected_not_uploaded_until_storage' : 'none',
-      img:'',
-      avatar:'',
-      avatarURL:'',
-      source:'member_phase6_stable_final',
-      schemaVersion: 6
-    };
-  }
-  function setButtonLoading(btn, old, loading){
-    if(!btn) return;
-    if(loading){ btn.disabled=true; btn.dataset.oldHtml=old || btn.innerHTML; btn.innerHTML='<span class="mi">hourglass_top</span> جاري إرسال الطلب...'; }
-    else { btn.disabled=false; btn.innerHTML=btn.dataset.oldHtml || '<span class="mi">person_add</span> إرسال طلب الاشتراك'; }
-  }
-  async function stableSubmit(ev){
-    if(ev){ ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation?.(); }
-    const form=$('registerForm');
-    const btn=$('linkoStableSignupSubmit') || form?.querySelector('button.btn.full,button[type="button"],button[type="submit"]');
-    if(sending){ setStatus('info','طلبك قيد الإرسال، انتظر لحظات.'); return false; }
-    sending=true;
-    currentToken = rand();
-    const token = currentToken;
-    const old = btn?.innerHTML;
-    clearOldBoxes();
-    setButtonLoading(btn, old, true);
-    setStatus('info','جاري إرسال طلب الاشتراك...');
-    try{
-      const request = makeRequest();
-      // IMPORTANT: Do not read or send Base64 image here. Images will be handled by Firebase Storage later.
-      await timeout(setDoc(doc(db, COLLECTION, request.id), safePlain({...request, serverCreatedAt: serverTimestamp()}), {merge:false}), 20000, 'Firestore');
-      if(token !== currentToken) return false;
-      localBackup(request);
-      try{ form?.reset(); }catch(_){ }
-      resetAvatarUI();
-      setStatus('ok','تم إرسال طلب الاشتراك إلى الإدارة بنجاح.\nيمكنك الدخول بعد موافقة الإدارة.');
-      try{ if(typeof window.switchAuth==='function') window.switchAuth('login'); }catch(_){ }
-      toast('تم إرسال طلب الاشتراك إلى الإدارة');
-    }catch(err){
-      console.error('LINKO STABLE SIGNUP ERROR:', err);
-      const code = err?.code || err?.name || 'unknown';
-      const msg = err?.message || String(err);
-      setStatus('error', code==='linko-validation' ? msg : ('تعذر إرسال طلب الاشتراك.\nسبب الخطأ: '+code+'\n'+msg));
-    }finally{
-      if(token === currentToken){ sending=false; setButtonLoading(btn, old, false); }
-    }
-    return false;
-  }
-  function hardBindSignup(){
-    const form=$('registerForm'); if(!form) return;
-    form.setAttribute('novalidate','novalidate');
-    form.onsubmit = stableSubmit;
-    // remove previous inline handlers on all possible buttons
-    form.querySelectorAll('button').forEach(b=>{ b.removeAttribute('onclick'); b.removeAttribute('onsubmit'); });
-    let btn = $('linkoStableSignupSubmit') || $('linkoSignupSubmitRoot') || form.querySelector('button.btn.full,button[type="button"],button[type="submit"]');
-    if(btn && btn.id !== 'linkoStableSignupSubmit'){
-      const clone = btn.cloneNode(true);
-      clone.id='linkoStableSignupSubmit'; clone.type='button'; clone.disabled=false; clone.removeAttribute('onclick');
-      btn.parentNode.replaceChild(clone, btn); btn=clone;
-    }
-    if(btn){
-      btn.type='button'; btn.disabled=false; btn.removeAttribute('onclick');
-      btn.onclick = stableSubmit;
-    }
-    window.register = stableSubmit;
-    window.linkoSubmitSignupRoot = stableSubmit;
-  }
-  // Capture old submit/clicks and stop them before old scripts can send Base64.
-  document.addEventListener('submit', function(e){ if(e.target && e.target.id==='registerForm') stableSubmit(e); }, true);
-  document.addEventListener('click', function(e){
-    const btn = e.target?.closest?.('#linkoStableSignupSubmit,#linkoSignupSubmitRoot,#registerForm button.btn.full,#registerForm button[type="submit"],#registerForm button[type="button"]');
-    if(btn && $('registerForm')?.contains(btn)) stableSubmit(e);
-  }, true);
-  ['DOMContentLoaded','load'].forEach(evt=>window.addEventListener(evt, hardBindSignup));
-  hardBindSignup();
-  setTimeout(hardBindSignup, 300);
-  setTimeout(hardBindSignup, 900);
-  setTimeout(hardBindSignup, 1800);
-  setTimeout(hardBindSignup, 3200);
-</script>
-
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
@@ -3785,3 +3602,275 @@ body:not(.linko-dark) .linko-chat-questions button{
 })();
 </script>
 <style id="linkoUnifiedSchemaResponsiveMember">html,body{width:100%;max-width:100%;overflow-x:hidden!important;touch-action:pan-y}.product-img img,.branch-img img,.profile-avatar img,.member-avatar img,.order-img img{object-fit:contain!important;object-position:center center!important}.app-wrap,.page-head,.cart-layout,.products-grid,.branches-rail{max-width:100%!important}@media(max-width:620px){.cart-layout{grid-template-columns:1fr!important}.product-card,.branch-card{max-width:100%!important}}</style>
+
+<!-- ===== LINKO PHASE 6 FINAL AUTHORITATIVE SIGNUP OVERRIDE - NO IMAGE PAYLOAD ===== -->
+<script type="module" id="linkoPhase6FinalAuthoritativeSignupNoImage">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",
+  authDomain: "medina-bazaar-e5d67.firebaseapp.com",
+  projectId: "medina-bazaar-e5d67",
+  storageBucket: "medina-bazaar-e5d67.firebasestorage.app",
+  messagingSenderId: "584827394228",
+  appId: "1:584827394228:web:2447944b4324a17b469fe1"
+};
+
+const app = getApps().find(a => a.name === '[DEFAULT]') || initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const COLLECTION = 'linko_market_requests';
+const LOCAL_KEY = 'linko_market_requests';
+const SESSION_DRAFT_KEY = 'linko_signup_last_success_v1';
+
+const $ = (id) => document.getElementById(id);
+const clean = (v) => String(v || '').trim();
+const phoneClean = (v) => String(v || '').replace(/[^0-9+]/g,'').trim();
+const nowText = () => { try { return new Date().toLocaleString('ar-IQ'); } catch(e){ return new Date().toISOString(); } };
+const iso = () => new Date().toISOString();
+
+let signupSending = false;
+let lastSubmitStartedAt = 0;
+let lastSuccessKey = '';
+
+function toast(msg){
+  try { if (typeof window.toast === 'function') return window.toast(msg); } catch(e) {}
+  const t = $('toast');
+  if(t){
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t.__linkoFinalToast);
+    t.__linkoFinalToast = setTimeout(()=>t.classList.remove('show'), 3000);
+  } else alert(msg);
+}
+
+function removeOldBoxes(){
+  ['linkoSignupDiagnosticBox','linkoSignupFinalBox','linkoUltimateStatusBox','linkoFinalSignupBox'].forEach(id=>{
+    const el = $(id); if(el) el.remove();
+  });
+}
+
+function statusBox(type, msg){
+  removeOldBoxes();
+  const form = $('registerForm');
+  const btn = $('linkoFinalSignupButton') || form?.querySelector('button.btn.full,button[type="submit"],button[type="button"]');
+  const box = document.createElement('div');
+  box.id = 'linkoFinalSignupBox';
+  const ok = type === 'ok';
+  box.style.cssText = [
+    'margin:12px 0',
+    'padding:13px',
+    'border-radius:18px',
+    'font-weight:900',
+    'line-height:1.8',
+    'white-space:pre-wrap',
+    'text-align:center',
+    'direction:rtl',
+    'border:1px solid '+(ok?'#86efac':'#fecaca'),
+    'background:'+(ok?'#dcfce7':'#fee2e2'),
+    'color:'+(ok?'#14532d':'#7f1d1d')
+  ].join(';');
+  box.textContent = msg;
+  (btn?.parentNode || form || document.body).insertBefore(box, btn || null);
+}
+
+function readLocal(){ try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]') || []; } catch(e){ return []; } }
+function writeLocal(rows){ try { localStorage.setItem(LOCAL_KEY, JSON.stringify(rows || [])); } catch(e){} }
+
+function withTimeout(promise, ms, label){
+  let timer;
+  const timeout = new Promise((_, reject)=>{
+    timer = setTimeout(()=>reject(Object.assign(new Error(label || 'انتهت مهلة الاتصال'), {code:'linko-timeout'})), ms);
+  });
+  return Promise.race([promise, timeout]).finally(()=>clearTimeout(timer));
+}
+
+function selectedImageExists(){
+  try {
+    if (typeof window.pendingAvatarData === 'string' && window.pendingAvatarData.startsWith('data:image')) return true;
+    const src = $('regAvatarPreview')?.querySelector('img')?.src || '';
+    return src.startsWith('data:image');
+  } catch(e){ return false; }
+}
+
+function clearLocalSignupImageOnly(){
+  try { window.pendingAvatarData = ''; } catch(e) {}
+  try { if (typeof window.renderAvatarBox === 'function') window.renderAvatarBox($('regAvatarPreview'), ''); } catch(e) {}
+}
+
+function buildSignupRequest(){
+  const fullName = clean($('regName')?.value);
+  const password = clean($('regPassword')?.value);
+  const phone = phoneClean($('regPhone')?.value);
+  const address = clean($('regAddress')?.value);
+  const terms = $('regTerms');
+
+  if(!fullName || !password || !phone || !address){
+    throw Object.assign(new Error('أكمل بيانات الاشتراك أولاً'), {code:'linko-validation'});
+  }
+  if(password.length < 4){
+    throw Object.assign(new Error('الرمز يجب أن يكون 4 أرقام أو أحرف على الأقل'), {code:'linko-validation'});
+  }
+  if(terms && !terms.checked){
+    throw Object.assign(new Error('يجب الموافقة على شروط استخدام الخدمة'), {code:'linko-validation'});
+  }
+
+  // ثابت ومقصود: الصورة لا تدخل طلب الاشتراك إطلاقاً.
+  // وجود صورة فقط معلومة منطقية، لكن لا نرسل Base64 ولا رابط ولا أي payload ثقيل.
+  const hasLocalAvatar = selectedImageExists();
+  const id = (crypto?.randomUUID ? crypto.randomUUID() : ('req_' + Date.now() + '_' + Math.random().toString(16).slice(2)));
+  const username = 'member_' + Date.now();
+
+  return {
+    id,
+    fullName,
+    name: fullName,
+    username,
+    code: username,
+    phone,
+    address,
+    area: address,
+    password,
+    img: '',
+    avatar: '',
+    image: '',
+    photoURL: '',
+    hasAvatar: hasLocalAvatar,
+    avatarStorage: 'not_sent_in_signup',
+    createdAt: nowText(),
+    createdAtISO: iso(),
+    createdAtServer: serverTimestamp(),
+    date: nowText(),
+    status: 'pending',
+    source: 'member_signup_final_no_image'
+  };
+}
+
+async function finalSignupSubmit(event){
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+    if(event.stopImmediatePropagation) event.stopImmediatePropagation();
+  }
+
+  const now = Date.now();
+  if(signupSending || (now - lastSubmitStartedAt) < 1200) return false;
+  lastSubmitStartedAt = now;
+
+  const form = $('registerForm');
+  const btn = $('linkoFinalSignupButton') || form?.querySelector('button.btn.full,button[type="submit"],button[type="button"]');
+  const oldHTML = btn ? btn.innerHTML : '';
+
+  try{
+    removeOldBoxes();
+    const request = buildSignupRequest();
+    const duplicateKey = [request.fullName, request.phone, request.address, request.password].join('|').toLowerCase();
+    if(lastSuccessKey === duplicateKey){
+      toast('تم إرسال هذا الطلب قبل قليل');
+      return false;
+    }
+
+    signupSending = true;
+    if(btn){
+      btn.disabled = true;
+      btn.style.pointerEvents = 'none';
+      btn.innerHTML = '<span class="mi">hourglass_top</span> جاري إرسال الطلب...';
+    }
+
+    // Firestore أولاً. لا نخزن نجاح محلي قبل نجاح السحابة حتى ما يصير وهم أو تكرار.
+    await withTimeout(setDoc(doc(db, COLLECTION, request.id), request, {merge:false}), 25000, 'انتهت مهلة الاتصال مع Firebase. جرّب مرة ثانية بعد التأكد من الإنترنت.');
+
+    const local = readLocal().filter(x => String(x.id) !== String(request.id));
+    local.unshift({...request, createdAtServer: null});
+    writeLocal(local);
+    try { localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify({id:request.id, phone:request.phone, at:Date.now()})); } catch(e) {}
+
+    lastSuccessKey = duplicateKey;
+    try { form?.reset(); } catch(e) {}
+    clearLocalSignupImageOnly();
+    statusBox('ok', 'تم إرسال طلب الاشتراك إلى الإدارة بنجاح.\nالصورة لا تُرسل مع الطلب حالياً، وسيتم إضافتها لاحقاً من الملف الشخصي.');
+    toast('تم إرسال طلب الاشتراك إلى الإدارة');
+    try { if(typeof window.switchAuth === 'function') setTimeout(()=>window.switchAuth('login'), 900); } catch(e) {}
+  } catch(err){
+    const code = err?.code || 'unknown';
+    const msg = err?.message || String(err || 'خطأ غير معروف');
+    console.error('LINKO FINAL AUTHORITATIVE SIGNUP ERROR:', err);
+    if(code === 'linko-validation'){
+      toast(msg);
+    } else {
+      statusBox('error', 'تعذر إرسال طلب الاشتراك.\nسبب الخطأ: ' + code + '\n' + msg + '\n\nملاحظة: الصورة غير مرسلة نهائياً في هذه النسخة، لذلك إذا ظهر خطأ فالمشكلة من الاتصال أو Firestore فقط.');
+      toast('تعذر إرسال الطلب');
+    }
+  } finally {
+    signupSending = false;
+    if(btn){
+      btn.disabled = false;
+      btn.style.pointerEvents = 'auto';
+      btn.innerHTML = oldHTML || '<span class="mi">person_add</span> إرسال طلب الاشتراك';
+    }
+  }
+  return false;
+}
+
+function hardInstallSignup(){
+  const form = $('registerForm');
+  if(!form) return;
+  form.noValidate = true;
+  form.removeAttribute('onsubmit');
+  form.onsubmit = finalSignupSubmit;
+
+  // استبدال الزر يزيل أغلب الأحداث القديمة المتراكمة على الزر نفسه.
+  let btn = $('linkoFinalSignupButton') || form.querySelector('button.btn.full,button[type="submit"],button[type="button"]');
+  if(btn && btn.id !== 'linkoFinalSignupButton'){
+    const clone = btn.cloneNode(true);
+    clone.id = 'linkoFinalSignupButton';
+    clone.type = 'button';
+    clone.disabled = false;
+    clone.removeAttribute('onclick');
+    clone.style.pointerEvents = 'auto';
+    clone.style.touchAction = 'manipulation';
+    btn.parentNode.replaceChild(clone, btn);
+    btn = clone;
+  }
+  if(btn){
+    btn.type = 'button';
+    btn.disabled = false;
+    btn.removeAttribute('onclick');
+    btn.style.pointerEvents = 'auto';
+    btn.style.touchAction = 'manipulation';
+    btn.onclick = finalSignupSubmit;
+  }
+
+  window.register = finalSignupSubmit;
+  window.linkoFinalSignupSubmit = finalSignupSubmit;
+}
+
+// اعتراض مبكر على كل أحداث الإرسال القديمة حتى لو كانت معلقة من سكربتات سابقة.
+function isSignupEventTarget(target){
+  const form = $('registerForm');
+  if(!form || !target) return false;
+  return target === form || form.contains(target);
+}
+
+function captureSignupEvent(e){
+  if(!isSignupEventTarget(e.target)) return;
+  const isSubmit = e.type === 'submit';
+  const isButton = e.target?.closest?.('button');
+  const isEnterKey = e.type === 'keydown' && e.key === 'Enter';
+  if(isSubmit || isButton || isEnterKey){
+    finalSignupSubmit(e);
+  }
+}
+
+document.addEventListener('submit', captureSignupEvent, true);
+document.addEventListener('click', captureSignupEvent, true);
+document.addEventListener('touchend', captureSignupEvent, true);
+document.addEventListener('pointerup', captureSignupEvent, true);
+document.addEventListener('keydown', captureSignupEvent, true);
+
+hardInstallSignup();
+document.addEventListener('DOMContentLoaded', hardInstallSignup);
+window.addEventListener('load', hardInstallSignup);
+[300,1000,2500,5500,8000].forEach(ms => setTimeout(hardInstallSignup, ms));
+</script>
+
