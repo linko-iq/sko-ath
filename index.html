@@ -352,7 +352,7 @@ body.linko-dark #infoModal .modal-card > .btn.full{
         </div>
       </div>
       <label class="terms"><input id="regTerms" type="checkbox"> أوافق على شروط استخدام الخدمة</label>
-      <button class="btn full" type="submit"><span class="mi">person_add</span> إرسال طلب الاشتراك</button>
+      <button id="linkoSignupSubmitRoot" class="btn full" type="button" onclick="window.linkoSubmitSignupRoot && window.linkoSubmitSignupRoot(event)"><span class="mi">person_add</span> إرسال طلب الاشتراك</button>
     </form>
   </div>
 </section>
@@ -2609,6 +2609,138 @@ body:not(.linko-dark) #branchPage.linko-premium-mode #branchPageSub{
   setTimeout(bindSignup, 600);
   setTimeout(bindSignup, 1600);
 </script>
+
+
+<!-- LINKO PHASE 6 FIX 2 ROOT: real clickable signup button + final Firestore submit override -->
+<script type="module" id="linkoPhase6RootSignupFix2">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",
+    authDomain: "medina-bazaar-e5d67.firebaseapp.com",
+    projectId: "medina-bazaar-e5d67",
+    storageBucket: "medina-bazaar-e5d67.firebasestorage.app",
+    messagingSenderId: "584827394228",
+    appId: "1:584827394228:web:2447944b4324a17b469fe1"
+  };
+
+  const app = getApps().find(a => a.name === '[DEFAULT]') || initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const COLLECTION = 'linko_market_requests';
+
+  const $ = (id) => document.getElementById(id);
+  const toastSafe = (msg) => { try { window.toast(msg); } catch(e) { alert(msg); } };
+  const nowIQ = () => new Date().toLocaleString('ar-IQ');
+  const cleanPhone = (v) => String(v || '').replace(/\s+/g, '').trim();
+  const getAvatar = () => {
+    const img = $('regAvatarPreview')?.querySelector('img');
+    return img?.src || window.pendingAvatarData || '';
+  };
+  const localRead = (k, fallback=[]) => { try { return JSON.parse(localStorage.getItem(k) || 'null') || fallback; } catch(e) { return fallback; } };
+  const localWrite = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+
+  let sending = false;
+
+  async function submitSignupRoot(ev){
+    if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+    if(sending) return;
+
+    const fullName = ($('regName')?.value || '').trim();
+    const phone = cleanPhone($('regPhone')?.value || '');
+    const address = ($('regAddress')?.value || '').trim();
+    const password = ($('regPassword')?.value || '').trim();
+    const terms = $('regTerms');
+
+    if(!fullName || !phone || !address || !password){
+      toastSafe('أكمل بيانات الاشتراك أولاً');
+      return false;
+    }
+    if(password.length < 4){
+      toastSafe('الرمز يجب أن يكون 4 أرقام أو أحرف على الأقل');
+      return false;
+    }
+    if(terms && !terms.checked){
+      toastSafe('يجب الموافقة على شروط استخدام الخدمة');
+      return false;
+    }
+
+    sending = true;
+    const btn = $('linkoSignupSubmitRoot') || $('registerForm')?.querySelector('button[type="button"],button[type="submit"]');
+    const oldText = btn ? btn.innerHTML : '';
+    if(btn){ btn.disabled = true; btn.style.pointerEvents = 'auto'; btn.innerHTML = '<span class="mi">hourglass_top</span> جارٍ إرسال الطلب...'; }
+
+    const id = String(Date.now());
+    const request = {
+      id,
+      fullName,
+      name: fullName,
+      username: 'member_' + id,
+      phone,
+      address,
+      area: address,
+      password,
+      code: password,
+      img: getAvatar(),
+      avatar: getAvatar(),
+      createdAt: nowIQ(),
+      date: nowIQ(),
+      status: 'pending',
+      source: 'member_signup'
+    };
+
+    try{
+      await setDoc(doc(db, COLLECTION, id), request, { merge: false });
+      const all = localRead(COLLECTION, []);
+      all.unshift(request);
+      localWrite(COLLECTION, all);
+
+      const form = $('registerForm');
+      if(form) form.reset();
+      try { window.pendingAvatarData = ''; } catch(e) {}
+      try { if(window.renderAvatarBox) window.renderAvatarBox($('regAvatarPreview'), ''); } catch(e) {}
+      try { if(window.switchAuth) window.switchAuth('login'); } catch(e) {}
+      toastSafe('تم إرسال طلب الاشتراك للإدارة. يمكنك الدخول بعد الموافقة فقط.');
+    } catch(error){
+      console.error('LINKO ROOT signup Firestore error:', error);
+      toastSafe('تعذر إرسال طلب الاشتراك. تأكد من الإنترنت وقواعد Firestore');
+    } finally {
+      sending = false;
+      if(btn){ btn.disabled = false; btn.innerHTML = oldText || '<span class="mi">person_add</span> إرسال طلب الاشتراك'; }
+    }
+    return false;
+  }
+
+  window.linkoSubmitSignupRoot = submitSignupRoot;
+  window.register = submitSignupRoot;
+
+  function bindSignupButton(){
+    const form = $('registerForm');
+    const btn = $('linkoSignupSubmitRoot') || form?.querySelector('button.btn.full');
+    if(btn){
+      btn.type = 'button';
+      btn.disabled = false;
+      btn.style.pointerEvents = 'auto';
+      btn.style.touchAction = 'manipulation';
+      btn.onclick = submitSignupRoot;
+      btn.addEventListener('click', submitSignupRoot, true);
+      btn.addEventListener('touchend', submitSignupRoot, true);
+      btn.addEventListener('pointerup', submitSignupRoot, true);
+    }
+    if(form){
+      form.noValidate = true;
+      form.onsubmit = submitSignupRoot;
+      form.addEventListener('submit', submitSignupRoot, true);
+    }
+  }
+
+  bindSignupButton();
+  document.addEventListener('DOMContentLoaded', bindSignupButton);
+  window.addEventListener('load', bindSignupButton);
+  setTimeout(bindSignupButton, 300);
+  setTimeout(bindSignupButton, 1000);
+</script>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
