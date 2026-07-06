@@ -3786,62 +3786,45 @@ console.log('LINKO micro patch loaded: photo + notification list only');
 
 
 
-<!-- LINKO FINAL PATCH: REALTIME PRODUCTS + BRANCHES FROM ADMIN -->
-<script>
-(function(){
-  function esc(s){return String(s??'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function setCatalog(newBranches, newProducts){
-    try{
-      newBranches = (Array.isArray(newBranches)?newBranches:[]).map(function(b,i){return {
-        id:String(b.id||Date.now()+i), name:String(b.name||''), icon:String(b.icon||'storefront'),
-        img:String(b.img||''), status:(b.status==='hidden'?'hidden':'visible'), order:Number(b.order||i+1)
-      }}).filter(function(b){return b.name && b.status!=='hidden'}).sort(function(a,b){return (a.order||0)-(b.order||0)});
-      newProducts = (Array.isArray(newProducts)?newProducts:[]).map(function(p,i){
-        var b = newBranches.find(function(x){return String(x.id)===String(p.branchId)||String(x.name)===String(p.branchName)||String(x.name)===String(p.branch)});
-        return {
-          id:String(p.id||Date.now()+i), name:String(p.name||''), branchId:b?String(b.id):String(p.branchId||''),
-          branchName:b?String(b.name):String(p.branchName||p.branch||''), branch:b?String(b.name):String(p.branch||p.branchName||''),
-          group:String(p.group||p.cat||''), img:String(p.img||''), status:(p.status==='unavailable'?'unavailable':'available'),
-          order:Number(p.order||i+1)
-        }
-      }).filter(function(p){return p.name}).sort(function(a,b){return (a.order||0)-(b.order||0)});
-      branches = newBranches;
-      products = newProducts;
-      try{ localStorage.setItem('linko_market_branches', JSON.stringify(branches)); }catch(e){}
-      try{ localStorage.setItem('linko_market_products', JSON.stringify(products)); }catch(e){}
-      try{ renderBranches(); }catch(e){}
-      try{ renderProducts(); }catch(e){}
-      try{ if(typeof renderBranchProducts==='function') renderBranchProducts(); }catch(e){}
-      try{ if(typeof updateCart==='function') updateCart(); }catch(e){}
-    }catch(e){ console.error('setCatalog error:', e); }
-  }
-  window.linkoSetRealtimeCatalog = setCatalog;
-})();
-</script>
-<script type="module" id="linkoRealtimeCatalogFromFirestorePatch">
-  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-  import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",
-    authDomain: "medina-bazaar-e5d67.firebaseapp.com",
-    projectId: "medina-bazaar-e5d67",
-    storageBucket: "medina-bazaar-e5d67.firebasestorage.app",
-    messagingSenderId: "584827394228",
-    appId: "1:584827394228:web:2447944b4324a17b469fe1"
-  };
-  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  let branchRows = [];
-  let productRows = [];
-  const apply = ()=> window.linkoSetRealtimeCatalog && window.linkoSetRealtimeCatalog(branchRows, productRows);
-  onSnapshot(collection(db,'linko_market_branches'), snap=>{
-    branchRows = snap.docs.map(d=>({id:d.id,...d.data()}));
-    apply();
-  }, err=>console.warn('branches realtime error', err));
-  onSnapshot(collection(db,'linko_market_products'), snap=>{
-    productRows = snap.docs.map(d=>({id:d.id,...d.data()}));
-    apply();
-  }, err=>console.warn('products realtime error', err));
+<!-- LINKO FINAL MEMBER PATCH: realtime branches/products from Firestore -->
+<script type="module" id="linkoFinalMemberRealtimeProductsBranches">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",authDomain:"medina-bazaar-e5d67.firebaseapp.com",projectId:"medina-bazaar-e5d67",storageBucket:"medina-bazaar-e5d67.firebasestorage.app",messagingSenderId:"584827394228",appId:"1:584827394228:web:2447944b4324a17b469fe1"};
+const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
+const db=window.linkoMemberFirestoreDB||getFirestore(app);
+const C={branches:'linko_market_branches',products:'linko_market_products'};
+function toast(m){try{window.toast(m)}catch(e){console.log(m)}}
+function esc(s){return String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
+function brStatus(s){return (s==='hidden'||s==='stopped'||s==='مخفي'||s==='موقوف'||s===false)?'hidden':'visible'}
+function prStatus(s){return (s==='unavailable'||s==='غير متوفر'||s===false)?'unavailable':'available'}
+function cleanBranch(b,i=0){return {id:String(b.id||''),name:String(b.name||''),icon:String(b.icon||'storefront'),img:String(b.img||b.image||''),status:brStatus(b.status),order:Number(b.order||i+1)}}
+function cleanProduct(p,i=0){return {id:String(p.id||''),name:String(p.name||''),branchId:String(p.branchId||p.branch||''),branchName:String(p.branchName||p.branch||''),branch:String(p.branchName||p.branch||''),group:String(p.group||p.badge||''),badge:String(p.group||p.badge||''),img:String(p.img||p.image||''),status:prStatus(p.status),order:Number(p.order||i+1),icon:p.icon||'shopping_bag'}}
+function syncAndRender(){
+  try{localStorage.setItem(C.branches,JSON.stringify(window.branches||[]));localStorage.setItem(C.products,JSON.stringify(window.products||[]));}catch(e){}
+  try{if(!window.selectedBranch)window.selectedBranch='all'; if(window.selectedBranch!=='all'&&!window.branches.find(b=>String(b.id)===String(window.selectedBranch)))window.selectedBranch='all';}catch(e){}
+  try{window.renderBranches&&window.renderBranches()}catch(e){}
+  try{window.renderProducts&&window.renderProducts()}catch(e){}
+  try{window.renderBranchPage&&window.renderBranchPage()}catch(e){}
+}
+window.renderBranches=function(){
+  const visible=(window.branches||[]).filter(b=>b.status!=='hidden').sort((a,b)=>(a.order||0)-(b.order||0));
+  const rail=document.getElementById('branchesRail');
+  if(rail){rail.innerHTML=visible.length?visible.map(b=>`<button class="branch-card ${String(window.selectedBranch)===String(b.id)?'active':''}" onclick="selectBranch('${esc(b.id)}')"><div class="branch-img">${b.img?`<img src="${esc(b.img)}" alt="${esc(b.name)}">`:`<span class="mi">${esc(b.icon||'storefront')}</span>`}</div><h3>${esc(b.name)}</h3><small>${(window.products||[]).filter(p=>String(p.branchId)===String(b.id)).length} منتج وخدمة</small></button>`).join(''):'<div class="empty-card">لا توجد فروع حالياً</div>';}
+};
+window.renderProducts=function(){
+  const q=(document.getElementById('globalSearch')?.value||'').trim().toLowerCase();
+  const list=(window.products||[]).filter(p=>(window.selectedBranch==='all'||String(p.branchId)===String(window.selectedBranch))&&(!q||p.name.toLowerCase().includes(q)||p.branchName.toLowerCase().includes(q))).sort((a,b)=>(a.order||0)-(b.order||0));
+  const count=document.getElementById('productsCount'); if(count)count.textContent=list.length+' منتج ظاهر';
+  const grid=document.getElementById('productsGrid');
+  if(grid)grid.innerHTML=list.length?list.map(p=>{const off=p.status==='unavailable';return `<article class="product-card"><div class="product-img"><span class="p-badge">${esc(p.group||'')}</span><span class="p-status ${off?'off':''}">${off?'غير متوفر':'متوفر'}</span>${p.img?`<img src="${esc(p.img)}" alt="${esc(p.name)}">`:`<span class="mi">shopping_bag</span>`}</div><div class="product-body"><h3>${esc(p.name)}</h3><div class="price-row"><button class="add-btn" ${off?'disabled':''} onclick="openAddProductModal('${esc(p.id)}')"><span class="mi">${off?'block':'add'}</span>${off?'غير متوفر':'أضف'}</button></div></div></article>`}).join(''):'<div class="empty-card">لا توجد منتجات أو فروع ظاهرة حالياً</div>';
+};
+function start(){
+  onSnapshot(collection(db,C.branches),snap=>{window.branches=snap.docs.map((d,i)=>cleanBranch({id:d.id,...d.data()},i)).filter(b=>b.name&&b.status!=='hidden');syncAndRender();},e=>{console.error('branches listener',e);toast('تعذر تحميل الفروع من Firebase')});
+  onSnapshot(collection(db,C.products),snap=>{window.products=snap.docs.map((d,i)=>cleanProduct({id:d.id,...d.data()},i)).filter(p=>p.name&&(p.status==='available'||p.status==='unavailable'));syncAndRender();},e=>{console.error('products listener',e);toast('تعذر تحميل المنتجات من Firebase')});
+  getDocs(collection(db,C.branches)).then(s=>{if(s.empty)toast('لا توجد فروع منشورة من الإدارة بعد')}).catch(()=>{});
+}
+start();
 </script>
 
 </body>
