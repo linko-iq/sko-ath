@@ -3386,8 +3386,8 @@ setTimeout(setup, 1600);
 
 
 
-<!-- ===== LINKO FINAL PATCH: REALTIME MEMBERS LOGIN - NO REFRESH NEEDED ===== -->
-<script type="module" id="linkoFinalRealtimeMembersLoginFix">
+<!-- LINKO PHASE 7 FINAL: AUTHORITATIVE REALTIME MEMBER LOGIN FIX -->
+<script type="module" id="linkoPhase7AuthoritativeMemberLoginFix">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
@@ -3404,164 +3404,186 @@ const app = getApps().find(a => a.name === '[DEFAULT]') || initializeApp(firebas
 const db = getFirestore(app);
 const MEMBERS_COLLECTION = 'linko_market_members';
 const MEMBERS_LOCAL_KEY = 'linko_market_members';
-const SESSION_KEY = 'linko_current_member_session_v2';
-const $ = (id)=>document.getElementById(id);
-const clean = (v)=>String(v || '').trim();
-const lower = (v)=>clean(v).toLowerCase();
+const SESSION_KEY = 'linko_current_member_session_v1';
 
-let membersCache = [];
-let realtimeStarted = false;
-let initialResolved = false;
-let resolveInitial;
-const initialMembersPromise = new Promise(resolve => { resolveInitial = resolve; });
+const $ = (id) => document.getElementById(id);
+const clean = (v) => String(v ?? '').trim();
+const compact = (v) => clean(v)
+  .replace(/[\u064B-\u065F\u0670]/g,'')
+  .replace(/\s+/g,' ')
+  .toLowerCase();
+const phoneClean = (v) => clean(v).replace(/[^0-9+]/g,'');
 
 function toast(msg){
   try { if(typeof window.toast === 'function') return window.toast(msg); } catch(e){}
   const t = $('toast');
-  if(t){ t.textContent = msg; t.classList.add('show'); clearTimeout(t.__rt); t.__rt=setTimeout(()=>t.classList.remove('show'),3200); }
-  else alert(msg);
+  if(t){
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t.__linkoLoginToast);
+    t.__linkoLoginToast = setTimeout(()=>t.classList.remove('show'), 2600);
+  } else alert(msg);
 }
-function readLocal(key, fallback=[]){ try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)) || fallback; } catch(e){ return fallback; } }
-function writeLocal(key, value){ try { localStorage.setItem(key, JSON.stringify(value || [])); } catch(e){} }
-function saveSession(member){ try { localStorage.setItem(SESSION_KEY, JSON.stringify(normalizeMember(member))); } catch(e){} }
-function getSession(){ try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch(e){ return null; } }
-function normalizeMember(m={}){
+
+function normalizeStatus(s){
+  return (s === 'stopped' || s === 'blocked' || s === 'موقوف' || s === 'مغلق' || s === false) ? 'stopped' : 'active';
+}
+function normalizeMember(m = {}, i = 0){
   const img = m.img || m.avatar || m.image || '';
   const fullName = clean(m.fullName || m.name || '');
   const username = clean(m.username || m.code || '');
+  const address = clean(m.address || m.area || '');
   return {
     ...m,
-    id: String(m.id || m.memberId || username || fullName || ''),
+    id: String(m.id || m.memberId || ('member_' + i)),
     fullName,
     name: fullName,
     username,
     code: username,
     phone: clean(m.phone || ''),
-    address: clean(m.address || m.area || ''),
-    area: clean(m.area || m.address || ''),
+    address,
+    area: address,
     img,
     avatar: img,
     balance: Number(m.balance || 0),
-    status: (m.status === 'stopped' || m.status === 'blocked' || m.status === 'موقوف') ? 'stopped' : 'active',
-    password: clean(m.password || '')
+    status: normalizeStatus(m.status),
+    password: clean(m.password || m.pass || m.pin || '')
   };
 }
-function publishMembers(list){
-  membersCache = (list || []).map(normalizeMember).filter(m => m.status === 'active');
-  window.linkoMembers = membersCache;
-  writeLocal(MEMBERS_LOCAL_KEY, membersCache);
-  refreshCurrentUserIfNeeded();
+function writeMembers(rows){
+  const members = (rows || []).map(normalizeMember);
+  try { localStorage.setItem(MEMBERS_LOCAL_KEY, JSON.stringify(members)); } catch(e){}
+  try { window.linkoMembers = members; } catch(e){}
+  try { window.members = members; } catch(e){}
+  return members;
 }
-function startRealtimeMembers(){
-  if(realtimeStarted) return;
-  realtimeStarted = true;
+async function fetchMembersFresh(){
+  const snap = await getDocs(collection(db, MEMBERS_COLLECTION));
+  const rows = [];
+  snap.forEach((d,i) => rows.push(normalizeMember({id:d.id, ...d.data()}, i)));
+  return writeMembers(rows);
+}
+function startMembersRealtime(){
+  if(window.__linkoMembersRealtimeFinalStarted) return;
+  window.__linkoMembersRealtimeFinalStarted = true;
   try{
-    onSnapshot(collection(db, MEMBERS_COLLECTION), (snap)=>{
-      const list=[];
-      snap.forEach(d => list.push(normalizeMember({id:d.id, ...d.data()})));
-      publishMembers(list);
-      if(!initialResolved){ initialResolved = true; resolveInitial(membersCache); }
-      console.log('[LINKO] members realtime updated:', membersCache.length);
-    }, async (err)=>{
-      console.warn('[LINKO] members realtime failed, fallback getDocs:', err);
-      try{
-        const snap = await getDocs(collection(db, MEMBERS_COLLECTION));
-        const list=[]; snap.forEach(d => list.push(normalizeMember({id:d.id, ...d.data()})));
-        publishMembers(list);
-      }catch(e){ publishMembers(readLocal(MEMBERS_LOCAL_KEY, [])); }
-      if(!initialResolved){ initialResolved = true; resolveInitial(membersCache); }
+    onSnapshot(collection(db, MEMBERS_COLLECTION), (snap) => {
+      const rows = [];
+      snap.forEach((d,i) => rows.push(normalizeMember({id:d.id, ...d.data()}, i)));
+      writeMembers(rows);
+    }, (err) => {
+      console.warn('LINKO member realtime listener error:', err);
+      window.__linkoMembersRealtimeFinalStarted = false;
     });
   }catch(e){
-    console.warn('[LINKO] start realtime error:', e);
-    publishMembers(readLocal(MEMBERS_LOCAL_KEY, []));
-    if(!initialResolved){ initialResolved = true; resolveInitial(membersCache); }
+    console.warn('LINKO member realtime start failed:', e);
+    window.__linkoMembersRealtimeFinalStarted = false;
   }
 }
-async function waitMembersReady(){
-  startRealtimeMembers();
-  if(membersCache.length) return membersCache;
-  await Promise.race([initialMembersPromise, new Promise(resolve=>setTimeout(resolve, 1800))]);
-  if(membersCache.length) return membersCache;
-  try{
-    const snap = await getDocs(collection(db, MEMBERS_COLLECTION));
-    const list=[]; snap.forEach(d => list.push(normalizeMember({id:d.id, ...d.data()})));
-    publishMembers(list);
-  }catch(e){ publishMembers(readLocal(MEMBERS_LOCAL_KEY, [])); }
-  return membersCache;
+function memberMatches(m, user, pass){
+  const u = compact(user);
+  const p = clean(pass);
+  const uPhone = phoneClean(user);
+  const identities = [m.fullName, m.name, m.username, m.code, m.phone]
+    .map(compact).filter(Boolean);
+  const phones = [m.phone].map(phoneClean).filter(Boolean);
+  const secrets = [m.password, m.code, m.username]
+    .map(clean).filter(Boolean);
+  const identityOK = identities.includes(u) || (uPhone && phones.includes(uPhone));
+  const passwordOK = secrets.includes(p);
+  return identityOK && passwordOK && m.status === 'active';
 }
-function matchMember(m, user, pass){
-  const u = lower(user), p = clean(pass);
-  const identities = [m.fullName, m.name, m.username, m.code, m.phone].map(lower).filter(Boolean);
-  const passwords = [m.password, m.code, m.username].map(clean).filter(Boolean);
-  return identities.includes(u) && passwords.includes(p) && m.status === 'active';
-}
-function setCurrentMember(member){
-  const m = normalizeMember(member);
-  window.currentUser = {...m, name:m.fullName || m.name, avatar:m.img, code:m.username || m.code, area:m.address || m.area};
+function setCurrentMember(m){
+  const member = normalizeMember(m);
+  window.currentUser = {
+    ...member,
+    name: member.fullName,
+    avatar: member.img,
+    code: member.username,
+    area: member.address
+  };
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(window.currentUser)); } catch(e){}
   try { if(typeof window.fillUser === 'function') window.fillUser(); } catch(e){}
   try { if(typeof window.go === 'function') window.go('homePage'); } catch(e){
     document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
     $('homePage')?.classList.add('active');
+    $('bottomNav') && ($('bottomNav').style.display = 'grid');
   }
-  saveSession(m);
+  toast('تم تسجيل الدخول بنجاح');
 }
-function refreshCurrentUserIfNeeded(){
-  const current = window.currentUser || getSession();
-  if(!current || !membersCache.length) return;
-  const fresh = membersCache.find(m => String(m.id) === String(current.id) || (m.username && m.username === current.username) || (m.fullName && m.fullName === current.fullName));
-  if(fresh && fresh.status === 'active'){
-    window.currentUser = {...fresh, name:fresh.fullName || fresh.name, avatar:fresh.img, code:fresh.username || fresh.code, area:fresh.address || fresh.area};
-    saveSession(fresh);
-    try { if(typeof window.fillUser === 'function') window.fillUser(); } catch(e){}
+
+let loginBusy = false;
+async function finalMemberLogin(event){
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+    if(event.stopImmediatePropagation) event.stopImmediatePropagation();
   }
-}
-async function realtimeLoginHandler(e){
-  if(e){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); }
+  if(loginBusy) return false;
   const user = clean($('loginUsername')?.value);
   const pass = clean($('loginPassword')?.value);
-  if(!user || !pass){ toast('أكمل الاسم والرمز'); return false; }
-  const form = $('loginForm');
-  const btn = $('linkoRealtimeLoginSubmit') || form?.querySelector('button.btn.full,button[type="submit"],button[type="button"]');
-  const old = btn ? btn.innerHTML : '';
+  if(!user || !pass){ toast('أكمل بيانات الدخول'); return false; }
+
+  const btn = $('loginForm')?.querySelector('button');
+  const oldHTML = btn ? btn.innerHTML : '';
   try{
+    loginBusy = true;
     if(btn){ btn.disabled = true; btn.innerHTML = '<span class="mi">sync</span> جاري التحقق...'; }
-    const members = await waitMembersReady();
-    const member = members.find(m => matchMember(m, user, pass));
-    if(!member){ toast('بيانات الدخول غير صحيحة أو الحساب لم تتم الموافقة عليه بعد'); return false; }
+    const fresh = await fetchMembersFresh();
+    const member = fresh.find(m => memberMatches(m, user, pass));
+    if(!member){
+      const sameName = fresh.find(m => [m.fullName,m.name,m.username,m.code,m.phone].map(compact).includes(compact(user)) || phoneClean(m.phone) === phoneClean(user));
+      if(sameName && sameName.status !== 'active') toast('الحساب موجود لكنه موقوف من الإدارة');
+      else if(sameName && clean(sameName.password || sameName.code || sameName.username) !== pass) toast('الرمز غير صحيح لهذا العضو');
+      else toast('بيانات الدخول غير صحيحة أو الحساب لم تتم الموافقة عليه بعد');
+      return false;
+    }
     setCurrentMember(member);
-    toast('تم تسجيل الدخول بنجاح');
   }catch(err){
-    console.error('[LINKO] realtime login error:', err);
-    toast('تعذر تسجيل الدخول، تأكد من الاتصال');
+    console.error('LINKO authoritative member login error:', err);
+    toast('تعذر التحقق من Firebase. تأكد من الإنترنت ثم جرّب مجدداً');
   }finally{
-    if(btn){ btn.disabled = false; btn.innerHTML = old || 'دخول'; }
+    loginBusy = false;
+    if(btn){ btn.disabled = false; btn.innerHTML = oldHTML || '<span class="mi">login</span> دخول الأعضاء'; }
   }
   return false;
 }
-function bindLoginFinal(){
+
+function installLogin(){
   const form = $('loginForm');
   if(!form) return;
-  form.setAttribute('novalidate','novalidate');
-  form.onsubmit = null;
-  const cleanForm = form.cloneNode(true);
-  form.parentNode.replaceChild(cleanForm, form);
-  const btn = cleanForm.querySelector('button.btn.full,button[type="submit"],button[type="button"]');
-  if(btn){ btn.id = 'linkoRealtimeLoginSubmit'; btn.type = 'button'; btn.removeAttribute('onclick'); btn.addEventListener('click', realtimeLoginHandler, true); }
-  cleanForm.addEventListener('submit', realtimeLoginHandler, true);
-  window.login = realtimeLoginHandler;
+  form.removeAttribute('onsubmit');
+  form.onsubmit = finalMemberLogin;
+  const btn = form.querySelector('button');
+  if(btn){
+    btn.type = 'button';
+    btn.removeAttribute('onclick');
+    btn.onclick = finalMemberLogin;
+  }
+  window.login = finalMemberLogin;
+}
+function isLoginTarget(target){
+  const form = $('loginForm');
+  return !!(form && target && (target === form || form.contains(target)));
+}
+function captureLogin(e){
+  if(!isLoginTarget(e.target)) return;
+  const isSubmit = e.type === 'submit';
+  const isButton = !!e.target?.closest?.('button');
+  const isEnter = e.type === 'keydown' && e.key === 'Enter';
+  if(isSubmit || isButton || isEnter) finalMemberLogin(e);
 }
 
-window.linkoStartMembersRealtime = startRealtimeMembers;
-window.linkoWaitMembersReady = waitMembersReady;
-window.getSavedMembers = function(){ startRealtimeMembers(); return membersCache.length ? membersCache : readLocal(MEMBERS_LOCAL_KEY, []).map(normalizeMember).filter(m=>m.status==='active'); };
+document.addEventListener('submit', captureLogin, true);
+document.addEventListener('click', captureLogin, true);
+document.addEventListener('touchend', captureLogin, true);
+document.addEventListener('keydown', captureLogin, true);
 
-startRealtimeMembers();
-bindLoginFinal();
-setTimeout(bindLoginFinal, 700);
-setTimeout(bindLoginFinal, 1700);
-
-// إذا الإدارة وافقت أثناء صفحة الأعضاء مفتوحة، يصير الدخول متاح مباشرة بدون تحديث.
+document.addEventListener('DOMContentLoaded', ()=>{ installLogin(); startMembersRealtime(); fetchMembersFresh().catch(()=>{}); });
+window.addEventListener('load', ()=>{ installLogin(); startMembersRealtime(); fetchMembersFresh().catch(()=>{}); });
+[250,800,1800,3500].forEach(ms=>setTimeout(()=>{ installLogin(); startMembersRealtime(); fetchMembersFresh().catch(()=>{}); }, ms));
 </script>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
