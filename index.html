@@ -2499,6 +2499,116 @@ body:not(.linko-dark) #branchPage.linko-premium-mode #branchPageSub{
   };
 </script>
 
+
+
+<!-- LINKO PHASE 6 FIX 1: Force real signup request submit to Firestore -->
+<script type="module" id="linkoPhase6SignupForceFix">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",
+    authDomain: "medina-bazaar-e5d67.firebaseapp.com",
+    projectId: "medina-bazaar-e5d67",
+    storageBucket: "medina-bazaar-e5d67.firebasestorage.app",
+    messagingSenderId: "584827394228",
+    appId: "1:584827394228:web:2447944b4324a17b469fe1"
+  };
+
+  const app = getApps().find(a => a.name === '[DEFAULT]') || initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const REQUESTS_COLLECTION = 'linko_market_requests';
+  const REQUESTS_LOCAL_KEY = 'linko_market_requests';
+
+  function el(id){ return document.getElementById(id); }
+  function val(id){ return (el(id)?.value || '').trim(); }
+  function nowIQ(){ return new Date().toLocaleString('ar-IQ'); }
+  function safeToast(msg){
+    try { if (typeof window.toast === 'function') return window.toast(msg); } catch(e) {}
+    try { const t=el('toast'); if(t){ t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); return; } } catch(e) {}
+    alert(msg);
+  }
+  function readLocal(){ try { return JSON.parse(localStorage.getItem(REQUESTS_LOCAL_KEY) || '[]'); } catch(e){ return []; } }
+  function writeLocal(rows){ try { localStorage.setItem(REQUESTS_LOCAL_KEY, JSON.stringify(rows || [])); } catch(e){} }
+  function getAvatar(){ return window.pendingAvatarData || el('regAvatarPreview')?.querySelector('img')?.src || ''; }
+  function clearAvatar(){
+    window.pendingAvatarData = '';
+    try { if (typeof window.renderAvatarBox === 'function') window.renderAvatarBox(el('regAvatarPreview'), ''); } catch(e) {}
+  }
+
+  async function forceRegisterSubmit(event){
+    if(event){ event.preventDefault(); event.stopPropagation(); if(event.stopImmediatePropagation) event.stopImmediatePropagation(); }
+
+    const fullName = val('regName');
+    const password = val('regPassword');
+    const phone = val('regPhone');
+    const address = val('regAddress');
+    const terms = el('regTerms');
+
+    if(!fullName || !password || !phone || !address){ safeToast('أكمل بيانات الاشتراك أولاً'); return false; }
+    if(terms && !terms.checked){ safeToast('يجب الموافقة على شروط الاستخدام'); return false; }
+
+    const id = String(Date.now());
+    const username = 'member_' + id;
+    const avatar = getAvatar();
+    const request = {
+      id,
+      fullName,
+      name: fullName,
+      username,
+      code: username,
+      phone,
+      address,
+      area: address,
+      password,
+      img: avatar,
+      avatar,
+      createdAt: nowIQ(),
+      date: nowIQ(),
+      status: 'pending',
+      source: 'member_signup'
+    };
+
+    try{
+      await setDoc(doc(db, REQUESTS_COLLECTION, id), JSON.parse(JSON.stringify(request)), { merge:false });
+      const rows = readLocal().filter(x => String(x.id) !== id);
+      rows.unshift(request);
+      writeLocal(rows);
+      const form = el('registerForm');
+      if(form) form.reset();
+      clearAvatar();
+      try { if(typeof window.switchAuth === 'function') window.switchAuth('login'); } catch(e) {}
+      safeToast('تم إرسال طلب الاشتراك للإدارة. يمكنك الدخول بعد الموافقة فقط.');
+      return false;
+    }catch(err){
+      console.error('LINKO Phase 6 signup force fix error:', err);
+      safeToast('تعذر إرسال طلب الاشتراك. تأكد من الإنترنت وقواعد Firestore');
+      return false;
+    }
+  }
+
+  window.register = forceRegisterSubmit;
+  window.linkoForceRegisterSubmit = forceRegisterSubmit;
+
+  function bindSignup(){
+    const form = el('registerForm');
+    const btn = form ? form.querySelector('button[type="submit"], button.btn.full') : null;
+    if(form && !form.dataset.linkoPhase6Fixed){
+      form.dataset.linkoPhase6Fixed = '1';
+      form.addEventListener('submit', forceRegisterSubmit, true);
+      form.onsubmit = forceRegisterSubmit;
+    }
+    if(btn && !btn.dataset.linkoPhase6Fixed){
+      btn.dataset.linkoPhase6Fixed = '1';
+      btn.addEventListener('click', function(e){ forceRegisterSubmit(e); }, true);
+    }
+  }
+
+  bindSignup();
+  document.addEventListener('DOMContentLoaded', bindSignup);
+  setTimeout(bindSignup, 600);
+  setTimeout(bindSignup, 1600);
+</script>
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
