@@ -3495,6 +3495,142 @@ try{
 console.log('LINKO conservative member patch loaded: live profile + notifications only');
 </script>
 
+
+
+<!-- ===== LINKO FINAL MICRO PATCH: profile photo save + notifications list only ===== -->
+<script type="module" id="linko-photo-notification-list-micro-patch">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, limit, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const configs = [
+  {
+    name:'medina-photo-notif',
+    config:{apiKey:"AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",authDomain:"medina-bazaar-e5d67.firebaseapp.com",projectId:"medina-bazaar-e5d67",storageBucket:"medina-bazaar-e5d67.firebasestorage.app",messagingSenderId:"584827394228",appId:"1:584827394228:web:2447944b4324a17b469fe1"}
+  },
+  {
+    name:'linko-photo-notif',
+    config:{apiKey:"AIzaSyA0-hPPRwjvWPMcL2qgmLsEf0DzmXWIrq4",authDomain:"linko-market.firebaseapp.com",projectId:"linko-market",storageBucket:"linko-market.firebasestorage.app",messagingSenderId:"505941528794",appId:"1:505941528794:web:4be4f63325f43f1861f9e4"}
+  }
+];
+const MEMBERS='linko_market_members';
+const NOTIF='linko_market_notifications';
+const clean=v=>String(v??'').trim();
+const readJSON=(k,d=[])=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch(_){return d}};
+const writeJSON=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
+const nowIQ=()=>{try{return new Date().toLocaleString('ar-IQ')}catch(_){return new Date().toISOString()}};
+function say(msg){try{window.toast(msg)}catch(_){alert(msg)}}
+function appDb(item){let app=getApps().find(a=>a.name===item.name); if(!app) app=initializeApp(item.config,item.name); return getFirestore(app);}
+function getCurrent(){return window.currentUser||readJSON('linko_current_member_session_v2',null)||readJSON('linko_current_member',null)||{};}
+function norm(m={}){const img=m.img||m.avatar||m.image||m.photoURL||'';return {...m,id:clean(m.id||m.memberId||m.docId||''),fullName:m.fullName||m.name||'',name:m.name||m.fullName||'',username:m.username||m.code||'',code:m.code||m.username||'',phone:m.phone||'',address:m.address||m.area||'',area:m.area||m.address||'',img,avatar:img,image:img,photoURL:img,balance:Number(m.balance||0)}}
+function match(a,b){a=norm(a);b=norm(b);return (!!a.id&&a.id===b.id)|| (!!a.phone&&a.phone===b.phone)|| (!!a.username&&a.username===b.username)|| (!!a.fullName&&a.fullName===b.fullName)|| (!!a.name&&a.name===b.name);}
+async function findRef(db, member){
+  const m=norm(member);
+  if(m.id){const r=doc(db,MEMBERS,m.id); const s=await getDoc(r).catch(()=>null); if(s&&s.exists()) return {ref:r,data:{id:s.id,...s.data()}};}
+  const tries=[];
+  if(m.phone) tries.push(query(collection(db,MEMBERS), where('phone','==',m.phone), limit(1)));
+  if(m.username) tries.push(query(collection(db,MEMBERS), where('username','==',m.username), limit(1)));
+  if(m.fullName) tries.push(query(collection(db,MEMBERS), where('fullName','==',m.fullName), limit(1)));
+  if(m.name) tries.push(query(collection(db,MEMBERS), where('name','==',m.name), limit(1)));
+  for(const q of tries){const snap=await getDocs(q).catch(()=>null); if(snap&&!snap.empty){const d=snap.docs[0]; return {ref:doc(db,MEMBERS,d.id),data:{id:d.id,...d.data()}};}}
+  return null;
+}
+async function imageToSmallBase64(file){
+  const data=await new Promise((res,rej)=>{const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file);});
+  const img=await new Promise((res,rej)=>{const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=data;});
+  let maxSide=260, quality=.58, out='';
+  for(let attempt=0; attempt<5; attempt++){
+    const ratio=Math.min(1,maxSide/Math.max(img.width,img.height));
+    const canvas=document.createElement('canvas'); canvas.width=Math.max(1,Math.round(img.width*ratio)); canvas.height=Math.max(1,Math.round(img.height*ratio));
+    const ctx=canvas.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    out=canvas.toDataURL('image/jpeg',quality);
+    if(out.length<180000) break;
+    maxSide=Math.max(120,Math.round(maxSide*.72)); quality=Math.max(.35,quality-.08);
+  }
+  return out;
+}
+function applyPhotoLocal(base64){
+  const old=getCurrent();
+  const updated=norm({...old,img:base64,avatar:base64,image:base64,photoURL:base64,updatedAt:nowIQ()});
+  window.currentUser=updated;
+  try{localStorage.setItem('linko_current_member_session_v2',JSON.stringify(updated)); localStorage.setItem('linko_current_member',JSON.stringify(updated));}catch(_){ }
+  const keys=['linko_market_members','lm_members'];
+  for(const k of keys){const arr=readJSON(k,[]); if(Array.isArray(arr)){let found=false; const next=arr.map(x=>{if(match(updated,x)){found=true; return {...x,...updated};} return x;}); if(found) writeJSON(k,next);}}
+  try{if(typeof window.renderAvatarBox==='function'){window.renderAvatarBox(window.memberAvatar,base64); window.renderAvatarBox(window.profileAvatar,base64);}}catch(_){ }
+  try{if(typeof window.fillUser==='function') window.fillUser();}catch(_){ }
+}
+window.handleProfileAvatarChange=async function(e){
+  const file=e?.target?.files&&e.target.files[0];
+  if(!file) return;
+  const member=getCurrent();
+  if(!member||(!member.id&&!member.phone&&!member.fullName&&!member.name&&!member.username)){say('سجل الدخول أولاً'); return;}
+  try{
+    say('جاري حفظ الصورة...');
+    const base64=await imageToSmallBase64(file);
+    let saved=false;
+    for(const item of configs){
+      try{
+        const db=appDb(item); const found=await findRef(db,member);
+        if(found){await updateDoc(found.ref,{img:base64,avatar:base64,image:base64,photoURL:base64,updatedAt:nowIQ(),updatedAtISO:new Date().toISOString()}); saved=true;}
+      }catch(err){console.warn('photo save skipped for',item.name,err);}
+    }
+    applyPhotoLocal(base64);
+    say(saved?'تم تغيير صورة الملف الشخصي':'تم تحديث الصورة محلياً، وسيتم مزامنتها لاحقاً');
+  }catch(err){console.error('final photo patch error',err); say('تعذر تغيير الصورة، جرّب صورة أصغر');}
+  finally{try{if(e?.target)e.target.value='';}catch(_){ }}
+};
+
+function adminToast(title,text){
+  let el=document.getElementById('linkoAdminToast');
+  if(!el){el=document.createElement('div');el.id='linkoAdminToast';el.className='linko-admin-toast';document.body.appendChild(el);}
+  el.innerHTML=`<b>📢 إشعار من الإدارة</b><span>${String(title||'إشعار')}</span>${text?`<span style="font-weight:800;opacity:.92">${String(text)}</span>`:''}`;
+  el.classList.add('show'); try{if(navigator.vibrate)navigator.vibrate(120)}catch(_){ }
+  clearTimeout(el.__t); el.__t=setTimeout(()=>el.classList.remove('show'),3000);
+}
+function targetsMe(n){
+  const c=norm(getCurrent()); if(!c.id&&!c.username&&!c.phone&&!c.fullName&&!c.name) return false;
+  const type=clean(n.targetType||n.type||n.target);
+  if(!type||['all','عام','general','الجميع'].includes(type)) return true;
+  const vals=[n.memberId,n.targetMemberId,n.memberUsername,n.targetUsername,n.phone,n.targetPhone,n.to,n.target,n.fullName,n.memberName].map(clean).filter(Boolean);
+  return !vals.length || vals.includes(c.id)||vals.includes(c.username)||vals.includes(c.phone)||vals.includes(c.fullName)||vals.includes(c.name);
+}
+function addNotificationToList(n){
+  const id=clean(n.id||n.docId||n.createdAtMs||n.createdAtISO||Date.now());
+  const item={id,title:n.title||'إشعار من الإدارة',text:n.text||n.message||n.body||'',type:n.type==='ok'?'ok':'info',createdAt:n.createdAt||n.date||nowIQ(),fromAdmin:true};
+  window.notes=Array.isArray(window.notes)?window.notes:[];
+  if(!window.notes.some(x=>clean(x.id)===id || (x.title===item.title&&x.text===item.text&&x.createdAt===item.createdAt))){window.notes.unshift(item);}
+  const saved=readJSON('linko_member_notifications',[]);
+  if(Array.isArray(saved)&&!saved.some(x=>clean(x.id)===id)){saved.unshift(item); writeJSON('linko_member_notifications',saved.slice(0,200));}
+  try{if(typeof window.renderNotes==='function') window.renderNotes();}catch(_){ }
+  try{if(window.notifBadge) window.notifBadge.textContent=String((window.notes||[]).length);}catch(_){ }
+}
+const oldRenderNotes=window.renderNotes;
+window.renderNotes=function(){
+  const saved=readJSON('linko_member_notifications',[]);
+  window.notes=Array.isArray(window.notes)?window.notes:[];
+  for(const n of saved.slice().reverse()){if(!window.notes.some(x=>clean(x.id)===clean(n.id))) window.notes.unshift(n);}
+  if(typeof oldRenderNotes==='function') return oldRenderNotes.apply(this,arguments);
+};
+const seenKey='linko_seen_admin_notifications_final_v2';
+let seen=new Set(readJSON(seenKey,[]));
+for(const item of configs){
+  try{
+    const db=appDb(item);
+    onSnapshot(collection(db,NOTIF),(snap)=>{
+      for(const d of snap.docs){
+        const n={id:d.id,docId:d.id,...d.data()};
+        const id=clean(n.id); if(!id||seen.has(item.name+'|'+id)) continue;
+        if(targetsMe(n)){
+          seen.add(item.name+'|'+id); writeJSON(seenKey,[...seen].slice(-500));
+          addNotificationToList(n); adminToast(n.title||'إشعار من الإدارة',n.text||n.message||'');
+        }
+      }
+    },err=>console.warn('final notification list listener error',item.name,err));
+  }catch(e){console.warn('notification listener init skipped',item.name,e);}
+}
+try{window.renderNotes&&window.renderNotes();}catch(_){ }
+console.log('LINKO micro patch loaded: photo + notification list only');
+</script>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
