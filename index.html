@@ -3631,6 +3631,159 @@ try{window.renderNotes&&window.renderNotes();}catch(_){ }
 console.log('LINKO micro patch loaded: photo + notification list only');
 </script>
 
+
+
+<!-- ===== LINKO FINAL LOCK: local profile/signup photo via IndexedDB, no canvas, no network, no Firestore payload ===== -->
+<script id="linko-photo-idb-final-lock">
+(function(){
+  'use strict';
+  const DB_NAME='linko_member_photos_db_v1';
+  const STORE='photos';
+  const META='photo_meta';
+  const DAY=24*60*60*1000;
+  const $=id=>document.getElementById(id);
+  const clean=v=>String(v??'').trim();
+  const say=msg=>{try{window.toast(msg)}catch(_){try{alert(msg)}catch(__){}}};
+  const read=(k,d=null)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v??d}catch(_){return d}};
+  const write=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
+  function openDB(){
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(DB_NAME,1);
+      req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE);};
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error||new Error('indexedDB failed'));
+    });
+  }
+  async function putPhoto(key,file){
+    if(!key||!file)return;
+    const db=await openDB();
+    await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put({blob:file,type:file.type||'image/*',name:file.name||'photo',time:Date.now()},key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+    db.close();
+  }
+  async function getPhoto(key){
+    if(!key)return null;
+    const db=await openDB();
+    const val=await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readonly');const req=tx.objectStore(STORE).get(key);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);});
+    db.close();
+    return val;
+  }
+  function normalize(m){m=m||{};const fullName=clean(m.fullName||m.name);const username=clean(m.username||m.code);return {id:clean(m.id||m.memberId||m.docId),fullName,name:fullName,username,code:username,phone:clean(m.phone),password:clean(m.password||m.pin||m.loginCode||m.accessCode),address:clean(m.address||m.area)}};
+  function currentMember(){return normalize(window.currentUser||read('linko_current_member_session_v2',null)||read('linko_current_member',null)||{});}
+  function formKeys(){
+    const fullName=clean($('regName')?.value);const phone=clean($('regPhone')?.value).replace(/[^0-9+]/g,'');const pass=clean($('regPassword')?.value);
+    const keys=['latest-signup'];
+    if(phone)keys.push('phone:'+phone);
+    if(fullName)keys.push('name:'+fullName);
+    if(fullName&&pass)keys.push('namepass:'+fullName+'|'+pass);
+    return [...new Set(keys)];
+  }
+  function memberKeys(member=currentMember()){
+    const m=normalize(member);const keys=[];
+    if(m.id)keys.push('id:'+m.id);
+    if(m.phone)keys.push('phone:'+m.phone);
+    if(m.username)keys.push('username:'+m.username);
+    if(m.fullName)keys.push('name:'+m.fullName);
+    if(m.fullName&&m.password)keys.push('namepass:'+m.fullName+'|'+m.password);
+    keys.push('latest-signup');
+    return [...new Set(keys)];
+  }
+  function setBox(el,src){
+    if(!el||!src)return;
+    el.innerHTML='<img src="'+src+'" alt="صورة العضو" style="width:100%;height:100%;object-fit:contain;object-position:center;background:#fff;border-radius:inherit;display:block">';
+  }
+  function previewSignup(src){
+    const box=$('regAvatarPreview')||window.regAvatarPreview;
+    setBox(box,src);
+  }
+  function previewMember(src){
+    setBox($('memberAvatar')||window.memberAvatar,src);
+    setBox($('profileAvatar')||window.profileAvatar,src);
+    try{document.querySelectorAll('#memberAvatar img,#profileAvatar img,.member-avatar img,.avatar-big img').forEach(img=>{img.src=src;});}catch(_){ }
+  }
+  async function saveToKeys(keys,file){
+    for(const k of keys){try{await putPhoto(k,file)}catch(e){console.warn('photo save skipped',k,e)}}
+    write(META,{keys,time:Date.now()});
+  }
+  async function getFirst(keys){
+    for(const k of keys){try{const v=await getPhoto(k);if(v&&v.blob)return {key:k,...v}}catch(e){}}
+    return null;
+  }
+  async function applyStoredForCurrent(){
+    const cur=currentMember();
+    if(!cur.id&&!cur.phone&&!cur.username&&!cur.fullName)return;
+    let photo=await getFirst(memberKeys(cur));
+    if(!photo){
+      const meta=read(META,null);
+      if(meta&&Date.now()-Number(meta.time||0)<DAY){photo=await getFirst(meta.keys||[])}
+    }
+    if(photo&&photo.blob){
+      const url=URL.createObjectURL(photo.blob);
+      previewMember(url);
+      try{window.currentUser={...(window.currentUser||{}),localPhotoKey:photo.key,avatar:'',img:'',photoURL:''};}catch(_){ }
+    }
+  }
+
+  window.handleAvatarFile=async function(e){
+    const file=e?.target?.files&&e.target.files[0];
+    if(!file)return;
+    try{
+      const keys=formKeys();
+      await saveToKeys(keys,file);
+      const url=URL.createObjectURL(file);
+      window.pendingAvatarData='';
+      window.linkoSignupPhotoSaved=true;
+      previewSignup(url);
+      say('تم اختيار الصورة وستظهر في ملفك الشخصي بعد الدخول');
+    }catch(err){console.error('signup photo local save failed',err);say('تعذر حفظ الصورة محلياً، جرّب صورة من المعرض مرة ثانية');}
+    finally{try{if(e?.target)e.target.value='';}catch(_){}}
+  };
+
+  window.handleProfileAvatarChange=async function(e){
+    const file=e?.target?.files&&e.target.files[0];
+    if(!file)return;
+    const cur=currentMember();
+    if(!cur.id&&!cur.phone&&!cur.username&&!cur.fullName){say('سجل الدخول أولاً');return;}
+    try{
+      const keys=memberKeys(cur).filter(k=>k!=='latest-signup');
+      await saveToKeys(keys,file);
+      const url=URL.createObjectURL(file);
+      previewMember(url);
+      say('تم تغيير صورة الملف الشخصي');
+    }catch(err){console.error('profile photo local save failed',err);say('تعذر قراءة الصورة، جرّب اختيار صورة من المعرض مرة ثانية');}
+    finally{try{if(e?.target)e.target.value='';}catch(_){}}
+  };
+
+  const oldRemove=window.removeAvatar;
+  window.removeAvatar=function(){
+    try{window.pendingAvatarData='';window.linkoSignupPhotoSaved=false;previewSignup('');}catch(_){ }
+    try{if(typeof oldRemove==='function')oldRemove()}catch(_){ }
+  };
+
+  const oldFill=window.fillUser;
+  window.fillUser=function(){
+    try{if(typeof oldFill==='function')oldFill.apply(this,arguments)}catch(e){console.warn(e)}
+    setTimeout(applyStoredForCurrent,60);
+  };
+  const oldLogin=window.login;
+  if(typeof oldLogin==='function'){
+    window.login=function(){
+      const r=oldLogin.apply(this,arguments);
+      Promise.resolve(r).finally(()=>setTimeout(applyStoredForCurrent,180));
+      return r;
+    };
+  }
+  function bindInputs(){
+    const reg=$('regAvatarInput'); if(reg){reg.onchange=window.handleAvatarFile; reg.setAttribute('accept','image/*');}
+    const prof=$('profileAvatarInput'); if(prof){prof.onchange=window.handleProfileAvatarChange; prof.setAttribute('accept','image/*');}
+  }
+  bindInputs();
+  document.addEventListener('DOMContentLoaded',()=>{bindInputs();setTimeout(applyStoredForCurrent,250)});
+  window.addEventListener('load',()=>{bindInputs();setTimeout(applyStoredForCurrent,500)});
+  [800,1600,3000,6000].forEach(ms=>setTimeout(()=>{bindInputs();applyStoredForCurrent();},ms));
+  console.log('LINKO PHOTO IDB FINAL LOCK loaded: signup/profile photos are local, no canvas, no network, no Firestore image payload');
+})();
+</script>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
