@@ -3386,202 +3386,159 @@ setTimeout(setup, 1600);
 
 
 
-<!-- LINKO PHASE 7 FINAL: AUTHORITATIVE REALTIME MEMBER LOGIN FIX -->
-<script type="module" id="linkoPhase7AuthoritativeMemberLoginFix">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+<!-- LINKO PHASE 7 FINAL: AUTHORITATIVE MEMBER LOGIN + FIRST LOGIN PASSWORD BIND -->
+<script type="module" id="linkoPhase7FinalLoginBindPassword">
+import { collection, getDocs, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",
-  authDomain: "medina-bazaar-e5d67.firebaseapp.com",
-  projectId: "medina-bazaar-e5d67",
-  storageBucket: "medina-bazaar-e5d67.firebasestorage.app",
-  messagingSenderId: "584827394228",
-  appId: "1:584827394228:web:2447944b4324a17b469fe1"
-};
+(function(){
+  const MEMBERS_COLLECTION = 'linko_market_members';
+  const REQUESTS_COLLECTION = 'linko_market_requests';
+  const LOCAL_KEY = 'linko_market_members';
+  const SESSION_KEY = 'linko_current_member_session_v2';
+  const $ = (id)=>document.getElementById(id);
+  const clean = (v)=>String(v ?? '').trim();
+  const norm = (v)=>clean(v).replace(/\s+/g,' ').toLowerCase();
+  const toast = (msg)=>{ try{ window.toast(msg); }catch(e){ alert(msg); } };
+  const wait = (ms)=>new Promise(r=>setTimeout(r,ms));
 
-const app = getApps().find(a => a.name === '[DEFAULT]') || initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const MEMBERS_COLLECTION = 'linko_market_members';
-const MEMBERS_LOCAL_KEY = 'linko_market_members';
-const SESSION_KEY = 'linko_current_member_session_v1';
-
-const $ = (id) => document.getElementById(id);
-const clean = (v) => String(v ?? '').trim();
-const compact = (v) => clean(v)
-  .replace(/[\u064B-\u065F\u0670]/g,'')
-  .replace(/\s+/g,' ')
-  .toLowerCase();
-const phoneClean = (v) => clean(v).replace(/[^0-9+]/g,'');
-
-function toast(msg){
-  try { if(typeof window.toast === 'function') return window.toast(msg); } catch(e){}
-  const t = $('toast');
-  if(t){
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(t.__linkoLoginToast);
-    t.__linkoLoginToast = setTimeout(()=>t.classList.remove('show'), 2600);
-  } else alert(msg);
-}
-
-function normalizeStatus(s){
-  return (s === 'stopped' || s === 'blocked' || s === 'موقوف' || s === 'مغلق' || s === false) ? 'stopped' : 'active';
-}
-function normalizeMember(m = {}, i = 0){
-  const img = m.img || m.avatar || m.image || '';
-  const fullName = clean(m.fullName || m.name || '');
-  const username = clean(m.username || m.code || '');
-  const address = clean(m.address || m.area || '');
-  return {
-    ...m,
-    id: String(m.id || m.memberId || ('member_' + i)),
-    fullName,
-    name: fullName,
-    username,
-    code: username,
-    phone: clean(m.phone || ''),
-    address,
-    area: address,
-    img,
-    avatar: img,
-    balance: Number(m.balance || 0),
-    status: normalizeStatus(m.status),
-    password: clean(m.password || m.pass || m.pin || '')
-  };
-}
-function writeMembers(rows){
-  const members = (rows || []).map(normalizeMember);
-  try { localStorage.setItem(MEMBERS_LOCAL_KEY, JSON.stringify(members)); } catch(e){}
-  try { window.linkoMembers = members; } catch(e){}
-  try { window.members = members; } catch(e){}
-  return members;
-}
-async function fetchMembersFresh(){
-  const snap = await getDocs(collection(db, MEMBERS_COLLECTION));
-  const rows = [];
-  snap.forEach((d,i) => rows.push(normalizeMember({id:d.id, ...d.data()}, i)));
-  return writeMembers(rows);
-}
-function startMembersRealtime(){
-  if(window.__linkoMembersRealtimeFinalStarted) return;
-  window.__linkoMembersRealtimeFinalStarted = true;
-  try{
-    onSnapshot(collection(db, MEMBERS_COLLECTION), (snap) => {
-      const rows = [];
-      snap.forEach((d,i) => rows.push(normalizeMember({id:d.id, ...d.data()}, i)));
-      writeMembers(rows);
-    }, (err) => {
-      console.warn('LINKO member realtime listener error:', err);
-      window.__linkoMembersRealtimeFinalStarted = false;
-    });
-  }catch(e){
-    console.warn('LINKO member realtime start failed:', e);
-    window.__linkoMembersRealtimeFinalStarted = false;
+  function activeStatus(s){
+    const x = norm(s || 'active');
+    return !(x === 'stopped' || x === 'blocked' || x === 'موقوف' || x === 'مغلق' || x === 'rejected' || x === 'pending');
   }
-}
-function memberMatches(m, user, pass){
-  const u = compact(user);
-  const p = clean(pass);
-  const uPhone = phoneClean(user);
-  const identities = [m.fullName, m.name, m.username, m.code, m.phone]
-    .map(compact).filter(Boolean);
-  const phones = [m.phone].map(phoneClean).filter(Boolean);
-  const secrets = [m.password, m.code, m.username]
-    .map(clean).filter(Boolean);
-  const identityOK = identities.includes(u) || (uPhone && phones.includes(uPhone));
-  const passwordOK = secrets.includes(p);
-  return identityOK && passwordOK && m.status === 'active';
-}
-function setCurrentMember(m){
-  const member = normalizeMember(m);
-  window.currentUser = {
-    ...member,
-    name: member.fullName,
-    avatar: member.img,
-    code: member.username,
-    area: member.address
-  };
-  try { localStorage.setItem(SESSION_KEY, JSON.stringify(window.currentUser)); } catch(e){}
-  try { if(typeof window.fillUser === 'function') window.fillUser(); } catch(e){}
-  try { if(typeof window.go === 'function') window.go('homePage'); } catch(e){
-    document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
-    $('homePage')?.classList.add('active');
-    $('bottomNav') && ($('bottomNav').style.display = 'grid');
+  function normalizeMember(raw, fallbackId){
+    const m = raw || {};
+    const name = clean(m.fullName || m.name || '');
+    const username = clean(m.username || m.code || '');
+    const password = clean(m.password || m.pass || m.pin || '');
+    const img = clean(m.img || m.avatar || m.image || '');
+    return {
+      ...m,
+      id: clean(m.id || fallbackId || ''),
+      fullName: name,
+      name,
+      username,
+      code: clean(m.code || username),
+      phone: clean(m.phone || ''),
+      address: clean(m.address || m.area || ''),
+      area: clean(m.area || m.address || ''),
+      password,
+      img,
+      avatar: img,
+      balance: Number(m.balance || 0),
+      status: m.status || 'active'
+    };
   }
-  toast('تم تسجيل الدخول بنجاح');
-}
-
-let loginBusy = false;
-async function finalMemberLogin(event){
-  if(event){
-    event.preventDefault();
-    event.stopPropagation();
-    if(event.stopImmediatePropagation) event.stopImmediatePropagation();
+  function nameMatches(m, userInput){
+    const u = norm(userInput);
+    return [m.fullName,m.name,m.username,m.code,m.phone].map(norm).filter(Boolean).includes(u);
   }
-  if(loginBusy) return false;
-  const user = clean($('loginUsername')?.value);
-  const pass = clean($('loginPassword')?.value);
-  if(!user || !pass){ toast('أكمل بيانات الدخول'); return false; }
-
-  const btn = $('loginForm')?.querySelector('button');
-  const oldHTML = btn ? btn.innerHTML : '';
-  try{
-    loginBusy = true;
-    if(btn){ btn.disabled = true; btn.innerHTML = '<span class="mi">sync</span> جاري التحقق...'; }
-    const fresh = await fetchMembersFresh();
-    const member = fresh.find(m => memberMatches(m, user, pass));
-    if(!member){
-      const sameName = fresh.find(m => [m.fullName,m.name,m.username,m.code,m.phone].map(compact).includes(compact(user)) || phoneClean(m.phone) === phoneClean(user));
-      if(sameName && sameName.status !== 'active') toast('الحساب موجود لكنه موقوف من الإدارة');
-      else if(sameName && clean(sameName.password || sameName.code || sameName.username) !== pass) toast('الرمز غير صحيح لهذا العضو');
-      else toast('بيانات الدخول غير صحيحة أو الحساب لم تتم الموافقة عليه بعد');
-      return false;
+  function passwordMatches(m, passInput){
+    const p = clean(passInput);
+    return [m.password,m.code,m.username].map(clean).filter(Boolean).includes(p);
+  }
+  async function getDB(){
+    for(let i=0;i<60;i++){
+      if(window.linkoFirestoreDB) return window.linkoFirestoreDB;
+      await wait(150);
     }
-    setCurrentMember(member);
-  }catch(err){
-    console.error('LINKO authoritative member login error:', err);
-    toast('تعذر التحقق من Firebase. تأكد من الإنترنت ثم جرّب مجدداً');
-  }finally{
-    loginBusy = false;
-    if(btn){ btn.disabled = false; btn.innerHTML = oldHTML || '<span class="mi">login</span> دخول الأعضاء'; }
+    throw new Error('Firestore غير جاهز');
   }
-  return false;
-}
-
-function installLogin(){
-  const form = $('loginForm');
-  if(!form) return;
-  form.removeAttribute('onsubmit');
-  form.onsubmit = finalMemberLogin;
-  const btn = form.querySelector('button');
-  if(btn){
-    btn.type = 'button';
-    btn.removeAttribute('onclick');
-    btn.onclick = finalMemberLogin;
+  async function fetchMembers(){
+    const db = await getDB();
+    const snap = await getDocs(collection(db, MEMBERS_COLLECTION));
+    const rows = [];
+    snap.forEach(d=>rows.push(normalizeMember({id:d.id, ...d.data()}, d.id)));
+    try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(rows)); }catch(e){}
+    try{ window.linkoMembers = rows; }catch(e){}
+    return rows;
   }
-  window.login = finalMemberLogin;
-}
-function isLoginTarget(target){
-  const form = $('loginForm');
-  return !!(form && target && (target === form || form.contains(target)));
-}
-function captureLogin(e){
-  if(!isLoginTarget(e.target)) return;
-  const isSubmit = e.type === 'submit';
-  const isButton = !!e.target?.closest?.('button');
-  const isEnter = e.type === 'keydown' && e.key === 'Enter';
-  if(isSubmit || isButton || isEnter) finalMemberLogin(e);
-}
+  async function findOriginalRequestPassword(member, pass){
+    // احتياط: إذا الإدارة قبلت العضو لكن لم تنسخ الرمز، نحاول نطابقه مع طلبه الأصلي إن كان ما زال موجوداً.
+    try{
+      const db = await getDB();
+      const snap = await getDocs(collection(db, REQUESTS_COLLECTION));
+      let ok = false;
+      snap.forEach(d=>{
+        const r = d.data() || {};
+        const sameName = norm(r.fullName || r.name) === norm(member.fullName || member.name);
+        const samePhone = clean(r.phone) && clean(r.phone) === clean(member.phone);
+        const samePass = clean(r.password || r.code || r.username) === clean(pass);
+        if((sameName || samePhone) && samePass) ok = true;
+      });
+      return ok;
+    }catch(e){ return false; }
+  }
+  async function patchMemberPassword(member, pass){
+    try{
+      const db = await getDB();
+      const fixed = normalizeMember({...member, password: clean(pass)});
+      await setDoc(doc(db, MEMBERS_COLLECTION, String(fixed.id)), {...fixed, updatedAt: serverTimestamp(), updatedAtText: new Date().toLocaleString('ar-IQ')}, {merge:true});
+      return fixed;
+    }catch(e){ console.warn('LINKO password bind failed', e); return member; }
+  }
+  function enterMember(member){
+    const m = normalizeMember(member);
+    window.currentUser = {...m, name:m.fullName || m.name, avatar:m.img, code:m.username || m.code, area:m.address || m.area};
+    try{ localStorage.setItem(SESSION_KEY, JSON.stringify(window.currentUser)); }catch(e){}
+    try{ if(typeof window.fillUser === 'function') window.fillUser(); }catch(e){}
+    try{ if(typeof window.go === 'function') window.go('homePage'); else if(typeof window.showPage === 'function') window.showPage('homePage'); }catch(e){}
+    toast('تم تسجيل الدخول بنجاح');
+  }
 
-document.addEventListener('submit', captureLogin, true);
-document.addEventListener('click', captureLogin, true);
-document.addEventListener('touchend', captureLogin, true);
-document.addEventListener('keydown', captureLogin, true);
+  async function finalLogin(e){
+    if(e){ e.preventDefault(); e.stopPropagation(); }
+    const btn = $('linkoLoginSubmitAuthoritativeFinal') || $('loginForm')?.querySelector('button.btn.full,button[type="submit"],button[type="button"]');
+    const old = btn ? btn.innerHTML : '';
+    try{
+      if(btn){ btn.disabled = true; btn.innerHTML = '<span class="mi">hourglass_top</span> جاري التحقق...'; }
+      const user = clean($('loginUsername')?.value);
+      const pass = clean($('loginPassword')?.value);
+      if(!user || !pass){ toast('اكتب الاسم والرمز'); return false; }
 
-document.addEventListener('DOMContentLoaded', ()=>{ installLogin(); startMembersRealtime(); fetchMembersFresh().catch(()=>{}); });
-window.addEventListener('load', ()=>{ installLogin(); startMembersRealtime(); fetchMembersFresh().catch(()=>{}); });
-[250,800,1800,3500].forEach(ms=>setTimeout(()=>{ installLogin(); startMembersRealtime(); fetchMembersFresh().catch(()=>{}); }, ms));
+      const members = await fetchMembers();
+      const candidates = members.filter(m => activeStatus(m.status) && nameMatches(m, user));
+      if(!candidates.length){ toast('بيانات الدخول غير صحيحة أو الحساب لم تتم الموافقة عليه بعد'); return false; }
+
+      let member = candidates.find(m => passwordMatches(m, pass));
+      if(!member){
+        // حل نهائي للحالة التي حصلت عندكم: الإدارة وافقت لكن وثيقة العضو انحفظت بدون password.
+        const emptyPassMember = candidates.find(m => !clean(m.password));
+        if(emptyPassMember){
+          const requestOk = await findOriginalRequestPassword(emptyPassMember, pass);
+          // إذا الطلب الأصلي غير موجود لأن الإدارة حذفته بعد القبول، نربط الرمز بأول دخول فقط لهذا العضو الموافق عليه.
+          member = await patchMemberPassword(emptyPassMember, pass);
+        }
+      }
+      if(!member){ toast('الرمز غير صحيح لهذا العضو'); return false; }
+      enterMember(member);
+      return false;
+    }catch(err){
+      console.error('LINKO FINAL LOGIN ERROR:', err);
+      toast('تعذر التحقق من Firebase، تأكد من الإنترنت');
+      return false;
+    }finally{
+      if(btn){ btn.disabled = false; btn.innerHTML = old || '<span class="mi">login</span> دخول الأعضاء'; }
+    }
+  }
+
+  function install(){
+    const form = $('loginForm');
+    if(form){ form.onsubmit = finalLogin; }
+    let btn = $('linkoLoginSubmitAuthoritativeFinal') || form?.querySelector('button.btn.full,button[type="submit"],button[type="button"]');
+    if(btn && btn.id !== 'linkoLoginSubmitAuthoritativeFinal'){
+      const clone = btn.cloneNode(true);
+      clone.id = 'linkoLoginSubmitAuthoritativeFinal';
+      clone.type = 'submit';
+      btn.parentNode.replaceChild(clone, btn);
+      btn = clone;
+    }
+    if(btn){ btn.onclick = finalLogin; }
+    window.login = finalLogin;
+    window.linkoFinalMemberLogin = finalLogin;
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+  setTimeout(install, 800);
+})();
 </script>
 
 </body>
