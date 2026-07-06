@@ -3784,6 +3784,79 @@ console.log('LINKO micro patch loaded: photo + notification list only');
 })();
 </script>
 
+
+
+<!-- LINKO FINAL MEMBER REALTIME PATCH: products + branches from Firestore with Storage URLs -->
+<script type="module" id="linkoFinalStorageProductsBranchesMember">
+  import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, query } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyBI_G4gS3WHQI-VF2JBUHPTACGFC3_s8y4",
+    authDomain: "medina-bazaar-e5d67.firebaseapp.com",
+    projectId: "medina-bazaar-e5d67",
+    storageBucket: "medina-bazaar-e5d67.firebasestorage.app",
+    messagingSenderId: "584827394228",
+    appId: "1:584827394228:web:2447944b4324a17b469fe1"
+  };
+  const app = window.linkoFirebaseApp || (getApps().length ? getApp() : initializeApp(firebaseConfig));
+  const db = window.linkoFirestoreDB || getFirestore(app);
+  const PRODUCT_COLLECTION = 'linko_market_products';
+  const BRANCH_COLLECTION = 'linko_market_branches';
+  const MEMBER_STATE_KEY = 'linko_member_state';
+  const safeString = (v) => String(v ?? '');
+  const normalizeBranch = (b,i=0) => ({
+    id: safeString(b.id || b.docId || Date.now()+i),
+    name: safeString(b.name || b.branchName || ''),
+    area: safeString(b.area || 'قسم السوق'),
+    icon: safeString(b.icon || 'storefront'),
+    status: (b.status === 'hidden' || b.status === 'stopped' || b.status === false) ? 'stopped' : 'active',
+    order: Number(b.order) || (i+1),
+    img: safeString(b.imageUrl || b.img || b.photoUrl || b.photo || ''),
+    imageUrl: safeString(b.imageUrl || b.img || b.photoUrl || b.photo || '')
+  });
+  const normalizeProduct = (p,i=0) => ({
+    id: safeString(p.id || p.docId || Date.now()+i),
+    name: safeString(p.name || ''),
+    branch: safeString(p.branchName || p.branch || 'كل الفروع'),
+    branchName: safeString(p.branchName || p.branch || 'كل الفروع'),
+    branchId: safeString(p.branchId || ''),
+    group: safeString(p.group || p.cat || p.category || ''),
+    status: (p.status === 'unavailable' || p.status === 'غير متوفر' || p.status === false) ? 'unavailable' : 'available',
+    order: Number(p.order) || (i+1),
+    img: safeString(p.imageUrl || p.img || p.photoUrl || p.photo || ''),
+    imageUrl: safeString(p.imageUrl || p.img || p.photoUrl || p.photo || '')
+  });
+  function writeState(key, rows){
+    try{ localStorage.setItem(key, JSON.stringify(rows)); }catch(e){}
+    try{
+      window.state = window.state || {};
+      if(key === PRODUCT_COLLECTION) window.state.products = rows;
+      if(key === BRANCH_COLLECTION) window.state.branches = rows;
+      localStorage.setItem(MEMBER_STATE_KEY, JSON.stringify(window.state));
+    }catch(e){}
+  }
+  let firstProducts = true, firstBranches = true;
+  onSnapshot(query(collection(db, BRANCH_COLLECTION)), (snap)=>{
+    const rows = snap.docs.map((d,i)=>normalizeBranch({id:d.id,...d.data()},i)).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+    writeState(BRANCH_COLLECTION, rows);
+    try{ if(typeof window.loadData === 'function') window.loadData(); }catch(e){}
+    try{ if(typeof window.renderHome === 'function') window.renderHome(); }catch(e){}
+    try{ if(typeof window.render === 'function') window.render(); }catch(e){}
+    if(!firstBranches) try{ window.toast && window.toast('تم تحديث الفروع من الإدارة'); }catch(e){}
+    firstBranches = false;
+  }, (err)=>console.warn('branches realtime error',err));
+  onSnapshot(query(collection(db, PRODUCT_COLLECTION)), (snap)=>{
+    const rows = snap.docs.map((d,i)=>normalizeProduct({id:d.id,...d.data()},i)).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+    writeState(PRODUCT_COLLECTION, rows);
+    try{ if(typeof window.loadData === 'function') window.loadData(); }catch(e){}
+    try{ if(typeof window.renderProducts === 'function') window.renderProducts(); }catch(e){}
+    try{ if(typeof window.renderHome === 'function') window.renderHome(); }catch(e){}
+    try{ if(typeof window.render === 'function') window.render(); }catch(e){}
+    if(!firstProducts) try{ window.toast && window.toast('تم تحديث المنتجات من الإدارة'); }catch(e){}
+    firstProducts = false;
+  }, (err)=>console.warn('products realtime error',err));
+</script>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
