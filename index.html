@@ -2886,6 +2886,31 @@ function setBranchAvailability(id,status){
 openBranch=function(){toast(&#x27;إضافة وتعديل الفروع معطلة حالياً — المتاح فقط تغيير الحالة&#x27;)}
 deleteBranch=function(){toast(&#x27;حذف الفروع معطل حالياً — المتاح فقط تغيير الحالة&#x27;)}
 
+
+
+/* ===== LINKO FIX: restore admin page renderer/content ===== */
+function dashboard(){
+ const totalBalance=(state.members||[]).reduce((a,b)=&gt;a+(+b.balance||0),0);
+ return `&lt;div class=&quot;kpis&quot;&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;groups&quot;&gt;&lt;small&gt;الأعضاء&lt;/small&gt;&lt;b&gt;${(state.members||[]).length}&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;inventory_2&quot;&gt;&lt;small&gt;المنتجات&lt;/small&gt;&lt;b&gt;${(state.products||[]).length}&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;storefront&quot;&gt;&lt;small&gt;الفروع&lt;/small&gt;&lt;b&gt;${(state.branches||[]).length}&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;shopping_bag&quot;&gt;&lt;small&gt;الطلبات&lt;/small&gt;&lt;b&gt;${(state.orders||[]).length}&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;assignment_add&quot;&gt;&lt;small&gt;طلبات الاشتراك&lt;/small&gt;&lt;b&gt;${pendingReq()}&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;move_to_inbox&quot;&gt;&lt;small&gt;طلبات الإدارة&lt;/small&gt;&lt;b&gt;${pendingAdmin()}&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;account_balance_wallet&quot;&gt;&lt;small&gt;إجمالي الأرصدة&lt;/small&gt;&lt;b&gt;${money(totalBalance)}&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kpi&quot; data-icon=&quot;notifications&quot;&gt;&lt;small&gt;الإشعارات&lt;/small&gt;&lt;b&gt;${(state.notifications||[]).length}&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;panel-head&quot;&gt;&lt;div&gt;&lt;h2&gt;ملخص سريع&lt;/h2&gt;&lt;p&gt;هذه الصفحة تعرض حالة النظام بدون تغيير أي بيانات.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;cards&quot;&gt;&lt;div class=&quot;log&quot;&gt;&lt;h3&gt;المنتجات المتوفرة&lt;/h3&gt;&lt;p&gt;${(state.products||[]).filter(p=&gt;p.status!==&#x27;unavailable&#x27;).length} منتج متوفر&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;log&quot;&gt;&lt;h3&gt;الفروع المتوفرة&lt;/h3&gt;&lt;p&gt;${(state.branches||[]).filter(b=&gt;b.status!==&#x27;stopped&#x27;).length} فرع متوفر&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;`;
+}
+function subscriptions(){
+ const list=state.requests||[];
+ return `&lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;panel-head&quot;&gt;&lt;div&gt;&lt;h2&gt;طلبات الاشتراك&lt;/h2&gt;&lt;p&gt;مراجعة طلبات الانضمام والموافقة أو الرفض.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;actions-row&quot;&gt;&lt;button class=&quot;btn danger mini&quot; onclick=&quot;clearRejected()&quot;&gt;حذف المرفوضة&lt;/button&gt;&lt;button class=&quot;btn danger mini&quot; onclick=&quot;clearAllSubscriptionRequests()&quot;&gt;حذف جميع الطلبات&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;cards&quot;&gt;${list.length?list.map(r=&gt;`&lt;div class=&quot;request-card&quot;&gt;&lt;h3&gt;${r.name||&#x27;طلب اشتراك&#x27;} &lt;span class=&quot;status ${cls(r.status)}&quot;&gt;${statusText(r.status)}&lt;/span&gt;&lt;/h3&gt;&lt;p&gt;الهاتف: ${r.phone||&#x27;-&#x27;}&lt;br&gt;العنوان: ${r.area||&#x27;-&#x27;}&lt;br&gt;الرمز: ${r.code||&#x27;-&#x27;}&lt;/p&gt;&lt;div class=&quot;actions-row&quot;&gt;&lt;button class=&quot;btn mini&quot; onclick=&quot;approveReq(${r.id})&quot;&gt;موافقة&lt;/button&gt;&lt;button class=&quot;btn warn mini&quot; onclick=&quot;rejectReq(${r.id})&quot;&gt;رفض&lt;/button&gt;&lt;button class=&quot;btn danger mini&quot; onclick=&quot;deleteReq(${r.id})&quot;&gt;حذف&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;`).join(&#x27;&#x27;):&#x27;&lt;div class=&quot;empty&quot;&gt;لا توجد طلبات اشتراك حالياً&lt;/div&gt;&#x27;}&lt;/div&gt;&lt;/div&gt;`;
+}
+function render(){
+ try{ state=normalizeState(state||loadState()); }catch(e){}
+ buildNav();
+ const main=document.getElementById(&#x27;main&#x27;);
+ if(!main){return;}
+ const pages={dashboard,subscriptions,members,products,branches,requests:requestsInbox,reports,notifications,logs,settings,trash:trashBin};
+ const fn=pages[active]||dashboard;
+ try{ main.innerHTML=fn(); }
+ catch(err){
+   console.error(err);
+   main.innerHTML=`&lt;div class=&quot;panel&quot;&gt;&lt;h2&gt;تعذر عرض هذا القسم&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;صار خطأ مؤقت في عرض القسم. جرّب تحديث الصفحة أو افتح قسم ثاني.&lt;/p&gt;&lt;/div&gt;`;
+ }
+}
+
 initTheme();buildNav();render();
 &lt;/script&gt;
 &lt;/body&gt;
