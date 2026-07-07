@@ -2565,6 +2565,11 @@ body.theme-dark .admin-req-card,body.theme-dark .admin-member-box,body.theme-dar
 @media(max-width:720px){.admin-two-grid,.sub-requests-grid,.members-admin-grid{grid-template-columns:1fr}.member-admin-meta{grid-template-columns:1fr}.branch-admin-photo{height:106px}}
 
 &lt;/style&gt;
+
+&lt;style id=&quot;linkoSimplifiedAdminStyle&quot;&gt;
+.product-img img,.branch-admin-photo img,.member-avatar img,.avatar-big img{object-fit:contain!important;object-position:center!important}
+#linkoDemoAdminNote b{font-size:18px}
+&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;section class=&quot;login-page&quot; id=&quot;loginPage&quot;&gt;
@@ -2627,7 +2632,7 @@ function toggleTheme(){
 }
 function initTheme(){applyTheme(localStorage.getItem(THEME_LS)||&#x27;light&#x27;)}
 
-const sections=[[&#x27;dashboard&#x27;,&#x27;dashboard&#x27;,&#x27;الرئيسية Dashboard&#x27;,&#x27;نظرة سريعة على حالة النظام اليوم.&#x27;],[&#x27;subscriptions&#x27;,&#x27;assignment_add&#x27;,&#x27;طلبات الاشتراك&#x27;,&#x27;مراجعة طلبات الاشتراك الجديدة والموافقة أو الرفض.&#x27;],[&#x27;members&#x27;,&#x27;groups&#x27;,&#x27;إدارة الأعضاء&#x27;,&#x27;بحث وتعديل بيانات الأعضاء والرصيد والحالة.&#x27;],[&#x27;products&#x27;,&#x27;shopping_cart&#x27;,&#x27;إدارة المنتجات&#x27;,&#x27;إضافة وتعديل وحذف المنتجات والتحكم بالحالة والبيع.&#x27;],[&#x27;branches&#x27;,&#x27;storefront&#x27;,&#x27;إدارة الفروع&#x27;,&#x27;إدارة فروع السوق والأقسام المرتبطة بها.&#x27;],[&#x27;requests&#x27;,&#x27;move_to_inbox&#x27;,&#x27;استلام الطلبات&#x27;,&#x27;استلام طلبات تعديل بيانات الأعضاء والرصيد والعضوية.&#x27;],[&#x27;reports&#x27;,&#x27;monitoring&#x27;,&#x27;التقارير&#x27;,&#x27;إحصائيات الطلبات والأعضاء والمنتجات والفروع.&#x27;],[&#x27;notifications&#x27;,&#x27;notifications&#x27;,&#x27;الإشعارات&#x27;,&#x27;إرسال إشعارات للأعضاء أو الفروع أو عضو محدد.&#x27;],[&#x27;logs&#x27;,&#x27;receipt_long&#x27;,&#x27;سجل العمليات&#x27;,&#x27;تتبع كل عملية مهمة داخل النظام.&#x27;],[&#x27;settings&#x27;,&#x27;settings&#x27;,&#x27;إعدادات النظام&#x27;,&#x27;إعدادات عامة للهوية والعملة والواتساب.&#x27;],[&#x27;trash&#x27;,&#x27;delete&#x27;,&#x27;سلة المحذوفات&#x27;,&#x27;استعراض العناصر المحذوفة وإدارتها.&#x27;]];
+const sections=[[&#x27;dashboard&#x27;,&#x27;dashboard&#x27;,&#x27;الرئيسية Dashboard&#x27;,&#x27;نظرة سريعة على حالة النظام اليوم.&#x27;],[&#x27;subscriptions&#x27;,&#x27;assignment_add&#x27;,&#x27;طلبات الاشتراك&#x27;,&#x27;مراجعة طلبات الاشتراك الجديدة والموافقة أو الرفض.&#x27;],[&#x27;members&#x27;,&#x27;groups&#x27;,&#x27;إدارة الأعضاء&#x27;,&#x27;بحث وتعديل بيانات الأعضاء والرصيد والحالة.&#x27;],[&#x27;products&#x27;,&#x27;shopping_cart&#x27;,&#x27;إدارة المنتجات&#x27;,&#x27;إضافة وتعديل وحذف المنتجات والتحكم بالحالة والبيع.&#x27;],[&#x27;branches&#x27;,&#x27;storefront&#x27;,&#x27;إدارة الفروع&#x27;,&#x27;إدارة فروع السوق والأقسام المرتبطة بها.&#x27;],[&#x27;requests&#x27;,&#x27;move_to_inbox&#x27;,&#x27;استلام طلبات التعديل&#x27;,&#x27;استلام طلبات تعديل بيانات الأعضاء والرصيد والعضوية.&#x27;],[&#x27;reports&#x27;,&#x27;monitoring&#x27;,&#x27;التقارير&#x27;,&#x27;إحصائيات الطلبات والأعضاء والمنتجات والفروع.&#x27;],[&#x27;notifications&#x27;,&#x27;notifications&#x27;,&#x27;الإشعارات&#x27;,&#x27;إرسال إشعارات للأعضاء أو الفروع أو عضو محدد.&#x27;],[&#x27;logs&#x27;,&#x27;receipt_long&#x27;,&#x27;سجل العمليات&#x27;,&#x27;تتبع كل عملية مهمة داخل النظام.&#x27;],[&#x27;settings&#x27;,&#x27;settings&#x27;,&#x27;إعدادات النظام&#x27;,&#x27;إعدادات عامة للهوية والعملة والواتساب.&#x27;],[&#x27;trash&#x27;,&#x27;delete&#x27;,&#x27;سلة المحذوفات&#x27;,&#x27;استعراض العناصر المحذوفة وإدارتها.&#x27;]];
 let active=&#x27;dashboard&#x27;, state=loadState();
 function seed(){return{settings:{market:&#x27;سوق المدينة الكبير&#x27;,whatsapp:&#x27;9647887624967&#x27;,currency:&#x27;د.ع&#x27;},requests:[],members:[],products:[],branches:[],notifications:[],logs:[],orders:[],adminMessages:[],trash:[]}}
 function normalizeState(data){
@@ -2648,12 +2653,12 @@ function normalizeState(data){
 function loadState(){try{return normalizeState(JSON.parse(localStorage.getItem(LS))||seed())}catch(e){return normalizeState(seed())}}
 function cleanOfficialState(data){
  data=data||seed();
- const isRemovedPhone=v=>/^07(700000000|800000000|711111111|822222222|712345678)$/.test(String(v||''));
- const isRemovedText=v=>/تجريبي|للتجربة|طلب اشتراك تجريبي/.test(String(v||''));
- data.requests=(data.requests||[]).filter(x=>!isRemovedPhone(x.phone)&&!isRemovedText(x.name)&&!isRemovedText(x.area));
- data.members=(data.members||[]).filter(x=>!isRemovedPhone(x.phone)&&!['محمد كريم','زينب أحمد'].includes(String(x.name||'')));
- data.adminMessages=(data.adminMessages||[]).filter(x=>!isRemovedText(x.details)&&!isRemovedText(x.memberName)&&!isRemovedText(x.title));
- data.logs=(data.logs||[]).filter(x=>!isRemovedText(x.details));
+ const isRemovedPhone=v=&gt;/^07(700000000|800000000|711111111|822222222|712345678)$/.test(String(v||&#x27;&#x27;));
+ const isRemovedText=v=&gt;/تجريبي|للتجربة|طلب اشتراك تجريبي/.test(String(v||&#x27;&#x27;));
+ data.requests=(data.requests||[]).filter(x=&gt;!isRemovedPhone(x.phone)&amp;&amp;!isRemovedText(x.name)&amp;&amp;!isRemovedText(x.area));
+ data.members=(data.members||[]).filter(x=&gt;!isRemovedPhone(x.phone)&amp;&amp;![&#x27;محمد كريم&#x27;,&#x27;زينب أحمد&#x27;].includes(String(x.name||&#x27;&#x27;)));
+ data.adminMessages=(data.adminMessages||[]).filter(x=&gt;!isRemovedText(x.details)&amp;&amp;!isRemovedText(x.memberName)&amp;&amp;!isRemovedText(x.title));
+ data.logs=(data.logs||[]).filter(x=&gt;!isRemovedText(x.details));
  return data;
 }
 
@@ -2676,7 +2681,6 @@ function createAdminMessage(type,title,details,extra={}){
  toast(&#x27;وصل طلب جديد للإدارة: &#x27;+title);
  render();
 }
-function demoCreditRequest(){toast('هذه الأداة غير متاحة في النسخة الرسمية')}
 function approveReq(id){let r=state.requests.find(x=&gt;x.id===id);if(!r)return; state.members.unshift({id:Date.now(),name:r.name,username:r.name,phone:r.phone,area:r.area,code:r.code,password:r.code,balance:0,status:&#x27;active&#x27;,img:&#x27;&#x27;}); state.requests=state.requests.filter(x=&gt;x.id!==id); log(&#x27;موافقة على عضو&#x27;,&#x27;تم قبول طلب &#x27;+r.name); save(); toast(&#x27;تمت الموافقة ونقل العضو&#x27;); render()}
 function rejectReq(id){let r=state.requests.find(x=&gt;x.id===id);if(r){r.status=&#x27;rejected&#x27;;log(&#x27;رفض طلب اشتراك&#x27;,&#x27;تم رفض طلب &#x27;+r.name);save();toast(&#x27;تم رفض الطلب&#x27;);render()}}
 function deleteReq(id){if(confirm(&#x27;تأكيد حذف الطلب ونقله إلى سلة المحذوفات؟&#x27;)){let r=state.requests.find(x=&gt;x.id===id);if(r){state.trash=state.trash||[];state.trash.unshift({id:Date.now(),kind:&#x27;طلب اشتراك&#x27;,name:r.name,data:r,time:new Date().toLocaleString(&#x27;ar-IQ&#x27;)});}state.requests=state.requests.filter(x=&gt;x.id!==id);log(&#x27;حذف طلب اشتراك&#x27;,&#x27;تم نقل طلب اشتراك إلى سلة المحذوفات&#x27;);save();toast(&#x27;تم نقل الطلب إلى السلة&#x27;);render()}}
@@ -2831,7 +2835,7 @@ function adminRequestCard(r){return `&lt;div class=&quot;admin-request unread&qu
 function approveAdminRequest(id){const r=(state.adminMessages||[]).find(x=&gt;x.id===id);if(!r)return;if(r.type===&#x27;credit_request&#x27;&amp;&amp;r.memberId){const m=state.members.find(x=&gt;x.id===r.memberId);if(m){m.balance+=(+r.amount||0);}}
  if(r.type===&#x27;stop_request&#x27;&amp;&amp;r.memberId){const m=state.members.find(x=&gt;x.id===r.memberId);if(m){m.status=&#x27;stopped&#x27;;}}
  r.status=&#x27;approved&#x27;;r.resolvedAt=new Date().toLocaleString(&#x27;ar-IQ&#x27;);log(&#x27;موافقة طلب إداري&#x27;,r.title+&#x27; - &#x27;+r.details);save();toast(&#x27;تمت الموافقة على الطلب&#x27;);render();}
-function rejectAdminRequest(id){const r=(state.adminMessages||[]).find(x=&gt;x.id===id);if(!r)return;r.status=&#x27;rejected&#x27;;r.resolvedAt=new Date().toLocaleString(&#x27;ar-IQ&#x27;);log(&#x27;رفض طلب إداري&#x27;,r.title+&#x27; - &#x27;+r.details);save();toast(&#x27;تم رفض الطلب&#x27;);render();}
+function rejectAdminRequest(id){const r=(state.adminMessages||[]).find(x=&gt;x.id===id);if(!r)return;state.adminMessages=(state.adminMessages||[]).filter(x=&gt;x.id!==id);log(&#x27;رفض طلب إداري&#x27;,r.title+&#x27; - &#x27;+r.details);save();toast(&#x27;تم رفض الطلب واختفى&#x27;);render();}
 function deleteAdminRequest(id){if(confirm(&#x27;تأكيد حذف الطلب؟&#x27;)){state.adminMessages=(state.adminMessages||[]).filter(x=&gt;x.id!==id);log(&#x27;حذف طلب إداري&#x27;,&#x27;تم حذف طلب من صندوق الإدارة&#x27;);save();toast(&#x27;تم حذف الطلب&#x27;);render();}}
 function renderNotificationTargets(){const type=document.getElementById(&#x27;nType&#x27;)?.value||&#x27;all_members&#x27;;const target=document.getElementById(&#x27;nTarget&#x27;);if(!target)return;if(type===&#x27;member&#x27;){target.innerHTML=state.members.map(m=&gt;`&lt;option value=&quot;${m.id}&quot;&gt;${m.name} - ${m.phone}&lt;/option&gt;`).join(&#x27;&#x27;)||&#x27;&lt;option&gt;لا يوجد أعضاء&lt;/option&gt;&#x27;;}else if(type===&#x27;branch&#x27;){target.innerHTML=state.branches.map(b=&gt;`&lt;option value=&quot;${b.id}&quot;&gt;${b.name}&lt;/option&gt;`).join(&#x27;&#x27;)||&#x27;&lt;option&gt;لا يوجد فروع&lt;/option&gt;&#x27;;}else{target.innerHTML=&#x27;&lt;option value=&quot;all&quot;&gt;كل الأعضاء&lt;/option&gt;&#x27;;}}
 function notificationTargetName(type,val){if(type===&#x27;member&#x27;){return state.members.find(m=&gt;String(m.id)===String(val))?.name||&#x27;عضو محدد&#x27;;}if(type===&#x27;branch&#x27;){return state.branches.find(b=&gt;String(b.id)===String(val))?.name||&#x27;فرع محدد&#x27;;}return &#x27;كل الأعضاء&#x27;;}
@@ -2844,9 +2848,100 @@ function removeTrashItem(id){if(confirm(&#x27;تأكيد الحذف النهائ
 function emptyTrash(){if(confirm(&#x27;تأكيد حذف جميع تفاصيل سلة المحذوفات نهائياً؟&#x27;)){state.trash=[];save();toast(&#x27;تم حذف جميع تفاصيل السلة&#x27;);render();}}
 function settings(){return `&lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;panel-head&quot;&gt;&lt;div&gt;&lt;h2&gt;إعدادات النظام&lt;/h2&gt;&lt;p&gt;هوية النظام والواتساب والعملة.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;form-grid&quot;&gt;&lt;div class=&quot;field&quot;&gt;&lt;label&gt;اسم السوق&lt;/label&gt;&lt;input class=&quot;input&quot; id=&quot;sMarket&quot; value=&quot;${state.settings.market}&quot;&gt;&lt;/div&gt;&lt;div class=&quot;field&quot;&gt;&lt;label&gt;رقم واتساب الإدارة&lt;/label&gt;&lt;input class=&quot;input&quot; id=&quot;sWhats&quot; value=&quot;${state.settings.whatsapp}&quot;&gt;&lt;/div&gt;&lt;div class=&quot;field&quot;&gt;&lt;label&gt;العملة&lt;/label&gt;&lt;input class=&quot;input&quot; id=&quot;sCurrency&quot; value=&quot;${state.settings.currency}&quot;&gt;&lt;/div&gt;&lt;button class=&quot;btn wide&quot; onclick=&quot;saveSettings()&quot;&gt;حفظ الإعدادات&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;`}
 function saveSettings(){state.settings={market:sMarket.value,whatsapp:sWhats.value,currency:sCurrency.value};log(&#x27;تعديل إعدادات&#x27;,&#x27;تم حفظ إعدادات النظام&#x27;);save();toast(&#x27;تم حفظ الإعدادات&#x27;);render()}
-function resetData(){toast('إعادة التعيين معطلة في النسخة الرسمية')}
+function resetData(){toast(&#x27;إعادة التعيين معطلة في النسخة الرسمية&#x27;)}
 function openModal(t,b){$(&#x27;modalTitle&#x27;).textContent=t;$(&#x27;modalBody&#x27;).innerHTML=b;$(&#x27;modal&#x27;).classList.add(&#x27;show&#x27;)}
 function closeModal(){$(&#x27;modal&#x27;).classList.remove(&#x27;show&#x27;)}
+
+
+/* ===== LINKO PRE-FIREBASE SIMPLIFY PATCH: admin demo login + limited branches/products ===== */
+(function(){
+  window.LINKO_PREFIREBASE_SIMPLIFIED = true;
+  window.LINKO_ADMIN_AUTH = function(u,p){
+    u = String(u||&#x27;&#x27;).trim().toLowerCase();
+    p = String(p||&#x27;&#x27;).trim();
+    return (u === &#x27;admin&#x27; || u === &#x27;linko&#x27;) &amp;&amp; p === &#x27;123456&#x27;;
+  };
+  function esc(v){return String(v??&#x27;&#x27;).replace(/[&amp;&lt;&gt;\&quot;]/g,function(m){return {&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;}[m]})}
+  function branchUiStatus(s){return (s===&#x27;active&#x27;||s===&#x27;available&#x27;||s===&#x27;visible&#x27;)?&#x27;متوفر&#x27;:&#x27;غير متوفر&#x27;}
+  function branchStatusClass(s){return (s===&#x27;active&#x27;||s===&#x27;available&#x27;||s===&#x27;visible&#x27;)?&#x27;ok&#x27;:&#x27;bad&#x27;}
+  function productUiStatus(s){return s===&#x27;available&#x27;?&#x27;متوفر&#x27;:&#x27;غير متوفر&#x27;}
+  function productStatusClass(s){return s===&#x27;available&#x27;?&#x27;ok&#x27;:&#x27;bad&#x27;}
+
+  const oldRender = window.render;
+  window.render = function(){
+    if(typeof oldRender === &#x27;function&#x27;) oldRender.apply(this, arguments);
+    setTimeout(function(){
+      document.querySelectorAll(&#x27;button,[onclick]&#x27;).forEach(function(el){
+        var t=((el.textContent||&#x27;&#x27;)+&#x27; &#x27;+(el.getAttribute(&#x27;onclick&#x27;)||&#x27;&#x27;));
+        if(/إضافة فرع|إضافة منتج|deleteBranch|deleteProduct|حذف فرع|حذف منتج/i.test(t)) el.remove();
+      });
+    },0);
+  };
+
+  window.products = function(){
+    let q=($(&#x27;prodSearch&#x27;)?.value||&#x27;&#x27;);
+    let list=state.products.filter(p=&gt;!q||[p.name,p.cat,p.branch,p.status].join(&#x27; &#x27;).includes(q));
+    return `&lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;panel-head&quot;&gt;&lt;div&gt;&lt;h2&gt;إدارة المنتجات&lt;/h2&gt;&lt;p&gt;هذه النسخة مبسطة قبل Firebase: تعديل اسم المنتج وتغيير الحالة فقط.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;tools&quot;&gt;&lt;input class=&quot;input&quot; id=&quot;prodSearch&quot; oninput=&quot;render()&quot; value=&quot;${esc(q)}&quot; placeholder=&quot;بحث عن منتج&quot;&gt;&lt;button class=&quot;btn secondary&quot; onclick=&quot;render()&quot;&gt;بحث&lt;/button&gt;&lt;/div&gt;&lt;div class=&quot;cards&quot;&gt;${list.map(productCard).join(&#x27;&#x27;)}&lt;/div&gt;&lt;/div&gt;`;
+  };
+  window.productCard = function(p){
+    return `&lt;div class=&quot;product-card&quot;&gt;&lt;div class=&quot;product-img&quot;&gt;${p.img?`&lt;img src=&quot;${esc(p.img)}&quot;&gt;`:&#x27;&lt;span class=&quot;material-symbols-rounded&quot;&gt;shopping_cart&lt;/span&gt;&#x27;}&lt;/div&gt;&lt;div&gt;&lt;h3&gt;${esc(p.name)}&lt;/h3&gt;&lt;p class=&quot;muted&quot;&gt;${esc(p.branch||&#x27;&#x27;)} ${p.group?(&#x27;• &#x27;+esc(p.group)):&#x27;&#x27;}&lt;/p&gt;&lt;span class=&quot;status ${productStatusClass(p.status)}&quot;&gt;${productUiStatus(p.status)}&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;actions-row&quot;&gt;&lt;button class=&quot;btn secondary mini&quot; onclick=&quot;openProduct(${p.id})&quot;&gt;تعديل الاسم&lt;/button&gt;&lt;button class=&quot;btn warn mini&quot; onclick=&quot;toggleProduct(${p.id})&quot;&gt;تغيير الحالة&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;`;
+  };
+  window.openProduct = function(id){
+    const p=state.products.find(x=&gt;String(x.id)===String(id));
+    if(!p){toast(&#x27;هذا المنتج ثابت ولا يمكن إضافة منتج جديد من الإدارة حالياً&#x27;);return;}
+    openModal(&#x27;تعديل منتج&#x27;,`&lt;div class=&quot;form-grid&quot;&gt;&lt;div class=&quot;field wide&quot;&gt;&lt;label&gt;اسم المنتج&lt;/label&gt;&lt;input class=&quot;input&quot; id=&quot;pName&quot; value=&quot;${esc(p.name)}&quot;&gt;&lt;/div&gt;&lt;div class=&quot;field wide&quot;&gt;&lt;label&gt;الحالة&lt;/label&gt;&lt;select id=&quot;pStatus&quot;&gt;&lt;option value=&quot;available&quot; ${p.status===&#x27;available&#x27;?&#x27;selected&#x27;:&#x27;&#x27;}&gt;متوفر&lt;/option&gt;&lt;option value=&quot;unavailable&quot; ${p.status===&#x27;unavailable&#x27;?&#x27;selected&#x27;:&#x27;&#x27;}&gt;غير متوفر&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;field wide&quot;&gt;&lt;p class=&quot;muted&quot; style=&quot;font-weight:900;line-height:1.8&quot;&gt;إضافة المنتجات والصور محذوفة حالياً لتسهيل ربط Firebase. أي منتج جديد يتم إضافته بتحديث رسمي للملف.&lt;/p&gt;&lt;/div&gt;&lt;button class=&quot;btn wide&quot; onclick=&quot;saveProduct(${p.id})&quot;&gt;حفظ التعديل&lt;/button&gt;&lt;/div&gt;`);
+  };
+  window.saveProduct = function(id){
+    const p=state.products.find(x=&gt;String(x.id)===String(id));
+    if(!p){toast(&#x27;لم يتم العثور على المنتج&#x27;);return;}
+    const name=(document.getElementById(&#x27;pName&#x27;)?.value||&#x27;&#x27;).trim();
+    const status=document.getElementById(&#x27;pStatus&#x27;)?.value||&#x27;available&#x27;;
+    if(!name){toast(&#x27;اكتب اسم المنتج&#x27;);return;}
+    p.name=name;
+    p.status=status;
+    log(&#x27;تعديل منتج&#x27;,&#x27;تم تعديل اسم/حالة المنتج &#x27;+name);
+    save();closeModal();toast(&#x27;تم حفظ المنتج&#x27;);render();
+  };
+  window.deleteProduct = function(){toast(&#x27;حذف المنتجات متوقف حالياً لحماية النظام قبل Firebase&#x27;)};
+
+  window.branches = function(){
+    const sorted=[...state.branches].sort((a,b)=&gt;(+a.order||999)-(+b.order||999));
+    return `&lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;panel-head&quot;&gt;&lt;div&gt;&lt;h2&gt;إدارة الفروع&lt;/h2&gt;&lt;p&gt;هذه النسخة مبسطة قبل Firebase: تعديل اسم الفرع وتغيير الحالة فقط.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;branch-grid&quot;&gt;${sorted.map(function(b){return `&lt;div class=&quot;branch-card admin-branch-box&quot;&gt;&lt;div class=&quot;branch-admin-photo&quot;&gt;${b.img?`&lt;img src=&quot;${esc(b.img)}&quot; alt=&quot;${esc(b.name)}&quot;&gt;`:&#x27;&lt;span class=&quot;material-symbols-rounded&quot;&gt;storefront&lt;/span&gt;&#x27;}&lt;span class=&quot;branch-admin-number&quot;&gt;#${b.order||&#x27;-&#x27;}&lt;/span&gt;&lt;/div&gt;&lt;h3&gt;${esc(b.name)} &lt;span class=&quot;status ${branchStatusClass(b.status)}&quot;&gt;${branchUiStatus(b.status)}&lt;/span&gt;&lt;/h3&gt;&lt;p&gt;رقم الفرع: ${b.order||&#x27;-&#x27;}&lt;br&gt;المنتجات: ${state.products.filter(p=&gt;p.branch===b.name||p.branch===&#x27;كل الفروع&#x27;||p.branchName===b.name||p.branchId===b.id).length}&lt;/p&gt;&lt;div class=&quot;actions-row&quot;&gt;&lt;button class=&quot;btn secondary mini&quot; onclick=&quot;openBranch(${b.id})&quot;&gt;تعديل الاسم&lt;/button&gt;&lt;button class=&quot;btn warn mini&quot; onclick=&quot;toggleBranch(${b.id})&quot;&gt;تغيير الحالة&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;`}).join(&#x27;&#x27;)}&lt;/div&gt;&lt;/div&gt;`;
+  };
+  window.openBranch = function(id){
+    const b=state.branches.find(x=&gt;String(x.id)===String(id));
+    if(!b){toast(&#x27;إضافة فرع جديد متوقفة حالياً&#x27;);return;}
+    openModal(&#x27;تعديل فرع&#x27;,`&lt;div class=&quot;form-grid&quot;&gt;&lt;div class=&quot;field wide&quot;&gt;&lt;label&gt;اسم الفرع&lt;/label&gt;&lt;input class=&quot;input&quot; id=&quot;bName&quot; value=&quot;${esc(b.name||&#x27;&#x27;)}&quot;&gt;&lt;/div&gt;&lt;div class=&quot;field wide&quot;&gt;&lt;label&gt;الحالة&lt;/label&gt;&lt;select id=&quot;bStatus&quot;&gt;&lt;option value=&quot;active&quot; ${(b.status===&#x27;active&#x27;||b.status===&#x27;available&#x27;||b.status===&#x27;visible&#x27;)?&#x27;selected&#x27;:&#x27;&#x27;}&gt;متوفر&lt;/option&gt;&lt;option value=&quot;stopped&quot; ${(b.status===&#x27;stopped&#x27;||b.status===&#x27;unavailable&#x27;||b.status===&#x27;hidden&#x27;)?&#x27;selected&#x27;:&#x27;&#x27;}&gt;غير متوفر&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;field wide&quot;&gt;&lt;p class=&quot;muted&quot; style=&quot;font-weight:900;line-height:1.8&quot;&gt;إضافة الفروع والصور محذوفة حالياً لتسهيل ربط Firebase. أي فرع جديد يتم إضافته بتحديث رسمي للملف.&lt;/p&gt;&lt;/div&gt;&lt;button class=&quot;btn wide&quot; onclick=&quot;saveBranch(${b.id})&quot;&gt;حفظ التعديل&lt;/button&gt;&lt;/div&gt;`);
+  };
+  window.saveBranch = function(id){
+    const b=state.branches.find(x=&gt;String(x.id)===String(id));
+    if(!b){toast(&#x27;لم يتم العثور على الفرع&#x27;);return;}
+    const name=(document.getElementById(&#x27;bName&#x27;)?.value||&#x27;&#x27;).trim();
+    const status=document.getElementById(&#x27;bStatus&#x27;)?.value||&#x27;active&#x27;;
+    if(!name){toast(&#x27;اكتب اسم الفرع&#x27;);return;}
+    b.name=name;
+    b.status=status;
+    state.products.forEach(function(p){ if(p.branchId===b.id) p.branchName=name; });
+    log(&#x27;تعديل فرع&#x27;,&#x27;تم تعديل اسم/حالة الفرع &#x27;+name);
+    save();closeModal();toast(&#x27;تم حفظ الفرع&#x27;);render();
+  };
+  window.deleteBranch = function(){toast(&#x27;حذف الفروع متوقف حالياً لحماية النظام قبل Firebase&#x27;)};
+
+  window.addEventListener(&#x27;load&#x27;, function(){
+    setTimeout(function(){
+      const login=document.querySelector(&#x27;#loginPage .login-card,#loginPage .auth-card,#loginPage&#x27;);
+      if(login &amp;&amp; !document.getElementById(&#x27;linkoDemoAdminNote&#x27;)){
+        const note=document.createElement(&#x27;div&#x27;);
+        note.id=&#x27;linkoDemoAdminNote&#x27;;
+        note.style.cssText=&#x27;margin:12px 0;padding:12px;border-radius:18px;background:#fff7ed;border:1px solid #f59e0b;color:#111827;font-weight:900;line-height:1.8;text-align:center&#x27;;
+        note.innerHTML=&#x27;دخول الإدارة التجريبي للمراجعة:&lt;br&gt;الاسم: &lt;b&gt;admin&lt;/b&gt; &amp;nbsp; الرمز: &lt;b&gt;123456&lt;/b&gt;&#x27;;
+        login.appendChild(note);
+      }
+      render();
+    },250);
+  });
+})();
+
 initTheme();buildNav();render();
 &lt;/script&gt;
 &lt;/body&gt;
@@ -2869,16 +2964,16 @@ initTheme();buildNav();render();
 
 
 
-<!-- ===== LINKO PATCH: admin visibility + premium splash/login intro ===== -->
+
 <style id="linkoDevGateAndSplashPatch">
-  /* مدخل الإدارة مخفي عن الواجهة ويعمل بثلاث ضغطات سريعة على الشعار */
+  
   .linko-admin-entry{display:none!important}
   body.linko-auth-visible .linko-admin-entry{display:none!important}
 
   /* زر الرجوع الثابت داخل نافذة الإدارة ملغي حتى لا يبقى فوق اللوحة */
   .linko-admin-frame-top{display:none!important}
 
-  /* زر رجوع الأعضاء داخل شاشة دخول الإدارة فقط */
+  
   .linko-admin-login-back{
     width:100%!important;
     min-height:46px!important;
@@ -2992,7 +3087,7 @@ initTheme();buildNav();render();
   const oldOpen=window.linkoOpenAdmin;
   window.linkoOpenAdmin=function(){ if(typeof oldOpen==='function') oldOpen(); setTimeout(injectAdminBackButton,150); setTimeout(injectAdminBackButton,700); };
 
-  /* فتح نافذة الإدارة: 3 ضغطات عادية وسريعة على الشعار بدون ضغط مطول */
+  
   let linkoSecretLogoClicks=0;
   let linkoSecretLogoTimer=null;
   function isLogoTarget(target){
@@ -3184,7 +3279,6 @@ body.linko-dark .secret-info .secret-eye{background:#1e293b!important;color:#fff
 
     activatePageWithoutJump(targetPage);
 
-    // Restore exactly where the user opened the branch from, after layout finishes.
     requestAnimationFrame(()=>{
       window.scrollTo(0, targetScroll);
       requestAnimationFrame(()=>{
@@ -3475,7 +3569,7 @@ body.linko-dark .branch-card::before{opacity:.82!important}
 
 
 
-<!-- ===== LINKO OFFICIAL CLEANUP: security + responsive safety ===== -->
+
 <style id="linkoOfficialCleanupStyle">
   .secure-hint{background:#fff7ed!important;border-color:#fed7aa!important;color:#9a3412!important}
   html,body{max-width:100%!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%;touch-action:manipulation}
@@ -3517,197 +3611,54 @@ body.linko-dark .branch-card::before{opacity:.82!important}
 })();
 </script>
 
-
-
-<!-- ===== LINKO FIREBASE CLEAN BRIDGE PHASE 2 - NO DESIGN CHANGE ===== -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script id="linkoFirebaseCleanBridge">
-(function(){
-  const firebaseConfig = {
-    apiKey: "AIzaSyDkE2IKISBHbYb6kCrU5CgvaZQ2hz0GFbk",
-    authDomain: "medina-bazaar-c0348.firebaseapp.com",
-    projectId: "medina-bazaar-c0348",
-    storageBucket: "medina-bazaar-c0348.firebasestorage.app",
-    messagingSenderId: "458340526289",
-    appId: "1:458340526289:web:ec6ee7470b6f80dc2dbdf0"
-  };
-  const ADMIN_EMAIL='mm11ss22@gmail.com';
-  try{ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig); }catch(e){}
-  const db=firebase.firestore();
-  const auth=firebase.auth();
-  window.LINKO_FIREBASE={db,auth,ADMIN_EMAIL};
-
-  function now(){return new Date().toLocaleString('ar-IQ')}
-  function safeToast(msg){ try{ if(typeof toast==='function') toast(msg); else alert(msg); }catch(e){ alert(msg); } }
-  function normalizeMember(d,id){
-    return {
-      id:id||d.id||Date.now(),
-      docId:id||d.docId||'',
-      username:d.username||d.name||'',
-      password:d.password||d.code||'',
-      name:d.name||'',
-      phone:d.phone||'',
-      address:d.address||d.area||d.branch||'',
-      area:d.area||d.address||d.branch||'',
-      code:d.code||d.password||'',
-      balance:+(d.balance||0),
-      status:d.status||'active',
-      created:d.created||d.createdAtText||'',
-      avatar:d.avatar||d.img||''
-    };
+<style id="linkoProductionHardeningStyle">
+  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;}
+  *,*::before,*::after{box-sizing:border-box;}
+  img,video,canvas,svg{max-width:100%;height:auto;}
+  button,a,input,select,textarea{touch-action:manipulation;}
+  .linko-admin-entry{display:none!important;}
+  @media(max-width:330px){
+    .app-wrap{padding-left:8px!important;padding-right:8px!important;}
+    .bottom-nav{left:6px!important;right:6px!important;gap:2px!important;}
+    .nav-btn{min-height:46px!important;border-radius:16px!important;}
+    .nav-btn span:last-child{font-size:9px!important;}
+    .auth-card,.modal-card{border-radius:24px!important;padding:16px!important;}
   }
-
-  window.linkoAdminEnsureAuth = async function(pass){
-    if(!pass) throw new Error('empty-password');
-    try{
-      const cur=auth.currentUser;
-      if(cur && cur.email===ADMIN_EMAIL) return cur;
-      const res=await auth.signInWithEmailAndPassword(ADMIN_EMAIL,pass);
-      return res.user;
-    }catch(e){
-      if(e && (e.code==='auth/user-not-found' || e.code==='auth/invalid-credential')){
-        try{ const res=await auth.createUserWithEmailAndPassword(ADMIN_EMAIL,pass); return res.user; }
-        catch(e2){ throw e2; }
-      }
-      throw e;
-    }
-  };
-
-  /* صفحة الأعضاء: التسجيل يذهب إلى subscriptionRequests فقط */
-  window.register = async function(e){
-    if(e) e.preventDefault();
-    const fullName=(document.getElementById('regName')?.value||'').trim();
-    const phone=(document.getElementById('regPhone')?.value||'').trim();
-    const address=(document.getElementById('regAddress')?.value||'').trim();
-    const password=(document.getElementById('regPassword')?.value||'').trim();
-    if(!fullName||!phone||!address||!password){safeToast('أكمل بيانات الاشتراك أولاً');return;}
-    try{
-      await db.collection('subscriptionRequests').add({
-        name:fullName,
-        phone:phone,
-        password:password,
-        code:password,
-        address:address,
-        area:address,
-        branch:address,
-        status:'pending',
-        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-        createdAtText:now(),
-        source:'member-page'
-      });
-      try{ if(e && e.target) e.target.reset(); }catch(_){ }
-      try{ pendingAvatarData=''; renderAvatarBox(regAvatarPreview,''); }catch(_){ }
-      try{ switchAuth('login'); }catch(_){ }
-      safeToast('تم إرسال طلب الاشتراك بنجاح، انتظر موافقة الإدارة');
-    }catch(err){
-      console.error('subscriptionRequests create failed',err);
-      safeToast('تعذر إرسال طلب الاشتراك. تحقق من اتصال الإنترنت والقواعد.');
-    }
-  };
-
-  /* دخول العضو: يقرأ من members بعد موافقة الإدارة */
-  window.login = async function(e){
-    if(e) e.preventDefault();
-    const fullName=(document.getElementById('loginUsername')?.value||'').trim();
-    const pass=(document.getElementById('loginPassword')?.value||'').trim();
-    if(!fullName||!pass){safeToast('اكتب الاسم الكامل والرمز');return;}
-    try{
-      const snap=await db.collection('members').where('name','==',fullName).where('password','==',pass).limit(1).get();
-      if(snap.empty){safeToast('الاسم الكامل أو الرمز غير صحيح أو لم تتم الموافقة بعد');return;}
-      const doc=snap.docs[0];
-      const member=normalizeMember(doc.data(),doc.id);
-      if(member.status && !['active','مفعل'].includes(member.status)){safeToast('الحساب غير مفعل حالياً');return;}
-      window.currentUser={...member};
-      try{ fillUser(); }catch(_){ }
-      try{ go('homePage'); }catch(_){ }
-      safeToast('تم تسجيل الدخول بنجاح');
-    }catch(err){
-      console.error('member login failed',err);
-      safeToast('تعذر تسجيل الدخول. تأكد من نشر قواعد Firestore الصحيحة.');
-    }
-  };
-
-  function injectAdminBridge(){
-    const frame=document.getElementById('linkoAdminFrame');
-    if(!frame) return;
-    let w,d;
-    try{ w=frame.contentWindow; d=frame.contentDocument||w.document; }catch(e){ return; }
-    if(!w||!d||d.getElementById('linkoAdminFirebaseBridge')) return;
-    const script=d.createElement('script');
-    script.id='linkoAdminFirebaseBridge';
-    script.textContent=`
+</style>
+<script id="linkoProductionHardeningScript">
 (function(){
-  const parentApi=parent.LINKO_FIREBASE;
-  const db=parentApi.db;
-  const ADMIN_EMAIL=parentApi.ADMIN_EMAIL;
-  let unsubReq=null, unsubMembers=null;
-  function A(id){return document.getElementById(id)}
-  function t(msg){try{toast(msg)}catch(e){alert(msg)}}
-  function showApp(){try{sessionStorage.setItem('LINKO_ADMIN_SESSION','1');A('loginPage').classList.add('hidden');A('app').classList.add('show');}catch(e){}}
-  function normalizeRequest(doc,idx){const d=doc.data()||{};return {id:idx+1,docId:doc.id,name:d.name||'',phone:d.phone||'',area:d.area||d.address||d.branch||'',address:d.address||d.area||d.branch||'',code:d.code||d.password||'',password:d.password||d.code||'',status:d.status||'pending',time:d.createdAtText||'',created:d.createdAtText||''};}
-  function normalizeMember(doc,idx){const d=doc.data()||{};return {id:idx+1,docId:doc.id,name:d.name||'',username:d.username||d.name||'',phone:d.phone||'',area:d.area||d.address||'',address:d.address||d.area||'',code:d.code||d.password||'',password:d.password||d.code||'',balance:+(d.balance||0),status:d.status||'active',img:d.img||d.avatar||'',created:d.createdAtText||''};}
-  window.loginAdmin=async function(){
-    const pass=(A('loginPass')?.value||'').trim();
-    if(!pass){t('أدخل رمز الإدارة');return;}
-    try{
-      await parent.linkoAdminEnsureAuth(pass);
-      showApp();
-      t('تم دخول لوحة الإدارة');
-      window.linkoStartFirestoreAdmin();
-    }catch(e){console.error(e);t('رمز الإدارة غير صحيح أو تعذر إنشاء حساب الإدارة');}
-  };
-  window.linkoStartFirestoreAdmin=function(){
-    try{ if(unsubReq)unsubReq(); if(unsubMembers)unsubMembers(); }catch(e){}
-    unsubReq=db.collection('subscriptionRequests').orderBy('createdAt','desc').onSnapshot(function(snap){
-      state.requests=snap.docs.map(normalizeRequest);
-      try{buildNav()}catch(e){}
-      try{render()}catch(e){}
-    },function(e){console.error(e);t('تعذر قراءة طلبات الاشتراك');});
-    unsubMembers=db.collection('members').onSnapshot(function(snap){
-      state.members=snap.docs.map(normalizeMember);
-      try{buildNav()}catch(e){}
-      try{render()}catch(e){}
-    },function(e){console.error(e);});
-  };
-  window.approveReq=async function(id){
-    const r=(state.requests||[]).find(x=>String(x.id)===String(id));
-    if(!r)return;
-    try{
-      await db.collection('members').add({name:r.name,username:r.name,phone:r.phone,area:r.area,address:r.address||r.area,code:r.code,password:r.password||r.code,balance:0,status:'active',img:'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdAtText:new Date().toLocaleString('ar-IQ')});
-      await db.collection('subscriptionRequests').doc(r.docId).delete();
-      t('تمت الموافقة ونقل العضو');
-    }catch(e){console.error(e);t('تعذر الموافقة على الطلب');}
-  };
-  window.rejectReq=async function(id){
-    const r=(state.requests||[]).find(x=>String(x.id)===String(id)); if(!r)return;
-    try{await db.collection('subscriptionRequests').doc(r.docId).update({status:'rejected',rejectedAt:firebase.firestore.FieldValue.serverTimestamp()});t('تم رفض الطلب');}catch(e){console.error(e);t('تعذر رفض الطلب');}
-  };
-  window.deleteReq=async function(id){
-    const r=(state.requests||[]).find(x=>String(x.id)===String(id)); if(!r)return;
-    if(!confirm('تأكيد حذف الطلب؟'))return;
-    try{await db.collection('subscriptionRequests').doc(r.docId).delete();t('تم حذف الطلب');}catch(e){console.error(e);t('تعذر حذف الطلب');}
-  };
-  window.clearAllSubscriptionRequests=async function(){
-    if(!confirm('تأكيد حذف جميع طلبات الاشتراك؟'))return;
-    const snap=await db.collection('subscriptionRequests').get();
-    const batch=db.batch(); snap.docs.forEach(d=>batch.delete(d.ref)); await batch.commit(); t('تم حذف جميع الطلبات');
-  };
-  if(sessionStorage.getItem('LINKO_ADMIN_SESSION')==='1' && parentApi.auth.currentUser && parentApi.auth.currentUser.email===ADMIN_EMAIL){showApp();window.linkoStartFirestoreAdmin();}
-})();`;
-    d.body.appendChild(script);
+  window.LINKO_PRODUCTION_READY_UI=true;
+  function cleanProductionArtifacts(){
+    document.querySelectorAll('button,a,[data-test],[data-demo]').forEach(function(el){
+      var t=((el.textContent||'')+' '+(el.getAttribute('onclick')||'')+' '+(el.id||'')+' '+(el.className||''));
+      if(/دخول تجريبي|تجريبي|للتجربة|demo|test/i.test(t)){el.remove();}
+    });
   }
-  window.addEventListener('load',function(){setTimeout(injectAdminBridge,500);setTimeout(injectAdminBridge,1500);});
-  const oldOpen=window.linkoOpenAdmin;
-  window.linkoOpenAdmin=function(){ if(typeof oldOpen==='function') oldOpen(); setTimeout(injectAdminBridge,200); setTimeout(injectAdminBridge,900); };
+  function productionViewportFix(){
+    document.documentElement.style.overflowX='hidden';
+    document.body.style.overflowX='hidden';
+  }
+  document.addEventListener('DOMContentLoaded',function(){cleanProductionArtifacts();productionViewportFix();});
+  window.addEventListener('load',function(){cleanProductionArtifacts();productionViewportFix();});
+  window.addEventListener('resize',productionViewportFix,{passive:true});
 })();
 </script>
-<!-- ===== /LINKO FIREBASE CLEAN BRIDGE PHASE 2 ===== -->
 
+
+
+<script id="linkoPreFirebaseParentPatch">
+(function(){
+  window.LINKO_PREFIREBASE_SIMPLIFIED_PARENT=true;
+  document.addEventListener('DOMContentLoaded',function(){
+    try{
+      document.querySelectorAll('.product-img img,.branch-img img,.member-avatar img,.avatar-big img').forEach(function(img){img.style.objectFit='contain';img.style.objectPosition='center';});
+    }catch(e){}
+  });
+})();
+</script>
 </body>
 </html>
-<!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
+
 <style id="linkoSafePatchFinal">
 /* خانة التوصيل تحت بطاقة العضوية */
 #homeDeliveryStatusBox{
