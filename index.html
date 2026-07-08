@@ -3769,6 +3769,149 @@ body.linko-dark #productsGrid .product-img{
 }
 </style>
 
+
+
+<!-- ===== LINKO PRODUCT CARD IMAGE LAYOUT STRICT FIX - PRODUCTS ONLY ===== -->
+<style id="linkoProductImageLayoutStrictFix">
+/* إصلاح جراحي لكروت منتجات واجهة الأعضاء فقط: الصورة داخل مساحتها، الاسم والزر تحتها */
+#productsGrid .product-card,
+#branchProductsGrid .product-card{
+  display:flex!important;
+  flex-direction:column!important;
+  padding:0!important;
+  gap:0!important;
+  overflow:hidden!important;
+  min-height:255px!important;
+  height:auto!important;
+  position:relative!important;
+}
+#productsGrid .product-card .product-img,
+#branchProductsGrid .product-card .product-img{
+  width:100%!important;
+  height:148px!important;
+  min-height:148px!important;
+  max-height:148px!important;
+  flex:0 0 148px!important;
+  border-radius:0!important;
+  padding:8px!important;
+  margin:0!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+  position:relative!important;
+  background:linear-gradient(135deg,#fff8e7,#f2ead9)!important;
+}
+#productsGrid .product-card .product-img img,
+#branchProductsGrid .product-card .product-img img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+  border-radius:12px!important;
+  padding:0!important;
+  margin:0!important;
+  background:transparent!important;
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+}
+#productsGrid .product-card .p-status,
+#branchProductsGrid .product-card .p-status{
+  position:absolute!important;
+  top:10px!important;
+  left:10px!important;
+  z-index:3!important;
+}
+#productsGrid .product-card .p-badge,
+#branchProductsGrid .product-card .p-badge{
+  position:absolute!important;
+  top:10px!important;
+  right:10px!important;
+  z-index:3!important;
+}
+#productsGrid .product-card .product-body,
+#branchProductsGrid .product-card .product-body{
+  flex:1 0 auto!important;
+  min-height:96px!important;
+  padding:9px 10px 12px!important;
+  margin:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  background:#fff!important;
+  position:relative!important;
+  z-index:2!important;
+}
+#productsGrid .product-card .product-body h3,
+#branchProductsGrid .product-card .product-body h3{
+  display:block!important;
+  min-height:34px!important;
+  max-height:42px!important;
+  overflow:hidden!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1.45!important;
+  font-size:14px!important;
+  font-weight:900!important;
+  text-align:right!important;
+  color:#101828!important;
+  position:relative!important;
+  z-index:2!important;
+}
+#productsGrid .product-card .price-row,
+#branchProductsGrid .product-card .price-row{
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  width:100%!important;
+  position:relative!important;
+  z-index:2!important;
+}
+#productsGrid .product-card .add-btn,
+#branchProductsGrid .product-card .add-btn{
+  width:100%!important;
+  max-width:190px!important;
+  min-height:42px!important;
+  height:42px!important;
+  border-radius:16px!important;
+  padding:6px 12px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  white-space:nowrap!important;
+  position:relative!important;
+  z-index:2!important;
+}
+body.linko-dark #productsGrid .product-card .product-body,
+body.linko-dark #branchProductsGrid .product-card .product-body{
+  background:#0f172a!important;
+}
+body.linko-dark #productsGrid .product-card .product-body h3,
+body.linko-dark #branchProductsGrid .product-card .product-body h3{
+  color:#ffffff!important;
+}
+body.linko-dark #productsGrid .product-card .product-img,
+body.linko-dark #branchProductsGrid .product-card .product-img{
+  background:linear-gradient(135deg,#111827,#1e293b)!important;
+}
+@media(max-width:410px){
+  #productsGrid .product-card,
+  #branchProductsGrid .product-card{min-height:244px!important;}
+  #productsGrid .product-card .product-img,
+  #branchProductsGrid .product-card .product-img{height:136px!important;min-height:136px!important;max-height:136px!important;flex-basis:136px!important;}
+  #productsGrid .product-card .product-body,
+  #branchProductsGrid .product-card .product-body{min-height:100px!important;padding:8px 8px 11px!important;}
+  #productsGrid .product-card .product-body h3,
+  #branchProductsGrid .product-card .product-body h3{font-size:13px!important;min-height:32px!important;}
+}
+</style>
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
