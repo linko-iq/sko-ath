@@ -3642,6 +3642,133 @@ body.linko-dark .branch-card::before{opacity:.82!important}
 </script>
 <!-- ===== /LINKO PATCH: admin image controls + smooth navigation ===== -->
 
+
+
+<!-- ===== LINKO STRICT FIX: PRODUCT IMAGES INSIDE THEIR BOX ONLY - NO DESIGN CHANGE ===== -->
+<style id="linkoProductImageContainFix">
+/* إصلاح جراحي فقط لبطاقات منتجات واجهة الأعضاء: الصورة تبقى داخل مربعها ولا تغطي الاسم أو الزر */
+#productsGrid .product-card{
+  display:flex!important;
+  flex-direction:column!important;
+  grid-template-columns:none!important;
+  gap:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border-radius:24px!important;
+  background:#fff!important;
+}
+#productsGrid .product-img{
+  width:100%!important;
+  height:150px!important;
+  min-height:150px!important;
+  max-height:150px!important;
+  border-radius:0!important;
+  padding:8px!important;
+  overflow:hidden!important;
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+  background:linear-gradient(135deg,#fff8e7,#f2ead9)!important;
+}
+#productsGrid .product-img img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  padding:0!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#productsGrid .product-img .mi{
+  position:relative!important;
+  z-index:1!important;
+}
+#productsGrid .product-img .p-status{
+  position:absolute!important;
+  left:10px!important;
+  top:10px!important;
+  z-index:5!important;
+  pointer-events:none!important;
+}
+#productsGrid .product-img .p-badge{
+  position:absolute!important;
+  right:10px!important;
+  top:10px!important;
+  z-index:5!important;
+  pointer-events:none!important;
+}
+#productsGrid .product-body{
+  width:100%!important;
+  padding:10px 10px 12px!important;
+  background:#fff!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+  position:relative!important;
+  z-index:2!important;
+}
+#productsGrid .product-body h3{
+  display:block!important;
+  min-height:28px!important;
+  height:auto!important;
+  margin:0!important;
+  line-height:1.45!important;
+  text-align:right!important;
+  overflow:visible!important;
+  color:#07111f!important;
+}
+#productsGrid .price-row{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  margin:0!important;
+  width:100%!important;
+}
+#productsGrid .add-btn{
+  width:100%!important;
+  min-height:44px!important;
+  border-radius:15px!important;
+  justify-content:center!important;
+  padding:8px 10px!important;
+  line-height:1.2!important;
+  position:relative!important;
+  z-index:3!important;
+}
+body.linko-dark #productsGrid .product-card,
+body.linko-dark #productsGrid .product-body{
+  background:#0f172a!important;
+}
+body.linko-dark #productsGrid .product-body h3{
+  color:#fff!important;
+}
+body.linko-dark #productsGrid .product-img{
+  background:linear-gradient(135deg,#111827,#1e293b)!important;
+}
+@media(max-width:430px){
+  #productsGrid .product-img{
+    height:142px!important;
+    min-height:142px!important;
+    max-height:142px!important;
+    padding:7px!important;
+  }
+  #productsGrid .product-body{padding:9px 9px 11px!important;gap:7px!important;}
+  #productsGrid .product-body h3{font-size:13.5px!important;min-height:26px!important;}
+  #productsGrid .add-btn{min-height:42px!important;font-size:13px!important;}
+}
+@media(min-width:760px){
+  #productsGrid .product-img{
+    height:165px!important;
+    min-height:165px!important;
+    max-height:165px!important;
+  }
+}
+</style>
+
 </body>
 </html>
 <!-- ===== LINKO SAFE PATCH: home delivery, assistant stability, instant cart feedback, clearer chat ===== -->
