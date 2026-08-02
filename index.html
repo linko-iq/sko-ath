@@ -1,4 +1,4 @@
-<!-- AL-SAADAH FULL V2 | AR-EN | LINKO FOOTER | QUICK ASSISTANT 25Q | 2026-08-02 -->
+<!-- AL-SAADAH LUXURY V3 | RESPONSIVE | TAP HINT | SWIPE VIEW | DIRECT PRODUCT ORDER | 2026-08-02 -->
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -89,6 +89,73 @@ html[dir="ltr"] body{font-family:Arial,Tahoma,sans-serif}html[dir="ltr"] .ribbon
 @media(max-width:360px){.brand-mark{width:38px;height:38px}.brand b{font-size:12px}.brand small{font-size:8px}.header-actions{gap:3px}.icon-btn{width:36px;height:36px}.lang-btn{min-width:43px;padding:0 6px}.products{gap:7px}.product-info{padding:9px 7px}.product-name{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.scroll-cue svg,.linko-credit{animation:none}}
 
+
+/* ===== LUXURY V3: RESPONSIVE SAFETY + CLEAR DISCOVERY ===== */
+html,body{width:100%;max-width:100%;overflow-x:clip}
+.shell,main,section,.header,.hero,.hero-frame,.product,.product-inner,.contact-panel,.linko-credit{min-width:0;max-width:100%}
+section{scroll-margin-top:calc(74px + env(safe-area-inset-top,0px))}
+.hero-frame{min-height:clamp(550px,78svh,720px);padding-bottom:20px}
+@supports(height:100dvh){.hero-frame{min-height:clamp(550px,78dvh,720px)}}
+.hero-copy{inset:auto clamp(12px,4vw,24px) 22px;max-width:100%}
+.hero-copy,.hero-copy *,.product-info,.linko-copy{overflow-wrap:anywhere}
+.hero-actions a{min-width:0;padding-inline:5px}
+.scroll-guide-wrap{display:flex;justify-content:center;align-items:center;padding:1px 0 9px;position:relative;z-index:7}
+.scroll-cue{position:relative;left:auto;bottom:auto;transform:none;display:inline-flex;flex-direction:row;align-items:center;gap:9px;min-height:43px;padding:6px 7px 6px 15px;border:1px solid rgba(255,226,161,.25);border-radius:999px;background:linear-gradient(135deg,rgba(28,13,15,.96),rgba(75,40,12,.72));color:#ffe8b9;font-size:10px;font-weight:950;box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 20px rgba(213,170,86,.1)}
+.scroll-cue:before{display:none}
+.scroll-cue span{position:static;bottom:auto;white-space:nowrap}
+.scroll-cue .scroll-circle{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#e4bc69,#87500c);color:#170b02;box-shadow:0 0 20px rgba(213,170,86,.28)}
+.scroll-cue .scroll-circle svg{position:static;top:auto;width:19px;height:19px;animation:scrollCue 1.35s ease-in-out infinite}
+.product-art{isolation:isolate}
+.product-art:focus-visible{outline:2px solid var(--gold2);outline-offset:-3px}
+.tap-hint{position:absolute;z-index:3;inset:auto 8px 8px;display:flex;align-items:center;justify-content:center;gap:5px;min-height:29px;padding:5px 8px;border:1px solid rgba(255,226,161,.27);border-radius:999px;background:rgba(8,4,5,.78);color:#ffe9bd;font-size:9px;font-weight:950;line-height:1;backdrop-filter:blur(9px);box-shadow:0 7px 22px rgba(0,0,0,.35);pointer-events:none}
+.tap-hint svg{width:15px;height:15px;flex:0 0 auto}
+.product-art:hover .tap-hint,.product-art:focus-visible .tap-hint{background:rgba(111,62,12,.9)}
+.modal-art{position:relative;touch-action:pan-y}
+.modal-counter{position:absolute;z-index:3;top:12px;right:12px;padding:7px 10px;border:1px solid rgba(255,226,161,.28);border-radius:999px;background:rgba(8,4,5,.76);color:#ffe8b5;font-size:9px;font-weight:950;backdrop-filter:blur(8px)}
+html[dir="ltr"] .modal-counter{right:auto;left:12px}
+.swipe-hint{position:absolute;z-index:3;left:50%;bottom:10px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,226,161,.22);background:rgba(8,4,5,.75);color:#f8dfae;font-size:9px;font-weight:900;white-space:nowrap;backdrop-filter:blur(8px)}
+.swipe-hint svg{width:16px;height:16px}
+.modal-action-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.modal-order{width:100%;min-height:47px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:linear-gradient(135deg,#25d366,#0b7c3a);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:950}
+.modal-order svg{width:20px;height:20px}
+.product-modal{width:min(92vw,470px);max-width:calc(100vw - 18px);max-height:calc(100svh - 20px)}
+@supports(height:100dvh){.product-modal{max-height:calc(100dvh - 20px)}}
+.cart-drawer,.assistant-panel{max-width:100vw}
+input,textarea,button,a{max-width:100%}
+@media(min-width:700px){
+  .hero-frame{min-height:clamp(650px,78svh,760px)}
+  @supports(height:100dvh){.hero-frame{min-height:clamp(650px,78dvh,760px)}}
+  .tap-hint{font-size:10px;min-height:32px}
+  .modal-action-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:430px){
+  .hero{padding-top:12px}
+  .hero-frame{min-height:clamp(535px,76svh,610px)}
+  @supports(height:100dvh){.hero-frame{min-height:clamp(535px,76dvh,610px)}}
+  .hero-copy{bottom:17px}
+  .hero h1{font-size:clamp(32px,11vw,46px)}
+  .hero p{font-size:12px;line-height:1.75}
+  .hero-actions{gap:6px;margin-top:12px}
+  .hero-actions a{min-height:43px;font-size:10px;border-radius:14px}
+}
+@media(max-width:340px){
+  .shell{padding-left:7px;padding-right:7px}
+  .header{padding-inline:8px}
+  .brand{gap:5px}.brand-mark{width:34px;height:34px}.brand small{display:none}.brand b{font-size:11px}
+  .header-actions{gap:3px}.icon-btn{width:33px;height:33px}.lang-btn{min-width:39px;padding:0 5px;font-size:9px}
+  .hero-frame{min-height:520px}.hero-copy{inset-inline:10px}.hero-actions{gap:4px}.hero-actions a{font-size:8px;padding-inline:2px}
+  .products{gap:6px}.product-info{padding:8px 6px}.product-name{font-size:11px;min-height:35px}.product-variant{font-size:8px}.price{font-size:14px}
+  .tap-hint{inset-inline:5px;bottom:5px;padding:4px 6px;font-size:8px}.tap-hint svg{width:13px;height:13px}
+}
+@media(max-height:560px) and (orientation:landscape){
+  .hero-frame{min-height:500px}
+  .hero-frame::before{background-position:center 29%}
+  .hero-copy{bottom:14px}
+  .hero h1{font-size:38px;margin:8px 0 5px}
+  .hero p{font-size:11px;line-height:1.55}
+  .hero-actions{margin-top:9px}
+}
+
 </style>
 </head>
 <body>
@@ -115,9 +182,14 @@ html[dir="ltr"] body{font-family:Arial,Tahoma,sans-serif}html[dir="ltr"] .ribbon
             <a href="https://maps.app.goo.gl/wea7VU3DVqrLBf5j8?g_st=ic" target="_blank" rel="noopener" data-i18n="location">الموقع</a>
           </div>
         </div>
-        <a class="scroll-cue" href="#collection" data-i18n-aria="scrollDown" aria-label="انزل للأسفل"><span data-i18n="scrollDown">اكتشف المجموعة</span><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></a>
       </div>
     </section>
+    <div class="scroll-guide-wrap">
+      <a class="scroll-cue" href="#collection" data-i18n-aria="scrollDown" aria-label="انزل للأسفل">
+        <span data-i18n="scrollDown">اكتشف المجموعة</span>
+        <span class="scroll-circle"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+      </a>
+    </div>
 
     <div class="ribbon" aria-hidden="true"><div class="ribbon-track">
       <span>✦ <span data-i18n="uniformPrice">السعر الموحد لكل عطر</span> <b data-i18n="priceShort">35,000 د.ع</b></span>
@@ -164,8 +236,14 @@ html[dir="ltr"] body{font-family:Arial,Tahoma,sans-serif}html[dir="ltr"] .ribbon
 <div class="overlay" id="productOverlay" aria-hidden="true">
   <section class="product-modal" role="dialog" aria-modal="true" data-i18n-aria="productDetails">
     <button class="modal-close" id="modalClose" type="button" data-i18n-aria="close">×</button>
-    <div class="modal-art" id="modalArt"></div>
-    <div class="modal-body"><h3 id="modalName"></h3><div class="variant" id="modalVariant"></div><div class="price" id="modalPrice"></div><p data-i18n="modalText">إصدار من مجموعة عطور السعادة. لمزيد من التفاصيل، يمكن التواصل مباشرة عبر واتساب.</p><div class="modal-nav"><button id="prevProduct" type="button" data-i18n-aria="previous">‹</button><button id="nextProduct" type="button" data-i18n-aria="next">›</button></div><button class="modal-add" id="modalAdd" type="button" data-i18n="addToCart">أضف إلى السلة</button></div>
+    <div class="modal-art" id="modalArt">
+      <span class="modal-counter" id="modalCounter"></span>
+      <span class="swipe-hint"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"></path></svg><span data-i18n="swipeHint">اسحب للتنقل</span></span>
+    </div>
+    <div class="modal-body"><h3 id="modalName"></h3><div class="variant" id="modalVariant"></div><div class="price" id="modalPrice"></div><p data-i18n="modalText">إصدار من مجموعة عطور السعادة. لمزيد من التفاصيل، يمكن التواصل مباشرة عبر واتساب.</p><div class="modal-nav"><button id="prevProduct" type="button" data-i18n-aria="previous">‹</button><button id="nextProduct" type="button" data-i18n-aria="next">›</button></div><div class="modal-action-grid">
+      <button class="modal-add" id="modalAdd" type="button" data-i18n="addToCart">أضف إلى السلة</button>
+      <button class="modal-order" id="modalOrder" type="button"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.5Z"></path><path d="M9 8.5c.5 2.4 2.1 4 4.5 5l1.2-1.2 2 .9c.2.1.3.3.2.5-.4 1.2-1.3 1.8-2.5 1.8-3.7-.2-6.8-3.3-7-7 0-1.2.6-2.1 1.8-2.5.2-.1.4 0 .5.2l.9 2L9 8.5Z"></path></svg><span data-i18n="orderThis">اطلب هذا العطر الآن</span></button>
+    </div></div>
   </section>
 </div>
 
@@ -221,8 +299,8 @@ const products=[
 {id:16,ar:{name:'قصة السعادة',variant:'الأبيض'},en:{name:'Qissat Al Saadah',variant:'White'}}
 ];
 const i18n={
-ar:{title:'عطور السعادة | المتجر الرسمي',description:'مجموعة عطور السعادة - تصفح العطور وأضفها إلى السلة وأرسل طلبك مباشرة عبر واتساب.',backTop:'العودة إلى البداية',brandName:'عطور السعادة',brandSub:'متجر العطور',instagram:'إنستغرام',location:'الموقع',eyebrow:'حكاية عطر تبدأ من السعادة',heroFirst:'عطور',heroSecond:'السعادة',heroText:'اختر عطرك، أضفه إلى السلة، وأرسل الطلب مباشرة عبر واتساب بخطوات واضحة وسريعة.',browse:'تصفح العطور',whatsapp:'واتساب',scrollDown:'اكتشف المجموعة',uniformPrice:'السعر الموحد لكل عطر',priceShort:'35,000 د.ع',smartOrder:'سلة ذكية وطلب مباشر عبر واتساب',collectionTitle:'مجموعة السعادة',collectionText:'اضغط على صورة أي عطر لمشاهدته بحجم أوضح، أو أضفه مباشرة إلى السلة.',smartCart:'سلة ذكية',smartCartText:'تعديل الكمية وحساب المجموع تلقائياً',directOrder:'طلب مباشر',directOrderText:'إرسال تفاصيل الطلب كاملة عبر واتساب',quickAccess:'وصول سريع',quickAccessText:'فتح موقع المتجر مباشرة على الخريطة',contactTitle:'تواصل معنا',contactText:'للاستفسار عن العطور أو إتمام الطلب، اختر الطريقة المناسبة.',designedBy:'تم تصميم وتطوير الموقع من فريق LINKO',linkoText:'حلول رقمية وأنظمة تقنية مصممة باحتراف، سرعة واهتمام بالتفاصيل.',contactLinko:'تواصل مع فريق LINKO عبر واتساب',footerBrand:'عطور السعادة',footerOrder:'الطلب عبر واتساب: 07744442973',cart:'السلة',quickAssistant:'مساعد سريع',productDetails:'تفاصيل العطر',close:'إغلاق',modalText:'إصدار من مجموعة عطور السعادة. لمزيد من التفاصيل، يمكن التواصل مباشرة عبر واتساب.',previous:'السابق',next:'التالي',addToCart:'أضف إلى السلة',shoppingCart:'سلة المشتريات',orderCart:'سلة الطلب',total:'المجموع',fullName:'الاسم الكامل',phoneNumber:'رقم الهاتف',province:'المحافظة',fullAddress:'العنوان بالتفصيل',notes:'ملاحظات إضافية (اختياري)',sendWhatsapp:'إرسال الطلب عبر واتساب',clearCart:'تفريغ السلة',added:'تمت الإضافة إلى السلة',assistantTitle:'مساعد عطور السعادة',assistantSub:'إجابات سريعة قبل الطلب',suggestedQuestions:'أسئلة مقترحة',askPlaceholder:'اكتب سؤالك هنا...',send:'إرسال',emptyCart:'السلة فارغة حالياً',remove:'حذف',writeNamePhone:'اكتب الاسم ورقم الهاتف',addFirst:'أضف عطراً إلى السلة أولاً',cartCleared:'تم تفريغ السلة',welcome:'أهلاً وسهلاً بك 🌹\nأنا المساعد السريع لمتجر عطور السعادة. اختر سؤالاً أو اكتب استفسارك.',fallback:'ما عندي معلومة مؤكدة عن هذا التفصيل. تقدر تتواصل مباشرة مع المتجر عبر واتساب للحصول على إجابة دقيقة.',orderGreeting:'السلام عليكم، أرغب بإرسال طلب جديد من موقع عطور السعادة:',name:'الاسم',phone:'رقم الهاتف',order:'الطلب',notesLabel:'الملاحظات',currency:'د.ع'},
-en:{title:'Al Saadah Perfumes | Official Store',description:'Explore Al Saadah perfumes, add products to your smart cart and send your order directly via WhatsApp.',backTop:'Back to top',brandName:'Al Saadah Perfumes',brandSub:'Perfume Store',instagram:'Instagram',location:'Location',eyebrow:'A fragrance story that begins with happiness',heroFirst:'Al Saadah',heroSecond:'Perfumes',heroText:'Choose your fragrance, add it to the cart, and send your order directly through WhatsApp in a few clear steps.',browse:'Browse Perfumes',whatsapp:'WhatsApp',scrollDown:'Discover the collection',uniformPrice:'One price for every fragrance',priceShort:'IQD 35,000',smartOrder:'Smart cart and direct WhatsApp ordering',collectionTitle:'The Al Saadah Collection',collectionText:'Tap any fragrance image for a closer view, or add it directly to your cart.',smartCart:'Smart Cart',smartCartText:'Change quantities and calculate totals automatically',directOrder:'Direct Order',directOrderText:'Send all order details directly through WhatsApp',quickAccess:'Quick Access',quickAccessText:'Open the store location directly in Maps',contactTitle:'Contact Us',contactText:'For fragrance questions or to complete an order, choose the channel that suits you.',designedBy:'Designed and developed by LINKO Team',linkoText:'Professional digital solutions and technical systems built with speed and attention to detail.',contactLinko:'Contact LINKO Team on WhatsApp',footerBrand:'Al Saadah Perfumes',footerOrder:'WhatsApp orders: 07744442973',cart:'Cart',quickAssistant:'Quick Assistant',productDetails:'Fragrance details',close:'Close',modalText:'An edition from the Al Saadah fragrance collection. For more details, contact the store directly on WhatsApp.',previous:'Previous',next:'Next',addToCart:'Add to Cart',shoppingCart:'Shopping cart',orderCart:'Order Cart',total:'Total',fullName:'Full name',phoneNumber:'Phone number',province:'Province',fullAddress:'Full address',notes:'Additional notes (optional)',sendWhatsapp:'Send Order via WhatsApp',clearCart:'Clear Cart',added:'Added to cart',assistantTitle:'Al Saadah Assistant',assistantSub:'Quick answers before ordering',suggestedQuestions:'Suggested questions',askPlaceholder:'Type your question...',send:'Send',emptyCart:'Your cart is currently empty',remove:'Remove',writeNamePhone:'Please enter your name and phone number',addFirst:'Add a fragrance to the cart first',cartCleared:'Cart cleared',welcome:'Welcome 🌹\nI am the quick assistant for Al Saadah Perfumes. Choose a question or type your inquiry.',fallback:'I do not have confirmed information about that detail. Please contact the store directly on WhatsApp for an accurate answer.',orderGreeting:'Hello, I would like to place a new order from the Al Saadah Perfumes website:',name:'Name',phone:'Phone',order:'Order',notesLabel:'Notes',currency:'IQD'}
+ar:{title:'عطور السعادة | المتجر الرسمي',description:'مجموعة عطور السعادة - تصفح العطور وأضفها إلى السلة وأرسل طلبك مباشرة عبر واتساب.',backTop:'العودة إلى البداية',brandName:'عطور السعادة',brandSub:'متجر العطور',instagram:'إنستغرام',location:'الموقع',eyebrow:'حكاية عطر تبدأ من السعادة',heroFirst:'عطور',heroSecond:'السعادة',heroText:'اختر عطرك، أضفه إلى السلة، وأرسل الطلب مباشرة عبر واتساب بخطوات واضحة وسريعة.',browse:'تصفح العطور',whatsapp:'واتساب',scrollDown:'اكتشف المجموعة',tapImage:'اضغط للتفاصيل',swipeHint:'اسحب للتنقل',orderThis:'اطلب هذا العطر الآن',productNumber:'العطر',uniformPrice:'السعر الموحد لكل عطر',priceShort:'35,000 د.ع',smartOrder:'سلة ذكية وطلب مباشر عبر واتساب',collectionTitle:'مجموعة السعادة',collectionText:'اضغط على صورة أي عطر لمشاهدته بحجم أوضح، أو أضفه مباشرة إلى السلة.',smartCart:'سلة ذكية',smartCartText:'تعديل الكمية وحساب المجموع تلقائياً',directOrder:'طلب مباشر',directOrderText:'إرسال تفاصيل الطلب كاملة عبر واتساب',quickAccess:'وصول سريع',quickAccessText:'فتح موقع المتجر مباشرة على الخريطة',contactTitle:'تواصل معنا',contactText:'للاستفسار عن العطور أو إتمام الطلب، اختر الطريقة المناسبة.',designedBy:'تم تصميم وتطوير الموقع من فريق LINKO',linkoText:'حلول رقمية وأنظمة تقنية مصممة باحتراف، سرعة واهتمام بالتفاصيل.',contactLinko:'تواصل مع فريق LINKO عبر واتساب',footerBrand:'عطور السعادة',footerOrder:'الطلب عبر واتساب: 07744442973',cart:'السلة',quickAssistant:'مساعد سريع',productDetails:'تفاصيل العطر',close:'إغلاق',modalText:'إصدار من مجموعة عطور السعادة. لمزيد من التفاصيل، يمكن التواصل مباشرة عبر واتساب.',previous:'السابق',next:'التالي',addToCart:'أضف إلى السلة',shoppingCart:'سلة المشتريات',orderCart:'سلة الطلب',total:'المجموع',fullName:'الاسم الكامل',phoneNumber:'رقم الهاتف',province:'المحافظة',fullAddress:'العنوان بالتفصيل',notes:'ملاحظات إضافية (اختياري)',sendWhatsapp:'إرسال الطلب عبر واتساب',clearCart:'تفريغ السلة',added:'تمت الإضافة إلى السلة',assistantTitle:'مساعد عطور السعادة',assistantSub:'إجابات سريعة قبل الطلب',suggestedQuestions:'أسئلة مقترحة',askPlaceholder:'اكتب سؤالك هنا...',send:'إرسال',emptyCart:'السلة فارغة حالياً',remove:'حذف',writeNamePhone:'اكتب الاسم ورقم الهاتف',addFirst:'أضف عطراً إلى السلة أولاً',cartCleared:'تم تفريغ السلة',welcome:'أهلاً وسهلاً بك 🌹\nأنا المساعد السريع لمتجر عطور السعادة. اختر سؤالاً أو اكتب استفسارك.',fallback:'ما عندي معلومة مؤكدة عن هذا التفصيل. تقدر تتواصل مباشرة مع المتجر عبر واتساب للحصول على إجابة دقيقة.',orderGreeting:'السلام عليكم، أرغب بإرسال طلب جديد من موقع عطور السعادة:',name:'الاسم',phone:'رقم الهاتف',order:'الطلب',notesLabel:'الملاحظات',currency:'د.ع'},
+en:{title:'Al Saadah Perfumes | Official Store',description:'Explore Al Saadah perfumes, add products to your smart cart and send your order directly via WhatsApp.',backTop:'Back to top',brandName:'Al Saadah Perfumes',brandSub:'Perfume Store',instagram:'Instagram',location:'Location',eyebrow:'A fragrance story that begins with happiness',heroFirst:'Al Saadah',heroSecond:'Perfumes',heroText:'Choose your fragrance, add it to the cart, and send your order directly through WhatsApp in a few clear steps.',browse:'Browse Perfumes',whatsapp:'WhatsApp',scrollDown:'Discover the collection',tapImage:'Tap for details',swipeHint:'Swipe to browse',orderThis:'Order this fragrance now',productNumber:'Fragrance',uniformPrice:'One price for every fragrance',priceShort:'IQD 35,000',smartOrder:'Smart cart and direct WhatsApp ordering',collectionTitle:'The Al Saadah Collection',collectionText:'Tap any fragrance image for a closer view, or add it directly to your cart.',smartCart:'Smart Cart',smartCartText:'Change quantities and calculate totals automatically',directOrder:'Direct Order',directOrderText:'Send all order details directly through WhatsApp',quickAccess:'Quick Access',quickAccessText:'Open the store location directly in Maps',contactTitle:'Contact Us',contactText:'For fragrance questions or to complete an order, choose the channel that suits you.',designedBy:'Designed and developed by LINKO Team',linkoText:'Professional digital solutions and technical systems built with speed and attention to detail.',contactLinko:'Contact LINKO Team on WhatsApp',footerBrand:'Al Saadah Perfumes',footerOrder:'WhatsApp orders: 07744442973',cart:'Cart',quickAssistant:'Quick Assistant',productDetails:'Fragrance details',close:'Close',modalText:'An edition from the Al Saadah fragrance collection. For more details, contact the store directly on WhatsApp.',previous:'Previous',next:'Next',addToCart:'Add to Cart',shoppingCart:'Shopping cart',orderCart:'Order Cart',total:'Total',fullName:'Full name',phoneNumber:'Phone number',province:'Province',fullAddress:'Full address',notes:'Additional notes (optional)',sendWhatsapp:'Send Order via WhatsApp',clearCart:'Clear Cart',added:'Added to cart',assistantTitle:'Al Saadah Assistant',assistantSub:'Quick answers before ordering',suggestedQuestions:'Suggested questions',askPlaceholder:'Type your question...',send:'Send',emptyCart:'Your cart is currently empty',remove:'Remove',writeNamePhone:'Please enter your name and phone number',addFirst:'Add a fragrance to the cart first',cartCleared:'Cart cleared',welcome:'Welcome 🌹\nI am the quick assistant for Al Saadah Perfumes. Choose a question or type your inquiry.',fallback:'I do not have confirmed information about that detail. Please contact the store directly on WhatsApp for an accurate answer.',orderGreeting:'Hello, I would like to place a new order from the Al Saadah Perfumes website:',name:'Name',phone:'Phone',order:'Order',notesLabel:'Notes',currency:'IQD'}
 };
 const faqs={
 ar:[
@@ -293,19 +371,23 @@ function applyLanguage(){
 }
 function loadCart(){try{cart=JSON.parse(localStorage.getItem('alsaadah-cart')||'{}')}catch{cart={}};renderCart()}
 function saveCart(){try{localStorage.setItem('alsaadah-cart',JSON.stringify(cart))}catch{}renderCart()}
-function productCard(p,i){const txt=pText(p);return `<article class="product"><div class="product-inner"><button class="product-art" type="button" aria-label="${currentLang==='ar'?'عرض':'View'} ${txt.name}" data-open="${i}" style="background-position:${positions(i)}"></button><div class="product-info"><h3 class="product-name">${txt.name}</h3><span class="product-variant">${txt.variant}</span><div class="price">${priceHTML()}</div><button class="add-btn" type="button" data-add="${p.id}">${t('addToCart')}</button></div></div></article>`}
+function productCard(p,i){const txt=pText(p);return `<article class="product"><div class="product-inner"><button class="product-art" type="button" aria-label="${currentLang==='ar'?'عرض':'View'} ${txt.name}" data-open="${i}" style="background-position:${positions(i)}"><span class="tap-hint"><svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg><span>${t('tapImage')}</span></span></button><div class="product-info"><h3 class="product-name">${txt.name}</h3><span class="product-variant">${txt.variant}</span><div class="price">${priceHTML()}</div><button class="add-btn" type="button" data-add="${p.id}">${t('addToCart')}</button></div></div></article>`}
 function renderProducts(){productsEl.innerHTML=products.map(productCard).join('')}
 function toast(msg=t('added')){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>el.classList.remove('show'),1500)}
 function add(id){cart[id]=(cart[id]||0)+1;saveCart();toast()}
 function count(){return Object.values(cart).reduce((a,b)=>a+b,0)}
 function renderCart(){const c=count();$('#cartCount').textContent=c;$('#cartFab').classList.toggle('show',c>0);const list=$('#cartItems');const entries=Object.entries(cart).filter(([,q])=>q>0);if(!entries.length){list.innerHTML=`<div class="empty">${t('emptyCart')}</div>`}else{list.innerHTML=entries.map(([id,q])=>{const p=products.find(x=>x.id==id),i=products.indexOf(p),txt=pText(p);return `<div class="cart-item"><div class="mini-art" style="background-position:${positions(i)}"></div><div><b>${txt.name}</b><small>${totalText(PRICE*q)}</small><button class="remove" data-remove="${id}">${t('remove')}</button></div><div class="qty"><button data-minus="${id}">−</button><span>${q}</span><button data-plus="${id}">+</button></div></div>`}).join('')}$('#cartTotal').textContent=totalText(c*PRICE)}
-function renderProductModal(){const p=products[activeIndex];if(!p)return;const txt=pText(p);$('#modalName').textContent=txt.name;$('#modalVariant').textContent=txt.variant;$('#modalPrice').innerHTML=priceHTML()}
+function renderProductModal(){const p=products[activeIndex];if(!p)return;const txt=pText(p);$('#modalName').textContent=txt.name;$('#modalVariant').textContent=txt.variant;$('#modalPrice').innerHTML=priceHTML();$('#modalCounter').textContent=`${t('productNumber')} ${format(activeIndex+1)} / ${format(products.length)}`}
 function openProduct(i){activeIndex=(i+products.length)%products.length;$('#modalArt').style.backgroundPosition=positions(activeIndex);renderProductModal();$('#productOverlay').classList.add('open');$('#productOverlay').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 function closeProduct(){$('#productOverlay').classList.remove('open');$('#productOverlay').setAttribute('aria-hidden','true');document.body.style.overflow=''}
 function openCart(){$('#cartOverlay').classList.add('open');$('#cartDrawer').classList.add('open');document.body.style.overflow='hidden'}
 function closeCart(){$('#cartOverlay').classList.remove('open');$('#cartDrawer').classList.remove('open');document.body.style.overflow=''}
 productsEl.addEventListener('click',e=>{const o=e.target.closest('[data-open]'),a=e.target.closest('[data-add]');if(o)openProduct(+o.dataset.open);if(a)add(+a.dataset.add)});
 $('#modalClose').onclick=closeProduct;$('#productOverlay').onclick=e=>{if(e.target.id==='productOverlay')closeProduct()};$('#prevProduct').onclick=()=>openProduct(activeIndex-1);$('#nextProduct').onclick=()=>openProduct(activeIndex+1);$('#modalAdd').onclick=()=>add(products[activeIndex].id);
+$('#modalOrder').onclick=()=>{const p=products[activeIndex],txt=pText(p);const message=currentLang==='ar'?`السلام عليكم، أرغب بطلب ${txt.name} - ${txt.variant}\nالسعر: ${totalText(PRICE)}`:`Hello, I would like to order ${txt.name} - ${txt.variant}\nPrice: ${totalText(PRICE)}`;window.open(`https://wa.me/${STORE_WHATSAPP}?text=${encodeURIComponent(message)}`,'_blank')};
+let productTouchStartX=0;
+$('#modalArt').addEventListener('touchstart',e=>{productTouchStartX=e.changedTouches[0].clientX},{passive:true});
+$('#modalArt').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-productTouchStartX;if(Math.abs(dx)<48)return;openProduct(activeIndex+(dx<0?1:-1))},{passive:true});
 $('#cartFab').onclick=openCart;$('#cartClose').onclick=closeCart;$('#cartOverlay').onclick=closeCart;
 $('#cartItems').addEventListener('click',e=>{const plus=e.target.dataset.plus,minus=e.target.dataset.minus,remove=e.target.dataset.remove;if(plus){cart[plus]=(cart[plus]||0)+1;saveCart()}if(minus){cart[minus]=Math.max(0,(cart[minus]||0)-1);if(!cart[minus])delete cart[minus];saveCart()}if(remove){delete cart[remove];saveCart()}});
 $('#clearCart').onclick=()=>{cart={};saveCart();toast(t('cartCleared'))};
