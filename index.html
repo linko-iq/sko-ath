@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- EBDAA_MEDIA_FIREBASE_ADMIN_DETAILS_V2_20260817 -->
+<!-- EBDAA_MEDIA_FINAL_ADMIN_DIRECT_V3_20260817 -->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -172,7 +172,7 @@ const FIREBASE_CONFIG={
   messagingSenderId:"1081194963110",
   appId:"1:1081194963110:web:9a131080ebe988b35e5467"
 };
-const FIREBASE_VERSION="12.16.0",COL="customers",ADMIN_SECRET="102030",EMPLOYEE_EMAIL="hhuux10@gmail.com";
+const FIREBASE_VERSION="12.16.0",COL="customers",ADMIN_SECRET="010203",EMPLOYEE_EMAIL="hhuux10@gmail.com";
 const STATUS={waiting:"قيد الانتظار",review:"قيد المراجعة",processing:"قيد المعالجة",completed:"مكتمل"};
 const SEC={support:"الدعم",recovery:"استرجاع الحسابات"};
 const PLAT=["Instagram","TikTok","Facebook","أخرى"],PAY=["نقدي","زين كاش","كي كارد","تحويل","أخرى"];
@@ -418,7 +418,16 @@ function modal(section,row=null){
 </div><input type="hidden" name="editId" value="${row?row.id:""}"><div class="form-actions"><button id="save" class="btn gold">${row?"حفظ التعديل":"حفظ العميل"}</button><button class="btn soft" type="button" data-close>إلغاء</button></div></form></section></div>`}
 function details(r){return`<div class="modal-bg" data-backdrop><section class="modal"><header class="modal-head"><h3>تفاصيل العميل</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="meta-grid details-grid">${[["الاسم",r.customerName],["اليوزر",r.username],["رقم الجهاز",r.deviceNumber],["القسم",SEC[r.section]],["نوع الاشتراك",r.subscriptionType],["الكمية",r.quantity],["المنصة",r.platform],["نوع الدفع",r.paymentType],["المبلغ",money(r.amount)],["نوع المهمة",r.taskType],["تاريخ العميل",formatCustomerDate(r.customerDate)],["الموظف",r.employeeName],["الحالة",STATUS[r.status]]].map(([a,b])=>`<div class="meta"><small>${a}</small><b>${esc(b??"-")}</b></div>`).join("")}</div><div class="meta details-notes" style="margin-top:12px;line-height:1.8"><small>الملاحظات</small><b>${esc(r.notes||"-")}</b></div></div></section></div>`}
 function quick(){return`<div class="modal-bg" data-backdrop><section class="modal" style="width:min(570px,100%)"><header class="modal-head"><h3>اختر القسم</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="services"><article class="service"><div class="ico">${icon("headset")}</div><h3>الدعم</h3><button class="btn gold full" type="button" data-add="support">اختيار</button></article><article class="service"><div class="ico">${icon("key")}</div><h3>استرجاع الحسابات</h3><button class="btn gold full" type="button" data-add="recovery">اختيار</button></article></div></div></section></div>`}
-function open(h){$("#modal").innerHTML=h}function close(){$("#modal").innerHTML=""}
+function open(h){$("#modal").innerHTML=h}
+function close(){
+  const wasDirectAdmin=!!$("#modal [data-admin-panel]");
+  $("#modal").innerHTML="";
+  if(wasDirectAdmin&&adminDirectSession){
+    adminDirectSession=false;
+    adminDirectMode=false;
+    fb().then(f=>f.u.signOut(f.auth)).catch(err=>console.error("Admin signout:",err));
+  }
+}
 function statsFromRows(allRows){
   const r=allRows.filter(x=>x.deleted!==true);
   const deletedRows=allRows.filter(x=>x.deleted===true);
@@ -472,6 +481,8 @@ function adminCustomerCards(rows){
   `).join("");
 }
 
+let adminDirectMode=false;
+let adminDirectSession=false;
 let adminTapCount=0,adminTapTimer=null;
 function adminLogoTap(){
   adminTapCount++;
@@ -494,16 +505,12 @@ window.__openEbdaaAdmin=async function(){
     return;
   }
 
-  try{
-    /*
-      لا يوجد حساب Firebase مستقل للإدارة.
-      الإدارة تستخدم نفس جلسة Firebase الموثقة الموجودة بالنظام،
-      ثم تسحب أحدث البيانات مباشرة من Firestore عند فتح اللوحة.
-    */
-    const f=await ensureAuthorized();
+  let f=null;
+  let createdDirectSession=false;
 
+  try{
     open(`<div class="modal-bg" data-backdrop>
-      <section class="modal" style="width:min(1120px,100%)">
+      <section class="modal" data-admin-panel style="width:min(1120px,100%)">
         <header class="modal-head">
           <h3>لوحة الإدارة</h3>
           <button class="x" data-close aria-label="إغلاق">
@@ -513,10 +520,35 @@ window.__openEbdaaAdmin=async function(){
           </button>
         </header>
         <div class="modal-body">
-          <div class="empty"><b>جاري تحميل بيانات الإدارة…</b><span>يتم جلب البيانات مباشرة من قاعدة البيانات.</span></div>
+          <div class="empty">
+            <b>جاري فتح الإدارة…</b>
+            <span>يتم تحميل بيانات العملاء والمبالغ.</span>
+          </div>
         </div>
       </section>
     </div>`);
+
+    f=await fb();
+
+    // إذا لم تكن هناك جلسة موظفين، نسجل دخول Firebase بالخلفية
+    // باستخدام نفس الرمز الذي أدخله المدير، بدون إظهار بوابة الموظفين.
+    if(!authorizedUser(f.auth.currentUser)){
+      adminDirectMode=true;
+
+      const cred=await f.u.signInWithEmailAndPassword(
+        f.auth,
+        EMPLOYEE_EMAIL,
+        code
+      );
+
+      if(!authorizedUser(cred.user)){
+        try{await f.u.signOut(f.auth)}catch{}
+        throw new Error("UNAUTHORIZED_EMPLOYEE");
+      }
+
+      adminDirectSession=true;
+      createdDirectSession=true;
+    }
 
     const snap=await f.s.getDocs(
       f.s.query(
@@ -565,12 +597,27 @@ window.__openEbdaaAdmin=async function(){
       </div>
     `;
   }catch(err){
-    console.error("Admin Firestore:",err);
+    console.error("Admin direct:",err);
 
-    if(String(err&&err.message||"")==="UNAUTHORIZED_EMPLOYEE"){
-      toast("افتح الإدارة بعد تسجيل دخول النظام بحساب الموظفين","error");
+    if(createdDirectSession||adminDirectSession){
+      adminDirectSession=false;
+      adminDirectMode=false;
+      if(f){
+        try{await f.u.signOut(f.auth)}catch{}
+      }
     }else{
-      toast("تعذر تحميل بيانات الإدارة","error");
+      adminDirectMode=false;
+    }
+
+    close();
+
+    const codeName=String(err&&err.code||"");
+    if(codeName.includes("invalid-credential")||codeName.includes("wrong-password")||codeName.includes("user-not-found")){
+      toast("رمز الإدارة غير مطابق لحساب النظام","error");
+    }else if(codeName.includes("network")){
+      toast("تعذر الاتصال، تحقق من الإنترنت","error");
+    }else{
+      toast("تعذر فتح الإدارة حالياً","error");
     }
   }
 }
@@ -594,6 +641,8 @@ document.addEventListener("submit",async e=>{
     btn.disabled=true;
     btn.textContent="جاري التحقق…";
     try{
+      adminDirectMode=false;
+      adminDirectSession=false;
       const f=await fb();
       const cred=await f.u.signInWithEmailAndPassword(
         f.auth,
@@ -656,6 +705,13 @@ async function bootAuthentication(){
     const f=await fb();
     f.u.onAuthStateChanged(f.auth,async user=>{
       if(user&&authorizedUser(user)){
+        if(adminDirectMode){
+          // دخول الإدارة المباشر: لا نفتح واجهة الموظفين بالخلفية.
+          $("#app").classList.add("hidden");
+          $("#auth").classList.remove("hidden");
+          return;
+        }
+
         $("#auth").classList.add("hidden");
         $("#app").classList.remove("hidden");
         try{
