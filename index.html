@@ -49,7 +49,54 @@ body,button,input,select,textarea{-webkit-text-size-adjust:100%}button,input,sel
 @media(max-width:1050px){.kpis,.admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:880px){.auth{grid-template-columns:1fr}.brand{display:none}.auth-panel{min-height:100dvh}.shell{display:block}.side{display:none}.content{padding:17px 13px}.top{padding:10px 14px}.mobile{display:grid;position:fixed;z-index:55;left:10px;right:10px;bottom:calc(9px + var(--safe));grid-template-columns:repeat(5,1fr);padding:7px;border-radius:20px;background:rgba(11,11,13,.96);box-shadow:0 18px 50px rgba(0,0,0,.2)}.mobile button{border:0;background:transparent;color:#999ca4;border-radius:13px;min-height:50px;font-size:10px;font-weight:900}.mobile button.active{background:rgba(239,197,107,.11);color:var(--gold2)}}
 @media(max-width:680px){.top .theme-label{display:none}.top .btn{padding:0 12px}.top-actions{gap:6px}.login{padding:22px 17px;border-radius:27px}.hero{grid-template-columns:1fr;padding:21px}.hero-logo{position:absolute;left:17px;top:17px;width:72px;height:72px;opacity:.17}.services,.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.span2{grid-column:auto}.modal-bg{padding:0;align-items:end}.modal{width:100%;max-height:92dvh;border-radius:28px 28px 0 0}.modal-body{padding:17px 13px 24px}}
-img,svg{max-width:100%}.modal,.login,.hero,.service,.card,.kpi{min-width:0}</style>
+img,svg{max-width:100%}.modal,.login,.hero,.service,.card,.kpi{min-width:0}
+/* V4 usability + performance */
+.modal{overflow-y:auto!important;overflow-x:hidden!important}
+.modal-body,.form-grid,.field,.date-fields,.details-grid{width:100%;max-width:100%;min-width:0}
+.field{overflow-x:hidden}
+.input,.select,.textarea{width:100%;max-width:100%;min-width:0}
+.input,.select{height:54px}
+.select{-webkit-appearance:auto;appearance:auto}
+.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.date-wrap{grid-column:1/-1;display:grid;gap:8px;min-width:0}
+.date-fields{display:grid;grid-template-columns:.85fr 1.35fr .85fr;gap:8px}
+.date-part{display:grid;gap:6px;min-width:0}
+.date-part small{font-size:11px;color:var(--muted);font-weight:800}
+.date-part .input{text-align:center;padding:0 8px}
+.details-grid{overflow:hidden}
+.details-grid .meta{height:78px;min-height:78px;max-height:78px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.details-grid .meta b{white-space:normal!important;overflow-wrap:anywhere;word-break:break-word;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.details-notes{width:100%;max-width:100%;overflow:hidden}
+.details-notes b{white-space:pre-wrap!important;overflow-wrap:anywhere;word-break:break-word}
+.guide-card{margin-top:14px;background:linear-gradient(135deg,rgba(201,150,50,.10),rgba(201,150,50,.035));border:1px solid rgba(201,150,50,.26);border-radius:21px;padding:14px 16px;display:flex;align-items:center;gap:14px;overflow:hidden}
+.guide-icon{width:42px;height:42px;flex:0 0 42px;border-radius:14px;display:grid;place-items:center;background:var(--card);color:var(--gold);border:1px solid var(--line)}
+.guide-copy{min-width:0;flex:1}.guide-copy b{display:block;font-size:14px}.guide-copy small{display:block;margin-top:4px;color:var(--muted);line-height:1.6}
+.guide-arrow{display:grid;place-items:center;color:var(--gold);animation:guideMove 1.2s ease-in-out infinite}
+.guide-arrow .icon{width:24px;height:24px}
+.service,.card,.kpi{transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.service:active,.card:active,.kpi.click:active{transform:scale(.992)}
+.btn.gold .icon{transition:transform .16s ease}.btn.gold:active .icon{transform:scale(1.15)}
+@keyframes guideMove{0%,100%{transform:translateX(0)}50%{transform:translateX(-7px)}}
+@keyframes softIn{from{opacity:.45;transform:translateY(4px)}to{opacity:1;transform:none}}
+.cards .card{animation:softIn .18s ease both}
+body.theme-dark .guide-card{background:linear-gradient(135deg,rgba(214,164,61,.13),rgba(214,164,61,.035));border-color:rgba(214,164,61,.28)}
+body.theme-dark .guide-icon{background:#202126}
+@media(max-width:680px){
+  .date-fields{grid-template-columns:.82fr 1.36fr .82fr;gap:6px}
+  .date-part .input{font-size:13px;padding:0 5px}
+  .guide-card{padding:12px;gap:10px}
+  .details-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:390px){
+  .date-fields{grid-template-columns:.8fr 1.4fr .8fr}
+  .date-part .input{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .guide-arrow,.cards .card{animation:none!important}
+  .service,.card,.kpi,.btn.gold .icon{transition:none!important}
+}
+
+</style>
 </head>
 <body>
 <section id="auth" class="auth screen">
@@ -99,6 +146,62 @@ const FIREBASE_VERSION="12.16.0",COL="customers",ADMIN_SECRET="102030";
 const STATUS={waiting:"قيد الانتظار",review:"قيد المراجعة",processing:"قيد المعالجة",completed:"مكتمل"};
 const SEC={support:"الدعم",recovery:"استرجاع الحسابات"};
 const PLAT=["Instagram","TikTok","Facebook","أخرى"],PAY=["نقدي","زين كاش","كي كارد","تحويل","أخرى"];
+
+const MONTHS=[
+  ["01","كانون الثاني"],["02","شباط"],["03","آذار"],["04","نيسان"],
+  ["05","أيار"],["06","حزيران"],["07","تموز"],["08","آب"],
+  ["09","أيلول"],["10","تشرين الأول"],["11","تشرين الثاني"],["12","كانون الأول"]
+];
+function pad2(v){return String(v).padStart(2,"0")}
+function splitCustomerDate(value){
+  const m=clean(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const now=new Date();
+  return m
+    ? {year:m[1],month:m[2],day:m[3]}
+    : {year:String(now.getFullYear()),month:pad2(now.getMonth()+1),day:pad2(now.getDate())};
+}
+function monthLabel(num){
+  const key=pad2(num);
+  const row=MONTHS.find(x=>x[0]===key);
+  return row?`${row[0]} - ${row[1]}`:key;
+}
+function parseMonthInput(value){
+  const raw=clean(value).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));
+  const number=raw.match(/\d{1,2}/);
+  if(number){
+    const n=Number(number[0]);
+    if(n>=1&&n<=12)return pad2(n);
+  }
+  const normalized=raw.replace(/\s+/g," ").toLowerCase();
+  const byName=MONTHS.find(x=>normalized.includes(x[1].toLowerCase()));
+  return byName?byName[0]:"";
+}
+function buildCustomerDate(fd){
+  const year=Number(clean(fd.get("customerYear")));
+  const month=parseMonthInput(fd.get("customerMonth"));
+  const day=Number(clean(fd.get("customerDay")));
+  if(!Number.isInteger(year)||year<1900||year>2200||!month||!Number.isInteger(day)||day<1||day>31)return "";
+  const maxDay=new Date(year,Number(month),0).getDate();
+  if(day>maxDay)return "";
+  return `${year}-${month}-${pad2(day)}`;
+}
+function formatCustomerDate(value){
+  const p=splitCustomerDate(value);
+  const row=MONTHS.find(x=>x[0]===p.month);
+  return `${Number(p.day)} ${row?row[1]:p.month} ${p.year}`;
+}
+function yearOptions(){
+  const current=new Date().getFullYear();
+  let html="";
+  for(let y=current+1;y>=current-12;y--)html+=`<option value="${y}"></option>`;
+  return html;
+}
+function dayOptions(){
+  let html="";
+  for(let d=1;d<=31;d++)html+=`<option value="${d}"></option>`;
+  return html;
+}
+
 const LS="ebdaa_media_customers_v1";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],clean=v=>String(v??"").trim(),esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])),money=n=>new Intl.NumberFormat("ar-IQ").format(Number(n||0))+" د.ع";
 
@@ -169,32 +272,60 @@ const active=()=>state.rows.filter(x=>x.deleted!==true),deleted=()=>state.rows.f
 function setView(v){state.view=v;if(v==="home")state.section="";$$("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));render()}
 function info(){return{home:["الرئيسية","اختر القسم الذي تريد العمل عليه"],section:[SEC[state.section]||"القسم","لوحة عمل القسم"],follow:["المتابعة","راقب حالات العمل من مكان واحد"],customers:["جميع العملاء","بحث وتعديل وإدارة السجلات"],deleted:["سجل المحذوفين","استرجاع العملاء المحذوفين"]}[state.view]}
 function render(){let [a,b]=info();$("#title").textContent=a;$("#sub").textContent=b;$("#backBtn")?.classList.toggle("hidden",state.view==="home");if(state.loading){$("#root").innerHTML='<div class="empty"><b>جاري التحميل…</b></div>';return}$("#root").innerHTML=state.view==="home"?home():state.view==="section"?sectionView():state.view==="follow"?follow():state.view==="customers"?customers():trash()}
-function home(){return`<section class="hero"><div class="hero-copy"><small>EBDAA MEDIA</small><h1>نظام إبداع ميديا</h1><p>تسجيل العملاء ومتابعة المهام وتنظيم العمل من واجهة واحدة خفيفة وسريعة.</p></div><div class="hero-logo"><img src="${LOGO}"></div></section><div class="head"><div><h2>مختصر العمل</h2><p>نظرة سريعة على النظام</p></div></div><div class="kpis"><div class="kpi"><small>إجمالي العملاء</small><strong>${active().length}</strong></div><div class="kpi"><small>قيد الانتظار</small><strong>${status("waiting").length}</strong></div><div class="kpi"><small>قيد المعالجة</small><strong>${status("processing").length}</strong></div><div class="kpi"><small>مكتمل</small><strong>${status("completed").length}</strong></div></div><div class="head"><div><h2>اختر قسم العمل</h2><p>ابدأ من القسم المناسب</p></div></div><div class="services"><article class="service"><div class="ico">${icon("headset")}</div><h3>قسم الدعم</h3><p>الدعم، الترويج، التوثيق، الحماية والخدمات الأخرى.</p><button class="btn gold" type="button" data-section="support">دخول قسم الدعم</button></article><article class="service"><div class="ico">${icon("key")}</div><h3>استرجاع الحسابات</h3><p>تسجيل ومتابعة حالات استرجاع الحسابات.</p><button class="btn gold" type="button" data-section="recovery">دخول الاسترجاع</button></article></div>`}
+function home(){return`<section class="hero"><div class="hero-copy"><small>EBDAA MEDIA</small><h1>نظام إبداع ميديا</h1><p>تسجيل العملاء ومتابعة المهام وتنظيم العمل من واجهة واحدة خفيفة وسريعة.</p></div><div class="hero-logo"><img src="${LOGO}"></div></section><div class="guide-card">
+  <div class="guide-icon">${icon("activity")}</div>
+  <div class="guide-copy"><b>استخدام سريع</b><small>اختر القسم ← أضف العميل ← تابع حالته من صفحة المتابعة حتى يكتمل العمل.</small></div>
+  <div class="guide-arrow" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></div>
+</div><div class="head"><div><h2>مختصر العمل</h2><p>نظرة سريعة على النظام</p></div></div><div class="kpis"><div class="kpi"><small>إجمالي العملاء</small><strong>${active().length}</strong></div><div class="kpi"><small>قيد الانتظار</small><strong>${status("waiting").length}</strong></div><div class="kpi"><small>قيد المعالجة</small><strong>${status("processing").length}</strong></div><div class="kpi"><small>مكتمل</small><strong>${status("completed").length}</strong></div></div><div class="head"><div><h2>اختر قسم العمل</h2><p>ابدأ من القسم المناسب</p></div></div><div class="services"><article class="service"><div class="ico">${icon("headset")}</div><h3>قسم الدعم</h3><p>الدعم، الترويج، التوثيق، الحماية والخدمات الأخرى.</p><button class="btn gold" type="button" data-section="support">دخول قسم الدعم</button></article><article class="service"><div class="ico">${icon("key")}</div><h3>استرجاع الحسابات</h3><p>تسجيل ومتابعة حالات استرجاع الحسابات.</p><button class="btn gold" type="button" data-section="recovery">دخول الاسترجاع</button></article></div>`}
 function sectionView(){let r=section(state.section);return`<section class="hero"><div class="hero-copy"><small>${SEC[state.section]}</small><h1>${SEC[state.section]}</h1><p>كل عميل يضاف هنا يحفظ تلقائياً تحت هذا القسم.</p></div><div class="hero-logo"><img src="${LOGO}"></div></section><div class="head"><div><h2>حالة القسم</h2><p>مختصر سريع</p></div><button class="btn gold" type="button" data-add="${state.section}">${icon("plus")}<span>إضافة عميل</span></button></div><div class="kpis"><div class="kpi"><small>كل العملاء</small><strong>${r.length}</strong></div><div class="kpi"><small>قيد الانتظار</small><strong>${r.filter(x=>x.status==="waiting").length}</strong></div><div class="kpi"><small>قيد المعالجة</small><strong>${r.filter(x=>x.status==="processing").length}</strong></div><div class="kpi"><small>مكتمل</small><strong>${r.filter(x=>x.status==="completed").length}</strong></div></div><div class="head"><div><h2>آخر العملاء</h2><p>${r.length} سجل</p></div></div><div class="cards">${cards(r.slice(0,8),false)}</div>`}
 function match(r,q){if(!q)return true;return[r.customerName,r.username,r.deviceNumber,r.subscriptionType,r.platform,r.taskType,r.employeeName,r.customerDate,SEC[r.section],STATUS[r.status]].join(" ").toLowerCase().includes(q.toLowerCase())}
-function bar(){return`<div class="toolbar"><div class="search"><input id="search" class="input" value="${esc(state.q)}" placeholder="بحث بالاسم، اليوزر، رقم الجهاز، المهمة أو الموظف"></div><button class="btn soft" type="button" data-clear>مسح</button></div>`}
-function follow(){let r=active().filter(x=>match(x,state.q));if(state.filter!=="all")r=r.filter(x=>x.status===state.filter);return`<div class="head"><div><h2>متابعة العمل</h2><p>فلترة مباشرة حسب الحالة</p></div><button class="btn gold" type="button" data-action="quick">${icon("plus")}<span>إضافة عميل</span></button></div><div class="kpis">${fk("all","كل الحالات",active().length)}${fk("waiting","قيد الانتظار",status("waiting").length)}${fk("review","قيد المراجعة",status("review").length)}${fk("processing","قيد المعالجة",status("processing").length)}</div><div class="head"><div><h2>العملاء</h2><p>${r.length} سجل مطابق</p></div></div>${bar()}<div class="cards">${cards(r,false)}</div>`}
+function bar(){return`<div class="toolbar"><div class="search"><input id="search" class="input" value="${esc(state.q)}" autocomplete="off" placeholder="بحث بالاسم، اليوزر، رقم الجهاز، المهمة أو الموظف"></div><button class="btn soft" type="button" data-clear>مسح</button></div>`}
+function visibleRows(){
+  let rows=state.view==="deleted"?deleted():active();
+  rows=rows.filter(x=>match(x,state.q));
+  if(state.view==="follow"&&state.filter!=="all")rows=rows.filter(x=>x.status===state.filter);
+  return rows;
+}
+function refreshSearchResults(){
+  const grid=$("#cardsGrid");
+  if(!grid)return;
+  const rows=visibleRows();
+  grid.innerHTML=cards(rows,state.view==="deleted");
+  const count=$("#resultCount");
+  if(count)count.textContent=String(rows.length);
+}
+function follow(){let r=visibleRows();return`<div class="head"><div><h2>متابعة العمل</h2><p>فلترة مباشرة حسب الحالة</p></div><button class="btn gold" type="button" data-action="quick">${icon("plus")}<span>إضافة عميل</span></button></div><div class="kpis">${fk("all","كل الحالات",active().length)}${fk("waiting","قيد الانتظار",status("waiting").length)}${fk("review","قيد المراجعة",status("review").length)}${fk("processing","قيد المعالجة",status("processing").length)}</div><div class="head"><div><h2>العملاء</h2><p><span id="resultCount">${r.length}</span> سجل مطابق</p></div></div>${bar()}<div id="cardsGrid" class="cards">${cards(r,false)}</div>`}
 function fk(k,l,n){return`<div class="kpi click ${state.filter===k?"active":""}" data-filter="${k}"><small>${l}</small><strong>${n}</strong></div>`}
-function customers(){let r=active().filter(x=>match(x,state.q));return`<div class="head"><div><h2>جميع العملاء</h2><p>${r.length} سجل</p></div><button class="btn gold" type="button" data-action="quick">${icon("plus")}<span>إضافة عميل</span></button></div>${bar()}<div class="cards">${cards(r,false)}</div>`}
-function trash(){let r=deleted().filter(x=>match(x,state.q));return`<div class="head"><div><h2>سجل المحذوفين</h2><p>يمكن إرجاع أي عميل بنفس بياناته</p></div>${deleted().length?`<button class="btn danger" type="button" data-clear-deleted>${icon("trash")}<span>حذف جميع المحذوفين</span></button>`:""}</div>${bar()}<div class="cards">${cards(r,true)}</div>`}
+function customers(){let r=visibleRows();return`<div class="head"><div><h2>جميع العملاء</h2><p><span id="resultCount">${r.length}</span> سجل</p></div><button class="btn gold" type="button" data-action="quick">${icon("plus")}<span>إضافة عميل</span></button></div>${bar()}<div id="cardsGrid" class="cards">${cards(r,false)}</div>`}
+function trash(){let r=visibleRows();return`<div class="head"><div><h2>سجل المحذوفين</h2><p><span id="resultCount">${r.length}</span> سجل محذوف • يمكن إرجاع العميل بنفس بياناته</p></div>${deleted().length?`<button class="btn danger" type="button" data-clear-deleted>${icon("trash")}<span>حذف جميع المحذوفين</span></button>`:""}</div>${bar()}<div id="cardsGrid" class="cards">${cards(r,true)}</div>`}
 function cards(r,d){if(!r.length)return'<div class="empty"><b>لا توجد سجلات</b><span>سيظهر العملاء هنا بعد إضافتهم.</span></div>';return r.map(x=>`<article class="card"><div class="card-head"><div><h3>${esc(x.customerName)}</h3><p>@${esc(x.username)} • ${esc(SEC[x.section]||"-")}</p></div><span class="status ${x.status||"waiting"}">${esc(STATUS[x.status]||"-")}</span></div><div class="meta-grid"><div class="meta"><small>نوع المهمة</small><b>${esc(x.taskType||"-")}</b></div><div class="meta"><small>المنصة</small><b>${esc(x.platform||"-")}</b></div><div class="meta"><small>الموظف المستلم</small><b>${esc(x.employeeName||"-")}</b></div><div class="meta"><small>المبلغ</small><b>${money(x.amount)}</b></div></div><div class="actions"><button class="btn soft" type="button" data-details="${x.id}">${icon("eye")}<span>التفاصيل</span></button>${d?`<button class="btn success" type="button" data-restore="${x.id}">${icon("restore")}<span>إرجاع العميل</span></button>`:`<button class="btn soft" type="button" data-edit="${x.id}">${icon("edit")}<span>تعديل</span></button><button class="btn danger" type="button" data-delete="${x.id}">${icon("trash")}<span>حذف</span></button>`}</div></article>`).join("")}
-function modal(section,row=null){let v=(k,d="")=>esc(row?.[k]??d),sec=row?.section||section||"support",st=row?.status||"waiting";return`<div class="modal-bg" data-backdrop><section class="modal"><header class="modal-head"><h3>${row?"تعديل معلومات العميل":"إضافة عميل جديد"}</h3><button class="x" type="button" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><form id="customerForm" class="modal-body"><div class="form-grid">
+function modal(section,row=null){
+  let v=(k,d="")=>esc(row?.[k]??d),sec=row?.section||section||"support",st=row?.status||"waiting";
+  const dp=splitCustomerDate(row?.customerDate);
+  return`<div class="modal-bg" data-backdrop><section class="modal"><header class="modal-head"><h3>${row?"تعديل معلومات العميل":"إضافة عميل جديد"}</h3><button class="x" type="button" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><form id="customerForm" class="modal-body"><div class="form-grid">
 <div class="field"><label>اسم العميل <span class="req">*</span></label><input class="input" name="customerName" value="${v("customerName")}" required></div>
 <div class="field"><label>يوزر المستخدم <span class="req">*</span></label><input class="input" name="username" value="${v("username")}" required></div>
 <div class="field"><label>رقم الجهاز <span class="req">*</span></label><input class="input" name="deviceNumber" value="${v("deviceNumber")}" required></div>
 <div class="field"><label>القسم <span class="req">*</span></label><select class="select" name="section"><option value="support" ${sec==="support"?"selected":""}>الدعم</option><option value="recovery" ${sec==="recovery"?"selected":""}>استرجاع الحسابات</option></select></div>
 <div class="field"><label>نوع الاشتراك <span class="req">*</span></label><input class="input" name="subscriptionType" value="${v("subscriptionType")}" required></div>
-<div class="field"><label>الكمية <span class="req">*</span></label><input class="input" type="number" min="1" name="quantity" value="${v("quantity","1")}" required></div>
+<div class="field"><label>الكمية <span class="req">*</span></label><input class="input" inputmode="numeric" type="number" min="1" name="quantity" value="${v("quantity","1")}" required></div>
 <div class="field"><label>المنصة <span class="req">*</span></label><select class="select" name="platform" required><option value="">اختر</option>${PLAT.map(p=>`<option value="${p}" ${row?.platform===p?"selected":""}>${p}</option>`).join("")}</select></div>
 <div class="field"><label>نوع الدفع <span class="req">*</span></label><select class="select" name="paymentType" required><option value="">اختر</option>${PAY.map(p=>`<option value="${p}" ${row?.paymentType===p?"selected":""}>${p}</option>`).join("")}</select></div>
-<div class="field"><label>المبلغ <span class="req">*</span></label><input class="input" type="number" min="0" name="amount" value="${v("amount")}" required></div>
-<div class="field"><label>تاريخ العميل <span class="req">*</span></label><input class="input" type="date" name="customerDate" value="${v("customerDate",new Date().toISOString().slice(0,10))}" required></div>
+<div class="field"><label>المبلغ <span class="req">*</span></label><input class="input" inputmode="numeric" type="number" min="0" name="amount" value="${v("amount")}" required></div>
+<div class="date-wrap">
+  <label style="font-size:14px;font-weight:900">تاريخ العميل <span class="req">*</span></label>
+  <div class="date-fields">
+    <div class="date-part"><small>السنة</small><input class="input" inputmode="numeric" list="yearList" name="customerYear" value="${dp.year}" placeholder="2026" required><datalist id="yearList">${yearOptions()}</datalist></div>
+    <div class="date-part"><small>الشهر</small><input class="input" list="monthList" name="customerMonth" value="${monthLabel(dp.month)}" placeholder="08 - آب" required><datalist id="monthList">${MONTHS.map(x=>`<option value="${x[0]} - ${x[1]}"></option>`).join("")}</datalist></div>
+    <div class="date-part"><small>اليوم</small><input class="input" inputmode="numeric" list="dayList" name="customerDay" value="${Number(dp.day)}" placeholder="17" required><datalist id="dayList">${dayOptions()}</datalist></div>
+  </div>
+</div>
 <div class="field"><label>نوع المهمة <span class="req">*</span></label><input class="input" name="taskType" value="${v("taskType")}" required></div>
 <div class="field"><label>اسم الموظف المستلم <span class="req">*</span></label><input class="input" name="employeeName" value="${v("employeeName")}" required></div>
 <div class="field"><label>الحالة <span class="req">*</span></label><select class="select" name="status">${Object.entries(STATUS).map(([k,l])=>`<option value="${k}" ${st===k?"selected":""}>${l}</option>`).join("")}</select></div>
 <div class="field span2"><label>ملاحظات العميل <span class="req">*</span></label><textarea class="textarea" name="notes" required>${v("notes")}</textarea></div>
 </div><input type="hidden" name="editId" value="${row?row.id:""}"><div class="form-actions"><button id="save" class="btn gold">${row?"حفظ التعديل":"حفظ العميل"}</button><button class="btn soft" type="button" data-close>إلغاء</button></div></form></section></div>`}
-function details(r){return`<div class="modal-bg" data-backdrop><section class="modal"><header class="modal-head"><h3>تفاصيل العميل</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="meta-grid">${[["الاسم",r.customerName],["اليوزر",r.username],["رقم الجهاز",r.deviceNumber],["القسم",SEC[r.section]],["نوع الاشتراك",r.subscriptionType],["الكمية",r.quantity],["المنصة",r.platform],["نوع الدفع",r.paymentType],["المبلغ",money(r.amount)],["نوع المهمة",r.taskType],["تاريخ العميل",r.customerDate],["الموظف",r.employeeName],["الحالة",STATUS[r.status]]].map(([a,b])=>`<div class="meta"><small>${a}</small><b>${esc(b??"-")}</b></div>`).join("")}</div><div class="meta" style="margin-top:12px;line-height:1.8;white-space:pre-wrap"><small>الملاحظات</small><b style="white-space:pre-wrap">${esc(r.notes||"-")}</b></div></div></section></div>`}
+function details(r){return`<div class="modal-bg" data-backdrop><section class="modal"><header class="modal-head"><h3>تفاصيل العميل</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="meta-grid details-grid">${[["الاسم",r.customerName],["اليوزر",r.username],["رقم الجهاز",r.deviceNumber],["القسم",SEC[r.section]],["نوع الاشتراك",r.subscriptionType],["الكمية",r.quantity],["المنصة",r.platform],["نوع الدفع",r.paymentType],["المبلغ",money(r.amount)],["نوع المهمة",r.taskType],["تاريخ العميل",formatCustomerDate(r.customerDate)],["الموظف",r.employeeName],["الحالة",STATUS[r.status]]].map(([a,b])=>`<div class="meta"><small>${a}</small><b>${esc(b??"-")}</b></div>`).join("")}</div><div class="meta details-notes" style="margin-top:12px;line-height:1.8"><small>الملاحظات</small><b>${esc(r.notes||"-")}</b></div></div></section></div>`}
 function quick(){return`<div class="modal-bg" data-backdrop><section class="modal" style="width:min(570px,100%)"><header class="modal-head"><h3>اختر القسم</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="services"><article class="service"><div class="ico">${icon("headset")}</div><h3>الدعم</h3><button class="btn gold full" type="button" data-add="support">اختيار</button></article><article class="service"><div class="ico">${icon("key")}</div><h3>استرجاع الحسابات</h3><button class="btn gold full" type="button" data-add="recovery">اختيار</button></article></div></div></section></div>`}
 function open(h){$("#modal").innerHTML=h}function close(){$("#modal").innerHTML=""}
 function stats(){let r=active(),top=k=>{let m={};r.forEach(x=>{let v=clean(x[k]);if(v)m[v]=(m[v]||0)+1});return(Object.entries(m).sort((a,b)=>b[1]-a[1])[0]||["-",0])[0]};return{total:r.length,amount:r.reduce((a,x)=>a+Number(x.amount||0),0),support:section("support").length,recovery:section("recovery").length,waiting:status("waiting").length,review:status("review").length,processing:status("processing").length,completed:status("completed").length,deleted:deleted().length,task:top("taskType"),employee:top("employeeName"),platform:top("platform")}}
@@ -228,8 +359,8 @@ function preventViewportZoom(){
 }
 preventViewportZoom();
 
-document.addEventListener("submit",async e=>{if(e.target.id==="loginForm"){e.preventDefault();let btn=$("#loginBtn"),old=btn.textContent;btn.disabled=true;btn.textContent="جاري التحقق…";try{let f=await fb();if(f)await f.u.signInWithEmailAndPassword(f.auth,$("#email").value,$("#pass").value);else if(!$("#email").value||!$("#pass").value)throw Error();$("#auth").classList.add("hidden");$("#app").classList.remove("hidden");await startData();toast("تم تسجيل الدخول بنجاح","success")}catch(err){console.error(err);toast("تعذر تسجيل الدخول","error")}finally{btn.disabled=false;btn.textContent=old}}if(e.target.id==="customerForm"){e.preventDefault();let fd=new FormData(e.target),p={customerName:clean(fd.get("customerName")),username:clean(fd.get("username")).replace(/^@/,""),deviceNumber:clean(fd.get("deviceNumber")),section:clean(fd.get("section")),subscriptionType:clean(fd.get("subscriptionType")),quantity:Number(fd.get("quantity")),platform:clean(fd.get("platform")),paymentType:clean(fd.get("paymentType")),amount:Number(fd.get("amount")),customerDate:clean(fd.get("customerDate")),taskType:clean(fd.get("taskType")),employeeName:clean(fd.get("employeeName")),status:clean(fd.get("status")),notes:clean(fd.get("notes"))};if(Object.values(p).some(v=>v===""||Number.isNaN(v))){toast("جميع معلومات العميل إجبارية","error");return}let id=clean(fd.get("editId"));try{id?await editRow(id,p):await addRow(p);close();if(!configured())render();toast(id?"تم حفظ التعديل":"تمت إضافة العميل","success")}catch(err){console.error(err);toast("تعذر حفظ العميل","error")}}})
-document.addEventListener("input",e=>{if(e.target.id==="search"){state.q=e.target.value;clearTimeout(state.t);state.t=setTimeout(render,80)}})
+document.addEventListener("submit",async e=>{if(e.target.id==="loginForm"){e.preventDefault();let btn=$("#loginBtn"),old=btn.textContent;btn.disabled=true;btn.textContent="جاري التحقق…";try{let f=await fb();if(f)await f.u.signInWithEmailAndPassword(f.auth,$("#email").value,$("#pass").value);else if(!$("#email").value||!$("#pass").value)throw Error();$("#auth").classList.add("hidden");$("#app").classList.remove("hidden");await startData();toast("تم تسجيل الدخول بنجاح","success")}catch(err){console.error(err);toast("تعذر تسجيل الدخول","error")}finally{btn.disabled=false;btn.textContent=old}}if(e.target.id==="customerForm"){e.preventDefault();let fd=new FormData(e.target),p={customerName:clean(fd.get("customerName")),username:clean(fd.get("username")).replace(/^@/,""),deviceNumber:clean(fd.get("deviceNumber")),section:clean(fd.get("section")),subscriptionType:clean(fd.get("subscriptionType")),quantity:Number(fd.get("quantity")),platform:clean(fd.get("platform")),paymentType:clean(fd.get("paymentType")),amount:Number(fd.get("amount")),customerDate:buildCustomerDate(fd),taskType:clean(fd.get("taskType")),employeeName:clean(fd.get("employeeName")),status:clean(fd.get("status")),notes:clean(fd.get("notes"))};if(!p.customerDate){toast("تحقق من السنة والشهر واليوم","error");return}if(Object.values(p).some(v=>v===""||Number.isNaN(v))){toast("جميع معلومات العميل إجبارية","error");return}let id=clean(fd.get("editId"));try{id?await editRow(id,p):await addRow(p);close();if(!configured())render();toast(id?"تم حفظ التعديل":"تمت إضافة العميل","success")}catch(err){console.error(err);toast("تعذر حفظ العميل","error")}}})
+document.addEventListener("input",e=>{if(e.target.id==="search"){state.q=e.target.value;cancelAnimationFrame(state.searchFrame||0);state.searchFrame=requestAnimationFrame(refreshSearchResults)}})
 document.addEventListener("click",async e=>{
   if(e.target.closest("#backBtn")){
     if(state.view!=="home") setView("home");
@@ -242,7 +373,7 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("[data-clear-deleted]")){
     try{await clearAllDeleted()}catch(err){console.error(err);toast("تعذر حذف جميع المحذوفين","error")}
     return;
-  }let v=e.target.closest("[data-view]");if(v){setView(v.dataset.view);return}let s=e.target.closest("[data-section]");if(s){state.section=s.dataset.section;state.view="section";render();return}if(e.target.closest('[data-action="quick"]')){open(quick());return}let a=e.target.closest("[data-add]");if(a){close();open(modal(a.dataset.add));return}if(e.target.matches("[data-backdrop]")){close();return}if(e.target.closest("[data-close]")){close();return}let f=e.target.closest("[data-filter]");if(f){state.filter=f.dataset.filter;render();return}if(e.target.closest("[data-clear]")){state.q="";render();return}let d=e.target.closest("[data-details]");if(d){let r=state.rows.find(x=>x.id===d.dataset.details);if(r)open(details(r));return}let ed=e.target.closest("[data-edit]");if(ed){let r=state.rows.find(x=>x.id===ed.dataset.edit);if(r)open(modal("",r));return}let de=e.target.closest("[data-delete]");if(de){let r=state.rows.find(x=>x.id===de.dataset.delete);if(r&&confirm(`تأكيد حذف العميل ${r.customerName}؟`)){await markDeleted(r.id,true);if(!configured())render();toast("تم نقل العميل للمحذوفين","success")}return}let rs=e.target.closest("[data-restore]");if(rs){await markDeleted(rs.dataset.restore,false);if(!configured())render();toast("تم إرجاع العميل","success");return}})
+  }let v=e.target.closest("[data-view]");if(v){setView(v.dataset.view);return}let s=e.target.closest("[data-section]");if(s){state.section=s.dataset.section;state.view="section";render();return}if(e.target.closest('[data-action="quick"]')){open(quick());return}let a=e.target.closest("[data-add]");if(a){close();open(modal(a.dataset.add));return}if(e.target.matches("[data-backdrop]")){close();return}if(e.target.closest("[data-close]")){close();return}let f=e.target.closest("[data-filter]");if(f){state.filter=f.dataset.filter;render();return}if(e.target.closest("[data-clear]")){state.q="";const s=$("#search");if(s){s.value="";s.focus()}refreshSearchResults();return}let d=e.target.closest("[data-details]");if(d){let r=state.rows.find(x=>x.id===d.dataset.details);if(r)open(details(r));return}let ed=e.target.closest("[data-edit]");if(ed){let r=state.rows.find(x=>x.id===ed.dataset.edit);if(r)open(modal("",r));return}let de=e.target.closest("[data-delete]");if(de){let r=state.rows.find(x=>x.id===de.dataset.delete);if(r&&confirm(`تأكيد حذف العميل ${r.customerName}؟`)){await markDeleted(r.id,true);if(!configured())render();toast("تم نقل العميل للمحذوفين","success")}return}let rs=e.target.closest("[data-restore]");if(rs){await markDeleted(rs.dataset.restore,false);if(!configured())render();toast("تم إرجاع العميل","success");return}})
 
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&$("#modal")&&$("#modal").innerHTML.trim()){
