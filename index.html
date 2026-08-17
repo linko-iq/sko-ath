@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- EBDAA_MEDIA_FIREBASE_FINAL_V1_20260817 -->
+<!-- EBDAA_MEDIA_FIREBASE_ADMIN_DETAILS_V2_20260817 -->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -95,6 +95,28 @@ body.theme-dark .guide-icon{background:#202126}
 @media(prefers-reduced-motion:reduce){
   .guide-arrow,.cards .card{animation:none!important}
   .service,.card,.kpi,.btn.gold .icon{transition:none!important}
+}
+
+
+/* Admin live Firestore details */
+.admin-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.admin-list{display:grid;gap:10px;margin-top:16px}
+.admin-customer{
+  border:1px solid var(--line);background:var(--card);border-radius:18px;padding:14px;
+  display:grid;gap:11px;min-width:0
+}
+.admin-customer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.admin-customer-head h4{margin:0;font-size:16px}
+.admin-customer-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.admin-customer-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.admin-customer-grid .meta{height:68px;min-height:68px;display:flex;flex-direction:column;justify-content:center}
+.admin-customer-grid .meta b{white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+.admin-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px}
+.admin-toolbar h3{margin:0}
+.admin-count{color:var(--muted);font-size:12px}
+@media(max-width:760px){
+  .admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-customer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
 </style>
@@ -397,7 +419,58 @@ function modal(section,row=null){
 function details(r){return`<div class="modal-bg" data-backdrop><section class="modal"><header class="modal-head"><h3>تفاصيل العميل</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="meta-grid details-grid">${[["الاسم",r.customerName],["اليوزر",r.username],["رقم الجهاز",r.deviceNumber],["القسم",SEC[r.section]],["نوع الاشتراك",r.subscriptionType],["الكمية",r.quantity],["المنصة",r.platform],["نوع الدفع",r.paymentType],["المبلغ",money(r.amount)],["نوع المهمة",r.taskType],["تاريخ العميل",formatCustomerDate(r.customerDate)],["الموظف",r.employeeName],["الحالة",STATUS[r.status]]].map(([a,b])=>`<div class="meta"><small>${a}</small><b>${esc(b??"-")}</b></div>`).join("")}</div><div class="meta details-notes" style="margin-top:12px;line-height:1.8"><small>الملاحظات</small><b>${esc(r.notes||"-")}</b></div></div></section></div>`}
 function quick(){return`<div class="modal-bg" data-backdrop><section class="modal" style="width:min(570px,100%)"><header class="modal-head"><h3>اختر القسم</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="services"><article class="service"><div class="ico">${icon("headset")}</div><h3>الدعم</h3><button class="btn gold full" type="button" data-add="support">اختيار</button></article><article class="service"><div class="ico">${icon("key")}</div><h3>استرجاع الحسابات</h3><button class="btn gold full" type="button" data-add="recovery">اختيار</button></article></div></div></section></div>`}
 function open(h){$("#modal").innerHTML=h}function close(){$("#modal").innerHTML=""}
-function stats(){let r=active(),top=k=>{let m={};r.forEach(x=>{let v=clean(x[k]);if(v)m[v]=(m[v]||0)+1});return(Object.entries(m).sort((a,b)=>b[1]-a[1])[0]||["-",0])[0]};return{total:r.length,amount:r.reduce((a,x)=>a+Number(x.amount||0),0),support:section("support").length,recovery:section("recovery").length,waiting:status("waiting").length,review:status("review").length,processing:status("processing").length,completed:status("completed").length,deleted:deleted().length,task:top("taskType"),employee:top("employeeName"),platform:top("platform")}}
+function statsFromRows(allRows){
+  const r=allRows.filter(x=>x.deleted!==true);
+  const deletedRows=allRows.filter(x=>x.deleted===true);
+  const top=k=>{
+    const m={};
+    r.forEach(x=>{
+      const v=clean(x[k]);
+      if(v)m[v]=(m[v]||0)+1;
+    });
+    return (Object.entries(m).sort((a,b)=>b[1]-a[1])[0]||["-",0])[0];
+  };
+  return{
+    total:r.length,
+    amount:r.reduce((a,x)=>a+Number(x.amount||0),0),
+    support:r.filter(x=>x.section==="support").length,
+    recovery:r.filter(x=>x.section==="recovery").length,
+    waiting:r.filter(x=>x.status==="waiting").length,
+    review:r.filter(x=>x.status==="review").length,
+    processing:r.filter(x=>x.status==="processing").length,
+    completed:r.filter(x=>x.status==="completed").length,
+    deleted:deletedRows.length,
+    task:top("taskType"),
+    employee:top("employeeName"),
+    platform:top("platform")
+  };
+}
+function adminCustomerCards(rows){
+  if(!rows.length){
+    return '<div class="empty"><b>لا توجد بيانات عملاء</b><span>ستظهر سجلات العملاء هنا بعد إضافتها.</span></div>';
+  }
+  return rows.map(r=>`
+    <article class="admin-customer">
+      <div class="admin-customer-head">
+        <div>
+          <h4>${esc(r.customerName||"-")}</h4>
+          <p>@${esc(r.username||"-")} • ${esc(SEC[r.section]||"-")}</p>
+        </div>
+        <span class="status ${r.status||"waiting"}">${esc(STATUS[r.status]||"-")}</span>
+      </div>
+      <div class="admin-customer-grid">
+        <div class="meta"><small>المبلغ</small><b>${money(r.amount)}</b></div>
+        <div class="meta"><small>نوع المهمة</small><b>${esc(r.taskType||"-")}</b></div>
+        <div class="meta"><small>الموظف المستلم</small><b>${esc(r.employeeName||"-")}</b></div>
+        <div class="meta"><small>المنصة</small><b>${esc(r.platform||"-")}</b></div>
+        <div class="meta"><small>نوع الاشتراك</small><b>${esc(r.subscriptionType||"-")}</b></div>
+        <div class="meta"><small>الكمية</small><b>${esc(r.quantity??"-")}</b></div>
+        <div class="meta"><small>نوع الدفع</small><b>${esc(r.paymentType||"-")}</b></div>
+        <div class="meta"><small>تاريخ العميل</small><b>${esc(formatCustomerDate(r.customerDate))}</b></div>
+      </div>
+    </article>
+  `).join("");
+}
 
 let adminTapCount=0,adminTapTimer=null;
 function adminLogoTap(){
@@ -414,7 +487,93 @@ document.querySelectorAll("[data-admin-logo]").forEach(el=>{
   el.style.cursor="pointer";
   el.addEventListener("click",adminLogoTap);
 });
-window.__openEbdaaAdmin=function(){let code=prompt("أدخل رمز الإدارة");if(code!==ADMIN_SECRET){toast("رمز الإدارة غير صحيح","error");return}let s=stats();open(`<div class="modal-bg" data-backdrop><section class="modal" style="width:min(1050px,100%)"><header class="modal-head"><h3>لوحة الإدارة</h3><button class="x" data-close aria-label="إغلاق"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="modal-body"><div class="admin-grid">${[["إجمالي العملاء",s.total],["إجمالي المبالغ",money(s.amount)],["الدعم",s.support],["الاسترجاع",s.recovery],["قيد الانتظار",s.waiting],["قيد المراجعة",s.review],["قيد المعالجة",s.processing],["مكتمل",s.completed],["المحذوفين",s.deleted],["أكثر مهمة",s.task],["أكثر موظف",s.employee],["أكثر منصة",s.platform]].map(([a,b])=>`<div class="admin-card"><small>${a}</small><strong>${esc(b)}</strong></div>`).join("")}</div></div></section></div>`)}
+window.__openEbdaaAdmin=async function(){
+  const code=prompt("أدخل رمز الإدارة");
+  if(code!==ADMIN_SECRET){
+    toast("رمز الإدارة غير صحيح","error");
+    return;
+  }
+
+  try{
+    /*
+      لا يوجد حساب Firebase مستقل للإدارة.
+      الإدارة تستخدم نفس جلسة Firebase الموثقة الموجودة بالنظام،
+      ثم تسحب أحدث البيانات مباشرة من Firestore عند فتح اللوحة.
+    */
+    const f=await ensureAuthorized();
+
+    open(`<div class="modal-bg" data-backdrop>
+      <section class="modal" style="width:min(1120px,100%)">
+        <header class="modal-head">
+          <h3>لوحة الإدارة</h3>
+          <button class="x" data-close aria-label="إغلاق">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </header>
+        <div class="modal-body">
+          <div class="empty"><b>جاري تحميل بيانات الإدارة…</b><span>يتم جلب البيانات مباشرة من قاعدة البيانات.</span></div>
+        </div>
+      </section>
+    </div>`);
+
+    const snap=await f.s.getDocs(
+      f.s.query(
+        f.s.collection(f.db,COL),
+        f.s.orderBy("createdAt","desc")
+      )
+    );
+
+    const allRows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const activeRows=allRows.filter(x=>x.deleted!==true);
+    const s=statsFromRows(allRows);
+
+    const body=$("#modal .modal-body");
+    if(!body)return;
+
+    body.innerHTML=`
+      <div class="admin-summary">
+        ${[
+          ["إجمالي العملاء",s.total],
+          ["إجمالي المبالغ",money(s.amount)],
+          ["الدعم",s.support],
+          ["الاسترجاع",s.recovery],
+          ["قيد الانتظار",s.waiting],
+          ["قيد المراجعة",s.review],
+          ["قيد المعالجة",s.processing],
+          ["مكتمل",s.completed],
+          ["المحذوفين",s.deleted],
+          ["أكثر مهمة",s.task],
+          ["أكثر موظف",s.employee],
+          ["أكثر منصة",s.platform]
+        ].map(([a,b])=>`
+          <div class="admin-card">
+            <small>${esc(a)}</small>
+            <strong>${esc(b)}</strong>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="admin-toolbar">
+        <h3>تفاصيل العملاء</h3>
+        <span class="admin-count">${activeRows.length} عميل</span>
+      </div>
+
+      <div class="admin-list">
+        ${adminCustomerCards(activeRows)}
+      </div>
+    `;
+  }catch(err){
+    console.error("Admin Firestore:",err);
+
+    if(String(err&&err.message||"")==="UNAUTHORIZED_EMPLOYEE"){
+      toast("افتح الإدارة بعد تسجيل دخول النظام بحساب الموظفين","error");
+    }else{
+      toast("تعذر تحميل بيانات الإدارة","error");
+    }
+  }
+}
 
 function preventViewportZoom(){
   const stop=e=>e.preventDefault();
