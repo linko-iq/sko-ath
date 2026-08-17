@@ -1,4 +1,4 @@
-const VERSION = "ebdaa-media-pwa-v1";
+const VERSION = "ebdaa-medi
 const CACHE_NAME = VERSION + "-core";
 
 const CORE = [
